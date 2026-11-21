@@ -22,7 +22,7 @@
 - You write `booking.user`, `booking.search`, `booking.passenger` with `updateBooking()` (KYLE's context). DAR's Stage 04 reads `booking.search`.
 
 ## Roadmap
-### - [ ] Task 1: CAPTCHA v1
+### - [x] Task 1: CAPTCHA v1
 Build `Captcha.jsx`: a fake image-grid CAPTCHA ("Select all squares with airplanes") using emoji or simple images. The correct answer is absurd (for example the only correct square is the one with a cloud shaped like a plane). Keep a question bank in `components/captcha/questions.js`. Call `onPass()` on success, `onFail()` and `bumpFrustration(5)` on failure, with a new question each time.
 **Done when:** `<Captcha onPass={...} />` renders a working, silly CAPTCHA you can pass and fail.
 
