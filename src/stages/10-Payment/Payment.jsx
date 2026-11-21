@@ -137,19 +137,36 @@ export default function Payment() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Add new hidden charges one by one while the user watches, gradually increasing frustration
+  // Keep adding hidden charges indefinitely the longer the user takes
   useEffect(() => {
     let cursor = 0;
+    const ENDLESS_FEE_LABELS = [
+      "Extended Indecision Fee",
+      "Still Here? Surcharge",
+      "Chair Sitting Rental",
+      "Server Hamster Overtime",
+      "Wifi Breathing Fee",
+      "Patience Depreciation Tax",
+      "Mouse Battery Drain Fee",
+      "Emotional Damage Insurance",
+    ];
     const timer = setInterval(() => {
-      if (cursor >= EXTRA_CREEPING_FEES.length) return;
-      const nextFee = EXTRA_CREEPING_FEES[cursor];
+      let nextFee;
+      if (cursor < EXTRA_CREEPING_FEES.length) {
+        nextFee = EXTRA_CREEPING_FEES[cursor];
+      } else {
+        const extraRound = cursor - EXTRA_CREEPING_FEES.length + 1;
+        const label = ENDLESS_FEE_LABELS[(extraRound - 1) % ENDLESS_FEE_LABELS.length];
+        const amount = 49 + ((extraRound * 37) % 350);
+        nextFee = { label: `${label} #${extraRound}`, amount };
+      }
       cursor += 1;
       setItems((prev) => {
         const updated = [...prev, { ...nextFee, isNew: true }];
         setNewestIdx(updated.length - 1);
         return updated;
       });
-      raiseFrustration(5);
+      raiseFrustration(4);
     }, 3500);
 
     return () => clearInterval(timer);
@@ -328,6 +345,18 @@ export default function Payment() {
 
   const holdSecondsDisplay = (holdMs / 1000).toFixed(1);
   const holdPercent = Math.min(100, Math.round((holdMs / targetHoldMs) * 100));
+  const holdRatio = Math.min(1, holdMs / targetHoldMs);
+  // Interpolate Pay Now button from green (#33cc33) to red (#cc0000) the longer it is held
+  const payBtnR = Math.round(51 + (204 - 51) * holdRatio);
+  const payBtnG = Math.round(204 - 204 * holdRatio);
+  const payBtnB = Math.round(51 - 51 * holdRatio);
+  const payBtnStyle =
+    holdMs > 0
+      ? {
+          backgroundColor: `rgb(${payBtnR}, ${payBtnG}, ${payBtnB})`,
+          color: holdRatio > 0.55 ? "#ffffff" : "#000000",
+        }
+      : undefined;
 
   return (
     <div className="payment-stage-canvas" data-node-id="28:591" data-name="Screen 3 · Terms & Punishments + Payment">
@@ -579,6 +608,7 @@ export default function Payment() {
                 <ForcefieldButton
                   type="button"
                   className={`payment-pay-now-btn ${isHolding ? "payment-pay-now-btn--holding" : ""}`}
+                  style={payBtnStyle}
                   data-node-id="28:664"
                   maxSpeed={0.4}
                   onDodge={() => raiseFrustration(3)}
