@@ -1,18 +1,43 @@
 /* OWNER: DIN — styles for Stage 10 (Payment), matched strictly to Figma Screen References (28:591 & 28:620) */
 @import url('https://fonts.googleapis.com/css2?family=Bangers&family=Comic+Neue:ital,wght@0,400;0,700;1,400&family=VT323&display=swap');
 
+/* Remove topbar and make stage full screen when Payment stage is rendered */
+body:has(.payment-stage-canvas) {
+  margin: 0;
+  padding: 0;
+  background: #ffff99;
+}
+
+.app-shell:has(.payment-stage-canvas) {
+  background: #ffff99;
+  min-height: 100vh;
+}
+
+.app-shell:has(.payment-stage-canvas) > .app-header {
+  display: none !important;
+}
+
+.app-shell:has(.payment-stage-canvas) > .stage-area {
+  max-width: 100% !important;
+  width: 100% !important;
+  min-height: 100vh;
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
 .payment-stage-canvas {
   background: #ffff99;
   border: 3px solid #000000;
   padding: 8px;
   font-family: 'Comic Neue', 'Comic Sans MS', cursive, sans-serif;
   color: #000000;
-  max-width: 1280px;
-  margin: 0 auto;
+  width: 100%;
+  min-height: 100vh;
+  margin: 0;
   box-sizing: border-box;
   display: flex;
   flex-direction: column;
-  gap: 6px;
+  gap: 8px;
   position: relative;
   user-select: none;
 }
@@ -107,24 +132,25 @@
   transition: width 0.25s ease;
 }
 
-/* Main content area centering Payment window (28:620) */
+/* Main content area filling full screen width */
 .payment-main-row {
   display: flex;
   gap: 8px;
-  align-items: flex-start;
+  align-items: stretch;
   justify-content: center;
   width: 100%;
+  flex: 1;
 }
 
 /* Payment Window (28:620) */
 .payment-window {
   background: #ffffff;
   border: 3px solid #003399;
-  width: 636px;
-  max-width: 100%;
+  width: 100%;
   display: flex;
   flex-direction: column;
   position: relative;
+  flex: 1;
 }
 
 .payment-title-bar {
