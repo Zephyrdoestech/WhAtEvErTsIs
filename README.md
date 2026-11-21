@@ -16,7 +16,7 @@ cd WhAtEvErTsIs
 npm install
 npm run dev
 
-# Terminal 2: API → http://localhost:3001 (optional: the site falls back to mock data without it)
+# Terminal 2: API → http://localhost:3001 (recommended; without it the site falls back to mock data)
 cd server
 npm install
 npm run dev
@@ -36,40 +36,40 @@ In development there's also a **DEV: jump to** dropdown in the top-left corner. 
 
 | # | Stage | What goes wrong | Built by |
 |---|---|---|---|
-| 01 | Welcome | ₱1 promo, then the Shea ad (Skip exists for 5 seconds only) | Kyle |
-| 02 | Login / Sign Up | CAPTCHAs, camera "airplane pose" verification | Precious |
-| 03 | Search Flights | Destination auto-corrects to the Philippines; dark mode = flashlight cursor | Precious |
-| 04 | View Flights | Flights load forever (with a minigame while you wait) | Darryll |
-| 05 | Select Flight | The Select button has a forcefield and dodges you | Ricksmer |
-| 06 | Choose Seat | Seats move; random darkness | Ricksmer |
-| 07 | Passenger Details | More verification, pose check | Precious |
-| 08 | Add Extras | Extras you didn't ask for | Darryll |
-| 09 | Review Booking | Terms & Punishments: scroll too fast and progress resets; KA-CHOW | Ricksmer |
-| 10 | Payment | Fees appear one by one; card number entered backwards; hold to pay | Jon Vincent |
-| 11 | Confirmation | "Confirmed-ish" e-ticket and the Certified Survivor badge | Jon Vincent |
-| 12 | Manage Booking | Modify sends you back; Cancel asks "Are you sure?" 3-5 times; both loop you | Kyle |
+| 01 | Welcome | The Shea ad first (Skip exists for 5 seconds only), then the ₱1 promo with a very long asterisk | Kyle |
+| 02 | Login / Sign Up | Log in, register or "guest": every road leads to more CAPTCHAs | Precious |
+| 03 | Search Flights | Every destination becomes "Piliin Mo ang Pilipinas"; dark mode turns your cursor into a flashlight | Precious |
+| 04 | View Flights | "Suspiciously cheap flights" load slowly; dodge luggage in a minigame while you wait | Darryll |
+| 05 | Select Flight | Absurd fare conditions; the Select button has a forcefield and runs away | Ricksmer |
+| 06 | Choose Seat | Seat map with ₱299 window seats; random darkness | Ricksmer |
+| 07 | Passenger Details | Birthday by slider; camera "airplane pose" check (nothing is recorded or uploaded) | Precious |
+| 08 | Add Extras | "Mandatory-optional" extras, already selected for you, with guilt trips | Darryll |
+| 09 | Terms & Punishments | Scroll too fast and progress resets to 0%; agree and KA-CHOW | Ricksmer |
+| 10 | Payment | Fees appear one by one (₱1 → ₱1,649.01); card number picked by shuffling digits; CAPTCHA #∞; hold Pay Now for 10s while a forcefield pushes you away | Jon Vincent |
+| 11 | Confirmation | "Confirmed-ish" e-ticket to ???, gate 404, Certified Survivor | Jon Vincent |
+| 12 | Manage Booking | Modify sends you back to a random stage; Cancel asks "Are you sure?" 3-5 times; both loop you | Kyle |
 
-On every page: the frustration meter (😊 → 💀), Ye Olde Airlper (a chatbot that forgets you), pop-up ads and sounds. Every sound can be muted and every popup closes.
+On every page: the frustration meter (😊 → 💀), Ye Olde Airlper (a chatbot that forgets your name), pop-up ads, "hee hee", surprise flashbangs, brownouts and Lightning McQueen driving past. The **Mute Chaos** button in the top-right corner silences it; every popup can be closed.
 
 ## 2-minute demo route
 
-Open `http://localhost:5173/?demo` on the presenting laptop with sound on. Close other tabs.
+Open `http://localhost:5173/?demo` on the presenting laptop, with the API running, sound on and other tabs closed. Have **Mute Chaos** ready in case the room is loud.
 
 | Time | Do this | Say this |
 |---|---|---|
-| 0:00 | Page loads → the Shea ad starts. Let the Skip button vanish. | "A normal airline. ₱1 flights. Let's book one." Frustration meter goes up. |
-| 0:10 | Ad ends → point at the ₱1 promo and the tiny asterisk. Click **Book Now**. | "The asterisk is doing a lot of work." |
-| 0:15 | Stage 02: try the CAPTCHA, do the airplane pose. | "Verification. Lots of it." |
-| 0:30 | Stage 03: search; watch the destination auto-correct; flashlight dark mode. | |
-| 0:40 | Stage 04: flights loading; play the minigame for a second. | |
-| 0:50 | Stage 05: chase the Select button. | "It has a forcefield." |
-| 1:00 | Stage 06-08: quick seat pick (it moves), passenger details, extras. | Point at the frustration meter. |
-| 1:15 | Stage 09: scroll the terms too fast → progress resets. Agree → KA-CHOW. | |
-| 1:30 | Stage 10: watch the fees pile up; pay. | "Your ₱1 flight is now ₱1,649.01." |
-| 1:40 | Stage 11: e-ticket, Certified Survivor badge in the header. | "You survived. Unfortunately." |
-| 1:50 | Stage 12: click **Cancel** → "Are you sure?" × 3-5 → "Book again?" → back to Stage 01. Loop counter goes up. | "And that's the loop. Thank you!" |
+| 0:00 | Page loads → the Shea ad. Let the Skip button vanish (demo mode ends the ad after 5s). | "A normal airline. ₱1 flights. Let's book one." |
+| 0:08 | Point at the ₱1 promo and the tiny asterisk. Click **Book Now**. | "The asterisk is doing a lot of work." |
+| 0:12 | Stage 02: continue as guest → CAPTCHA. | "Verification. Lots of it." |
+| 0:25 | Stage 03: pick a destination, watch it become "Pilipinas". Flip dark mode for the flashlight. | "We know best." |
+| 0:35 | Stage 04: flights loading → dodge two pieces of luggage → pick BN 101. | |
+| 0:45 | Stage 05: chase the Select button. | "It has a forcefield." |
+| 0:55 | Stage 06-08: grab a seat, slide to a birthday, strike the airplane pose, accept the extras. | Point at the frustration meter. |
+| 1:15 | Stage 09: scroll the terms too fast → progress resets. Agree → KA-CHOW. | "Scroll slowly. No, slower." |
+| 1:25 | Stage 10: watch the fees pile up; shuffle the card digits; hold Pay Now. | "Your ₱1 flight is now ₱1,649.01." |
+| 1:45 | Stage 11: e-ticket, Certified Survivor badge in the header. | "You survived. Unfortunately." |
+| 1:50 | Stage 12: **Cancel** → "Are you sure?" × 3-5 → "Book again?" → back to Stage 01. Loop counter goes up. | "And that's the loop. Thank you!" |
 
-**If something breaks live:** use the DEV dropdown (or `?stage=N&demo` in the address bar) to skip to the next stage and keep talking.
+**If something breaks live:** use the DEV dropdown (top-left, dev server only) or type `?stage=N&demo` in the address bar to skip ahead and keep talking.
 
 ## Project layout
 
@@ -80,7 +80,7 @@ src/
   stages/       one folder per stage (01-Welcome … 12-ManageBooking)
   components/   layout (meter, progress), captcha, flashlight, forcefield, transitions, chaos
   api/          client.js: the only place that talks to the server (mock fallback)
-server/         Node + Express API (flights, quote, terms, bookings)
+server/         Node + Express API (flights, quote, terms, bookings); endpoints in server/README.md
 docs/           team GitHub rules, design references (docs/references)
 roles/          each developer's task list
 ```

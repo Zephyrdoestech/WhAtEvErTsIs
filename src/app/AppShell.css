@@ -2,7 +2,7 @@
 .app-shell { min-height: 100vh; display: flex; flex-direction: column; gap: 0.5rem; padding: 0.5rem; border: 3px solid var(--ink); }
 
 /* Marquee + news ticker */
-.ticker { overflow: hidden; border: var(--border); white-space: nowrap; }
+.ticker { position: relative; overflow: hidden; border: var(--border); white-space: nowrap; }
 .ticker-track { display: inline-flex; animation: ticker 40s linear infinite; }
 .ticker-track span { padding-right: 2rem; }
 @keyframes ticker { to { transform: translateX(-50%); } }
