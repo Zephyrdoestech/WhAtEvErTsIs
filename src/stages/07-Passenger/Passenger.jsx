@@ -1,6 +1,7 @@
 // OWNER: SYOS — see SYOS.MD (Stage 07: Passenger Details)
 import { useId, useState } from "react";
 import useBooking from "../../context/useBooking.js";
+import PoseCheck from "./PoseCheck.jsx";
 import "./Passenger.css";
 
 const fields = [
@@ -14,11 +15,12 @@ const fields = [
 ];
 
 export default function Passenger() {
-  const { booking, updateBooking } = useBooking();
+  const { booking, updateBooking, demoMode } = useBooking();
   const prefix = useId();
   const [passenger, setPassenger] = useState(() => Object.fromEntries(fields.map(({ name }) => [name, booking.passenger?.[name] || ""])));
   const [errors, setErrors] = useState({});
   const [saved, setSaved] = useState(false);
+  const [posed, setPosed] = useState(false);
   const [today] = useState(() => {
     const now = new Date();
     return `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
@@ -65,7 +67,8 @@ export default function Passenger() {
           <button className="btn go passenger__submit" type="submit">Save passenger details</button>
         </form> : <div className="passenger__saved">
           <p role="status">Passenger details saved for {passenger.firstName} {passenger.lastName}.</p>
-          <button type="button" className="btn" onClick={() => setSaved(false)}>Edit passenger details</button>
+          {!posed ? <PoseCheck demoMode={demoMode} onDone={() => setPosed(true)} /> : <p role="status">Pose accepted. Ready for human verification.</p>}
+          <button type="button" className="btn" onClick={() => { setSaved(false); setPosed(false); }}>Edit passenger details</button>
         </div>}
       </div>
     </section>

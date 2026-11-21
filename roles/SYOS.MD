@@ -54,7 +54,7 @@ Build `Flashlight.jsx`: when `on`, cover its children with a black overlay and c
 Build `Passenger.jsx`: first/last name, birthday, nationality, email, phone, passport number (any fake value). Light validation with silly error messages ("Name too name-like").
 **Done when:** filling the form saves `booking.passenger`.
 
-### - [ ] Task 9: Stage 07: camera pose check
+### - [x] Task 9: Stage 07: camera pose check
 Add a "voluntary" camera step: `navigator.mediaDevices.getUserMedia({ video: true })` shows a live preview only (never upload or save frames). Prompt "Strike your best airplane pose ✈", 3-2-1 countdown, then fake analysis messages ("Wingspan: inadequate... Accepted anyway"). If the camera is denied or missing: "Your refusal has been noted. Pose anyway." and continue. Stop the camera stream when leaving.
 **Done when:** the pose check works with and without a camera, and the camera light turns off after.
 
