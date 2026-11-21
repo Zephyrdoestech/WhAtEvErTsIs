@@ -18,6 +18,7 @@ export default function SheaAd({ onDone }) {
   useEffect(() => {
     const dialog = dialogRef.current;
     if (!dialog.open) dialog.showModal();
+    dialog.querySelector(".shea-ad-skip")?.focus(); // showModal() focuses the first button; start on Skip instead
     return () => dialog.close();
   }, []);
 
