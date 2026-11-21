@@ -59,6 +59,6 @@ When `booking.survivor` is true, show a "🏅 Certified Survivor" badge in the h
 Pull everyone's work. Walk all 12 stages from the start with the real flow (no `?stage`). Fix anything in your files; for bugs in other people's files, list them and send them to the owner. Add a dev-only stage jumper (hidden unless `import.meta.env.DEV`).
 **Done when:** a full run from Stage 01 to the Stage 12 loop works without console errors.
 
-### - [ ] Task 10: Demo prep
+### - [x] Task 10: Demo prep
 Write `README.md`: what the project is, how to run frontend + backend, the 2-minute demo route, and team credits. Make sure `?demo` shortens timers across the app (ask owners to read `demoMode`). Rehearse once with the team.
 **Done when:** anyone can clone, run, and give the demo using only the README.
