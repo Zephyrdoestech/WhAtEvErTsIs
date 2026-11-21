@@ -50,14 +50,14 @@ If the destination is international, interrupt with a patriotic tourism modal: b
 Build `Flashlight.jsx`: when `on`, cover its children with a black overlay and cut a circle (CSS `radial-gradient` mask) around the cursor. Add a "🌙 Dark Mode" toggle to Stage 03 that turns the form pitch black except the flashlight.
 **Done when:** dark mode makes the page black and only the area around the cursor is visible. Tell RICKS it's ready.
 
-### - [ ] Task 8: Stage 07: passenger form
+### - [x] Task 8: Stage 07: passenger form
 Build `Passenger.jsx`: first/last name, birthday, nationality, email, phone, passport number (any fake value). Light validation with silly error messages ("Name too name-like").
 **Done when:** filling the form saves `booking.passenger`.
 
-### - [ ] Task 9: Stage 07: camera pose check
+### - [x] Task 9: Stage 07: camera pose check
 Add a "voluntary" camera step: `navigator.mediaDevices.getUserMedia({ video: true })` shows a live preview only (never upload or save frames). Prompt "Strike your best airplane pose ✈", 3-2-1 countdown, then fake analysis messages ("Wingspan: inadequate... Accepted anyway"). If the camera is denied or missing: "Your refusal has been noted. Pose anyway." and continue. Stop the camera stream when leaving.
 **Done when:** the pose check works with and without a camera, and the camera light turns off after.
 
-### - [ ] Task 10: Stage 07: are you human?
+### - [x] Task 10: Stage 07: are you human?
 After the pose check, show `<Captcha />` with the question "Despite the pose, are you human?". On pass, `next()`.
 **Done when:** Stage 07 runs form → pose → CAPTCHA → Stage 08.

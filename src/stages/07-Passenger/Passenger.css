@@ -1,1 +1,33 @@
 /* OWNER: SYOS — styles for Stage 07 only */
+.passenger { font-size: 1rem; }
+.passenger__title { margin: 0; color: var(--blue); font-size: clamp(2rem, 6vw, 3rem); }
+.passenger__notice { padding: 0.75rem; border: 1px solid var(--ink); background: var(--page); line-height: 1.4; }
+.passenger__form { display: grid; gap: 1.25rem; }
+.passenger__field { display: grid; align-content: start; gap: 0.5rem; min-width: 0; }
+.passenger__field label { font-weight: 700; }
+.passenger__field input { width: 100%; min-width: 0; min-height: 2.75rem; padding: 0.6rem; border: var(--border); background: #fff; color: var(--ink); font: inherit; }
+.passenger__field input[aria-invalid="true"] { border-color: var(--red); }
+.passenger__field input::placeholder { color: #595959; opacity: 1; }
+.passenger input:focus-visible, .passenger button:focus-visible { outline: 3px solid var(--purple); outline-offset: 3px; }
+.passenger__error { color: var(--red); font-weight: 700; font-size: 0.875rem; line-height: 1.4; }
+.passenger__validation { margin: 0; }
+.passenger__validation:empty { display: none; }
+.passenger__submit { min-height: 2.75rem; font-size: 1rem; }
+.passenger__saved { display: grid; justify-items: start; gap: 1rem; }
+.pose { width: 100%; max-width: 36rem; }
+.pose h3 { margin: 0; color: var(--blue); font-size: 1.75rem; }
+.pose p { line-height: 1.4; }
+.pose__privacy { padding: 0.75rem; border: 1px solid var(--ink); background: var(--lavender); }
+.pose__preview { border: var(--border); background: #000; color: #fff; }
+.pose__preview video { display: block; width: 100%; aspect-ratio: 4 / 3; object-fit: contain; transform: scaleX(-1); }
+.pose__placeholder { padding: 1.5rem 0.75rem; text-align: center; }
+.pose__placeholder > span { font-size: 3rem; }
+.pose__status { min-height: 2.75rem; font-weight: 700; }
+.pose__actions { display: flex; flex-wrap: wrap; gap: 0.75rem; }
+.pose__actions button { min-height: 2.75rem; }
+
+@media (min-width: 720px) {
+  .passenger .panel-body { padding: 1.25rem; }
+  .passenger__form { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .passenger__validation, .passenger__submit { grid-column: 1 / -1; }
+}
