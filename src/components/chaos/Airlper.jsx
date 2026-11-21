@@ -1,17 +1,17 @@
 // OWNER: DAR — "Ye Olde Airlper", the stage-aware peeking helper.
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import JoseMariChan from "../../assets/images/Jose-Mari-Chan.png";
 import useBooking from "../../context/useBooking.js";
-import { getAirlperLines } from "./airlperLines.js";
+import { getAirlperLines, getForgetfulAirlperQuestion } from "./airlperLines.js";
 import "./Airlper.css";
 
 const PEEK_POSITIONS = [
-  { name: "left-top", side: "left", x: "0%", y: "8%", offsetY: "0%" },
-  { name: "right-middle", side: "right", x: "100%", y: "50%", offsetY: "-50%" },
-  { name: "left-bottom", side: "left", x: "0%", y: "92%", offsetY: "-100%" },
-  { name: "right-top", side: "right", x: "100%", y: "8%", offsetY: "0%" },
-  { name: "left-middle", side: "left", x: "0%", y: "50%", offsetY: "-50%" },
-  { name: "right-bottom", side: "right", x: "100%", y: "92%", offsetY: "-100%" },
+  { name: "left-top", side: "left", vertical: "top" },
+  { name: "right-middle", side: "right", vertical: "middle" },
+  { name: "left-bottom", side: "left", vertical: "bottom" },
+  { name: "right-top", side: "right", vertical: "top" },
+  { name: "left-middle", side: "left", vertical: "middle" },
+  { name: "right-bottom", side: "right", vertical: "bottom" },
 ];
 
 function chooseDifferentIndex(length, currentIndex) {
@@ -27,18 +27,19 @@ function getNextPositionIndex(currentIndex) {
 }
 
 export default function Airlper() {
-  const { stage } = useBooking();
+  const { stage, booking } = useBooking();
   const stageLines = getAirlperLines(stage);
   const [minimized, setMinimized] = useState(false);
+  const [answerDraft, setAnswerDraft] = useState("");
+  const [chat, setChat] = useState({ phase: "asking", hasForgotten: false, lastAnswer: "" });
+  const forgetTimerRef = useRef(null);
   const [ticker, setTicker] = useState(() => ({
     stage,
     lineIndex: 0,
     positionIndex: Math.floor(Math.random() * PEEK_POSITIONS.length),
   }));
 
-  useEffect(() => {
-    setTicker((current) => ({ ...current, stage, lineIndex: 0 }));
-  }, [stage]);
+  useEffect(() => () => window.clearTimeout(forgetTimerRef.current), []);
 
   useEffect(() => {
     const intervalId = window.setInterval(() => {
@@ -59,17 +60,38 @@ export default function Airlper() {
   const position = PEEK_POSITIONS[ticker.positionIndex] ?? PEEK_POSITIONS[0];
   const lineIndex = ticker.stage === stage ? ticker.lineIndex : 0;
   const line = stageLines[lineIndex] ?? stageLines[0];
+  const chatPrompt = chat.phase === "thanking"
+    ? `Thank thee, ${chat.lastAnswer}! I shall remember it forevermore.`
+    : chat.hasForgotten
+      ? getForgetfulAirlperQuestion(booking, chat.lastAnswer)
+      : "Prithee, what is thy name?";
+
+  function submitAnswer(event) {
+    event.preventDefault();
+    const answer = answerDraft.trim();
+    if (!answer) return;
+
+    window.clearTimeout(forgetTimerRef.current);
+    setChat((current) => ({ ...current, phase: "thanking", lastAnswer: answer }));
+    setAnswerDraft("");
+    forgetTimerRef.current = window.setTimeout(() => {
+      setChat((current) => ({ ...current, phase: "asking", hasForgotten: true }));
+    }, 3500);
+  }
+
+  // Flip horizontally when on the right side so the face looks left into the screen;
+  // invert vertically when at the top so the cut torso sits flush against the top edge.
+  const scaleX = position.side === "right" ? -1 : 1;
+  const scaleY = position.vertical === "top" ? -1 : 1;
 
   return (
     <aside
-      className={`airlper airlper--${position.side}`}
+      className={`airlper airlper--${position.side} airlper--${position.vertical}`}
       data-position={position.name}
       aria-label="Airlper flight helper"
       style={{
-        left: position.x,
-        top: position.y,
-        "--airlper-offset-x": position.side === "left" ? "-12%" : "12%",
-        "--airlper-offset-y": position.offsetY,
+        "--airlper-scale-x": scaleX,
+        "--airlper-scale-y": scaleY,
       }}
     >
       {minimized ? (
@@ -103,6 +125,27 @@ export default function Airlper() {
           <p className="airlper__message" role="status" aria-live="polite" aria-atomic="true">
             {line}
           </p>
+          <div className="airlper__chat">
+            <p className="airlper__chat-prompt" role="status" aria-live="polite" aria-atomic="true">
+              {chatPrompt}
+            </p>
+            {chat.phase === "asking" && (
+              <form className="airlper__chat-form" onSubmit={submitAnswer}>
+                <input
+                  type="text"
+                  value={answerDraft}
+                  maxLength={80}
+                  autoComplete="off"
+                  aria-label="Answer Airlper"
+                  placeholder="Type thy answer"
+                  onChange={(event) => setAnswerDraft(event.target.value)}
+                />
+                <button className="btn airlper__submit" type="submit" disabled={!answerDraft.trim()}>
+                  Tell him
+                </button>
+              </form>
+            )}
+          </div>
         </div>
       )}
     </aside>

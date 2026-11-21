@@ -34,27 +34,27 @@ Support `chain={n}`: after passing one, the next one appears ("Great! Now verify
 Build `Login.jsx` with three tabs: Log in, Register, Continue as Guest. Fake fields only (no real auth). Looks like a normal airline login.
 **Done when:** Stage 02 looks believable and all three tabs show their forms.
 
-### - [ ] Task 4: Stage 02: no escape
+### - [x] Task 4: Stage 02: no escape
 Every path needs verification: Register → `<Captcha chain={2} />`, Log in → `<Captcha />` then "Account not found, please register", Guest → "Guests must also prove they exist" → `<Captcha />`. On success `updateBooking({ user: { mode, name } })` and `next()`.
 **Done when:** every route through Stage 02 ends in CAPTCHAs and then reaches Stage 03.
 
-### - [ ] Task 5: Stage 03: search form
+### - [x] Task 5: Stage 03: search form
 Build `Search.jsx`: origin, destination, depart/return dates, passenger count, Search button. Keep an airport list in `03-Search/airports.js` with a `domestic: true/false` flag (MNL, CEB, DVO, ILO, TAG ... plus a few international ones). On search, `updateBooking({ search })` and `next()`.
 **Done when:** a search saves `booking.search` and moves to Stage 04.
 
-### - [ ] Task 6: Stage 03: "Piliin Mo ang Pilipinas"
+### - [x] Task 6: Stage 03: "Piliin Mo ang Pilipinas"
 If the destination is international, interrupt with a patriotic tourism modal: big button "Piliin ang Pilipinas!" swaps the destination to a random domestic one; the "Continue abroad" button is tiny and wanders. Allow them abroad after 3 tries, with `bumpFrustration`.
 **Done when:** choosing an international destination always triggers the modal at least once.
 
-### - [ ] Task 7: Flashlight component + Stage 03 dark mode
+### - [x] Task 7: Flashlight component + Stage 03 dark mode
 Build `Flashlight.jsx`: when `on`, cover its children with a black overlay and cut a circle (CSS `radial-gradient` mask) around the cursor. Add a "🌙 Dark Mode" toggle to Stage 03 that turns the form pitch black except the flashlight.
 **Done when:** dark mode makes the page black and only the area around the cursor is visible. Tell RICKS it's ready.
 
-### - [ ] Task 8: Stage 07: passenger form
+### - [x] Task 8: Stage 07: passenger form
 Build `Passenger.jsx`: first/last name, birthday, nationality, email, phone, passport number (any fake value). Light validation with silly error messages ("Name too name-like").
 **Done when:** filling the form saves `booking.passenger`.
 
-### - [ ] Task 9: Stage 07: camera pose check
+### - [x] Task 9: Stage 07: camera pose check
 Add a "voluntary" camera step: `navigator.mediaDevices.getUserMedia({ video: true })` shows a live preview only (never upload or save frames). Prompt "Strike your best airplane pose ✈", 3-2-1 countdown, then fake analysis messages ("Wingspan: inadequate... Accepted anyway"). If the camera is denied or missing: "Your refusal has been noted. Pose anyway." and continue. Stop the camera stream when leaving.
 **Done when:** the pose check works with and without a camera, and the camera light turns off after.
 

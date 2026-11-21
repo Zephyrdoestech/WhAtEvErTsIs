@@ -1,1 +1,394 @@
 /* OWNER: DAR — styles for Stage 04 only */
+
+.flights-stage {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.flights-banner__body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.45rem;
+}
+
+.flights-banner__route {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.35rem;
+  font-size: 1rem;
+}
+
+.flights-banner__badge {
+  padding: 0.1rem 0.4rem;
+  border: 1px solid var(--ink, #111);
+  background: var(--yellow, #ffee00);
+  color: var(--red, #cc0000);
+  font: 700 0.72rem var(--font-mono, monospace);
+}
+
+.flights-banner__meta {
+  color: #333;
+  font-size: 0.9rem;
+}
+
+.flights-banner__warning {
+  margin: 0;
+  padding: 0.4rem 0.55rem;
+  border: 2px dashed var(--red, #cc0000);
+  background: #fff4cc;
+  color: var(--ink, #111);
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.flights-loading {
+  margin: 0;
+  font-weight: 700;
+}
+
+/* Loading endless-runner minigame */
+.flights-minigame__body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.flights-minigame__hud {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.flights-minigame__status {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.45rem;
+  font-size: 0.88rem;
+}
+
+.flights-minigame__timer,
+.flights-minigame__score,
+.flights-minigame__hits {
+  padding: 0.2rem 0.5rem;
+  border: 2px solid var(--ink, #111);
+  background: #fff;
+  font-family: var(--font-mono, monospace);
+}
+
+.flights-minigame__timer {
+  background: var(--yellow, #ffee00);
+}
+
+.flights-minigame__score {
+  background: #e3ffe7;
+}
+
+.flights-minigame__hits {
+  background: #ffe5e5;
+  color: var(--red, #cc0000);
+}
+
+.flights-minigame__progress {
+  height: 14px;
+  border: 2px solid var(--ink, #111);
+  background: var(--grey, #d9d9d9);
+  overflow: hidden;
+}
+
+.flights-minigame__progress-fill {
+  height: 100%;
+  background: repeating-linear-gradient(
+    -45deg,
+    var(--green, #22bb33),
+    var(--green, #22bb33) 10px,
+    var(--yellow, #ffee00) 10px,
+    var(--yellow, #ffee00) 20px
+  );
+  transition: width 0.1s linear;
+}
+
+.flights-minigame__instructions {
+  margin: 0;
+  font-size: 0.85rem;
+}
+
+.flights-minigame__track {
+  display: grid;
+  grid-template-rows: repeat(3, minmax(56px, 1fr));
+  border: 3px solid var(--ink, #111);
+  background: linear-gradient(180deg, #87ceeb 0%, #bae4ff 60%, #e5f6ff 100%);
+  box-shadow: inset 0 0 0 2px #fff;
+  overflow: hidden;
+  user-select: none;
+  touch-action: none;
+}
+
+.flights-minigame__track--bonk {
+  background: #ffcccc;
+}
+
+.flights-minigame__lane {
+  position: relative;
+  display: flex;
+  align-items: center;
+  min-height: 58px;
+  padding: 0 0.5rem;
+  border-bottom: 2px dashed rgb(0 51 153 / 35%);
+  cursor: pointer;
+  overflow: hidden;
+}
+
+.flights-minigame__lane:last-child {
+  border-bottom: 0;
+}
+
+.flights-minigame__lane--active {
+  background: rgb(255 238 0 / 28%);
+}
+
+.flights-minigame__lane:focus-visible {
+  outline: 3px solid var(--red, #cc0000);
+  outline-offset: -3px;
+}
+
+.flights-minigame__lane-label {
+  position: absolute;
+  right: 0.45rem;
+  bottom: 0.2rem;
+  color: rgb(0 51 153 / 55%);
+  font: 700 0.68rem var(--font-mono, monospace);
+  pointer-events: none;
+}
+
+.flights-minigame__plane {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  z-index: 2;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.25rem;
+  pointer-events: none;
+}
+
+.flights-minigame__plane-icon {
+  display: inline-block;
+  font-size: 1.85rem;
+  line-height: 1;
+  filter: drop-shadow(2px 2px 0 var(--ink, #111));
+}
+
+.flights-minigame__plane--bonk .flights-minigame__plane-icon {
+  transform: rotate(-18deg) scale(1.15);
+}
+
+.flights-minigame__bonk-tag {
+  padding: 0.08rem 0.3rem;
+  border: 1px solid var(--ink, #111);
+  background: var(--red, #cc0000);
+  color: var(--yellow, #ffee00);
+  font: 700 0.68rem var(--font-display, Impact, sans-serif);
+  letter-spacing: 0.04em;
+}
+
+.flights-minigame__obstacle {
+  position: absolute;
+  top: 50%;
+  transform: translate(-50%, -50%);
+  font-size: 1.6rem;
+  line-height: 1;
+  filter: drop-shadow(1px 2px 0 rgb(0 0 0 / 35%));
+  pointer-events: none;
+}
+
+.flights-minigame__controls {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.flights-minigame__ctrl-btn {
+  min-height: 38px;
+}
+
+.flights-minigame__lane-indicator {
+  font-family: var(--font-mono, monospace);
+  font-size: 0.85rem;
+}
+
+.flights-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.75rem;
+}
+
+@media (min-width: 760px) {
+  .flights-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.flight-card {
+  margin-bottom: 0;
+  box-shadow: 4px 4px 0 var(--ink, #111);
+  cursor: pointer;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+.flight-card:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0 var(--red, #cc0000);
+}
+
+.flight-card__header {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.45rem 0.65rem;
+  border-bottom: 2px solid var(--ink, #111);
+  background: var(--blue, #003399);
+  color: #fff;
+}
+
+.flight-card__code {
+  display: inline-block;
+  margin-right: 0.45rem;
+  padding: 0.1rem 0.35rem;
+  border: 1px solid var(--ink, #111);
+  background: var(--yellow, #ffee00);
+  color: var(--ink, #111);
+  font: 700 0.75rem var(--font-mono, monospace);
+}
+
+.flight-card__airline {
+  display: inline;
+  margin: 0;
+  font-size: 0.95rem;
+  text-transform: uppercase;
+}
+
+.flight-card__deal-tag {
+  padding: 0.12rem 0.4rem;
+  border: 1px solid var(--yellow, #ffee00);
+  background: var(--red, #cc0000);
+  color: var(--yellow, #ffee00);
+  font: 700 0.68rem var(--font-mono, monospace);
+  white-space: nowrap;
+}
+
+.flight-card__body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.65rem;
+}
+
+.flight-card__main {
+  display: flex;
+  align-items: flex-start;
+  justify-content: space-between;
+  gap: 0.75rem;
+}
+
+.flight-card__cities {
+  margin: 0 0 0.4rem;
+  font-size: 1.05rem;
+  font-weight: 700;
+}
+
+.flight-card__arrow {
+  color: var(--red, #cc0000);
+}
+
+.flight-card__times {
+  display: grid;
+  gap: 0.2rem;
+  margin: 0;
+  font-size: 0.85rem;
+}
+
+.flight-card__times div {
+  display: flex;
+  gap: 0.35rem;
+}
+
+.flight-card__times dt {
+  color: #444;
+  font-weight: 700;
+}
+
+.flight-card__times dd {
+  margin: 0;
+  font-family: var(--font-mono, monospace);
+  font-weight: 700;
+}
+
+.flight-card__pricing {
+  display: flex;
+  flex-direction: column;
+  align-items: flex-end;
+  padding: 0.35rem 0.55rem;
+  border: 2px solid var(--ink, #111);
+  background: var(--yellow, #ffee00);
+  text-align: right;
+}
+
+.flight-card__old-price {
+  color: #555;
+  font-size: 0.75rem;
+  text-decoration: line-through;
+}
+
+.flight-card__price {
+  color: var(--red, #cc0000);
+  font-size: 1.85rem;
+  line-height: 1;
+}
+
+.flight-card__price-sub {
+  font-size: 0.65rem;
+  font-style: italic;
+}
+
+.flight-card__fineprint {
+  padding: 0.45rem 0.55rem;
+  border: 1px dashed var(--ink, #111);
+  background: #f9f6e5;
+  font-size: 0.76rem;
+}
+
+.flight-card__fineprint-title {
+  margin: 0 0 0.25rem;
+  color: var(--purple, #660099);
+  font-weight: 700;
+}
+
+.flight-card__fineprint ul {
+  margin: 0;
+  padding-left: 1.1rem;
+}
+
+.flight-card__fineprint li {
+  margin-bottom: 0.15rem;
+  line-height: 1.25;
+}
+
+.flight-card__actions {
+  display: flex;
+  justify-content: flex-end;
+}
+
+.flight-card__select {
+  width: 100%;
+}
+
+.flights-footer {
+  display: flex;
+  justify-content: flex-start;
+}

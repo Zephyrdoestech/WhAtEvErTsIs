@@ -1,5 +1,5 @@
 // OWNER: DIN — see DIN.MD (Stage 10: Payment + Task 8 Gauntlet)
-// Built strictly from Figma "Screen References" page tab (Frame 28:591 / 28:620 / 28:682 / 28:692 / 28:702).
+// Built from Figma "Screen References" page tab (Frame 28:591 / 28:620 / 28:682 / 28:692 / 28:702).
 import { useEffect, useRef, useState } from "react";
 import useBooking from "../../context/useBooking.js";
 import { createBooking, getQuote } from "../../api/client.js";
@@ -22,7 +22,6 @@ const PAYMENT_METHODS = [
   { id: "gcash", label: "GCash" },
   { id: "card", label: "Credit Card" },
   { id: "pigeon", label: "Cash (send via pigeon)" },
-  { id: "exposure", label: "Exposure" },
 ];
 
 // Dialog templates from Figma Screen References (nodes 28:682, 28:692, 28:702)
@@ -76,7 +75,7 @@ function formatPeso(amount) {
 }
 
 export default function Payment() {
-  const { booking, updateBooking, frustration, bumpFrustration, demoMode, next } = useBooking();
+  const { booking, updateBooking, bumpFrustration, next } = useBooking();
 
   const [items, setItems] = useState([
     { label: "Base fare", amount: 1 },
@@ -88,22 +87,39 @@ export default function Payment() {
     { label: "Tax on Tax", amount: 0.01 },
   ]);
   const [newestIdx, setNewestIdx] = useState(-1);
-  const [method, setMethod] = useState("exposure");
+  const [method, setMethod] = useState("card");
+
+  // Payment method states
   const [digitScreen, setDigitScreen] = useState(1);
-  const [currentDigit, setCurrentDigit] = useState("7");
-  const [cvvOfCvv, setCvvOfCvv] = useState("***");
+  const [cardDigits, setCardDigits] = useState(Array(16).fill(""));
+  const [cvvOfCvv, setCvvOfCvv] = useState("");
+  const [gcashNumber, setGcashNumber] = useState("");
+  const [gcashPin, setGcashPin] = useState("");
+  const [pigeonName, setPigeonName] = useState("");
+  const [pigeonWindow, setPigeonWindow] = useState("3:00 AM (approx.)");
   const [infiniteCaptchaChecked, setInfiniteCaptchaChecked] = useState(false);
 
-  // Hold progress bar & gauntlet state
-  const targetHoldSeconds = demoMode ? 2 : 10;
-  const [holdSeconds, setHoldSeconds] = useState(1);
+  // Frustration starts at 0% and gradually increases as things happen
+  const [localFrustration, setLocalFrustration] = useState(0);
+
+  // Hold-to-pay progress (0 -> 10s); gauntlet ONLY pops when hold completes
+  const targetHoldMs = 10000;
+  const [holdMs, setHoldMs] = useState(0);
   const [isHolding, setIsHolding] = useState(false);
+  const [holdStatusMsg, setHoldStatusMsg] = useState("");
+
+  // Multiplying confirmation dialogs & final CAPTCHA state
   const [dialogs, setDialogs] = useState([]);
   const [spawnCount, setSpawnCount] = useState(0);
   const [waveStage, setWaveStage] = useState(0); // 0: idle, 1: wave of 1, 2: wave of 2, 3: wave of 4
   const [showCaptchaModal, setShowCaptchaModal] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const nextDialogId = useRef(1);
+
+  const raiseFrustration = (delta) => {
+    setLocalFrustration((prev) => Math.min(100, prev + delta));
+    bumpFrustration?.(delta);
+  };
 
   // Load initial quote from backend / mock fallback
   useEffect(() => {
@@ -118,10 +134,9 @@ export default function Payment() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Add new hidden charges one by one while the user watches
+  // Add new hidden charges one by one while the user watches, gradually increasing frustration
   useEffect(() => {
     let cursor = 0;
-    const intervalMs = demoMode ? 2200 : 3500;
     const timer = setInterval(() => {
       if (cursor >= EXTRA_CREEPING_FEES.length) return;
       const nextFee = EXTRA_CREEPING_FEES[cursor];
@@ -131,10 +146,12 @@ export default function Payment() {
         setNewestIdx(updated.length - 1);
         return updated;
       });
-    }, intervalMs);
+      raiseFrustration(5);
+    }, 3500);
 
     return () => clearInterval(timer);
-  }, [demoMode]);
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, []);
 
   const total = Math.round(items.reduce((sum, item) => sum + Number(item.amount || 0), 0) * 100) / 100;
 
@@ -148,7 +165,6 @@ export default function Payment() {
     const id = nextDialogId.current;
     nextDialogId.current += 1;
     const tpl = DIALOG_TEMPLATES[templateIdx % DIALOG_TEMPLATES.length];
-    // Cascade positions similar to Figma (left: 552 -> 637 -> 714, top: 557 -> 626 -> 717)
     const baseLeft = 36 + ((id + offsetIndex) % 5) * 6;
     const baseTop = 32 + ((id + offsetIndex) % 5) * 9;
     return {
@@ -159,9 +175,9 @@ export default function Payment() {
     };
   };
 
-  // Start the multiplying confirmation gauntlet (1 -> 2 -> 4 stacked dialogs, capped)
+  // Start the multiplying confirmation gauntlet ONLY when hold progress reaches 100%
   const triggerGauntlet = () => {
-    bumpFrustration?.(5);
+    raiseFrustration(8);
     if (dialogs.length > 0 || showCaptchaModal) return;
     const first = makeDialogItem(0, 0);
     setDialogs([first]);
@@ -169,30 +185,52 @@ export default function Payment() {
     setWaveStage(1);
   };
 
-  // Optional hold mechanic that also triggers the gauntlet
+  // Smooth hold timer: increments while holding, resets to 0 if released early
   useEffect(() => {
     if (!isHolding) return undefined;
+    const stepMs = 100;
     const timer = setInterval(() => {
-      setHoldSeconds((prev) => {
-        if (prev + 1 >= targetHoldSeconds) {
-          setIsHolding(false);
-          triggerGauntlet();
-          return targetHoldSeconds;
+      setHoldMs((prev) => {
+        const nextVal = prev + stepMs;
+        if (nextVal % 1000 === 0) {
+          raiseFrustration(2);
         }
-        return prev + 1;
+        if (nextVal >= targetHoldMs) {
+          setIsHolding(false);
+          setHoldStatusMsg("Hold complete! Initiating confirmation...");
+          triggerGauntlet();
+          return targetHoldMs;
+        }
+        return nextVal;
       });
-    }, 350);
+    }, stepMs);
+
     return () => clearInterval(timer);
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [isHolding, targetHoldSeconds]);
+  }, [isHolding]);
+
+  const handleHoldStart = () => {
+    if (dialogs.length > 0 || showCaptchaModal || submitting) return;
+    setHoldStatusMsg("");
+    setIsHolding(true);
+  };
+
+  const handleHoldEnd = () => {
+    if (!isHolding) return;
+    setIsHolding(false);
+    if (holdMs < targetHoldMs) {
+      setHoldMs(0);
+      setHoldStatusMsg("Released too early! Hold for the full 10 seconds.");
+      raiseFrustration(4);
+    }
+  };
 
   const handleDialogButton = (dialog, btn) => {
-    bumpFrustration?.(3);
+    raiseFrustration(4);
 
     setDialogs((prev) => {
       const remaining = prev.filter((d) => d.id !== dialog.id);
 
-      // If we haven't hit the cap yet, multiply (1 -> 2 -> 4 stacked) or spawn another on close
       if (spawnCount < MAX_SPAWNED_DIALOGS) {
         if (waveStage === 1 && remaining.length === 0) {
           const d1 = makeDialogItem(1, 1);
@@ -248,17 +286,29 @@ export default function Payment() {
 
   const handleMethodSelect = (id) => {
     setMethod(id);
-    bumpFrustration?.(2);
+    raiseFrustration(3);
+  };
+
+  const handleCardDigitChange = (val) => {
+    const clean = val.replace(/\D/g, "").slice(-1);
+    setCardDigits((prev) => {
+      const copy = [...prev];
+      copy[digitScreen - 1] = clean;
+      return copy;
+    });
   };
 
   const handleNextCardDigit = () => {
-    bumpFrustration?.(2);
+    raiseFrustration(2);
     setDigitScreen((prev) => (prev >= 16 ? 1 : prev + 1));
-    setCurrentDigit(String(Math.floor(Math.random() * 10)));
   };
 
-  const displayedFrustration = Math.max(94, Math.min(100, frustration || 94));
-  const holdPercent = Math.min(100, Math.round((holdSeconds / targetHoldSeconds) * 100));
+  const handlePrevCardDigit = () => {
+    setDigitScreen((prev) => (prev <= 1 ? 16 : prev - 1));
+  };
+
+  const holdSecondsDisplay = (holdMs / 1000).toFixed(1);
+  const holdPercent = Math.min(100, Math.round((holdMs / targetHoldMs) * 100));
 
   return (
     <div className="payment-stage-canvas" data-node-id="28:591" data-name="Screen 3 · Terms & Punishments + Payment">
@@ -276,13 +326,13 @@ export default function Payment() {
         </p>
         <div className="payment-frustration-box" data-node-id="28:596">
           <p className="payment-frustration-label" data-node-id="28:597">
-            FRUSTRATION METER: {displayedFrustration}%
+            FRUSTRATION METER: {localFrustration}%
           </p>
           <div className="payment-frustration-bar-bg" data-node-id="28:598">
             <div
               className="payment-frustration-bar-fill"
               data-node-id="28:599"
-              style={{ width: `${displayedFrustration}%` }}
+              style={{ width: `${localFrustration}%` }}
             />
           </div>
         </div>
@@ -320,7 +370,7 @@ export default function Payment() {
               </div>
             </div>
 
-            {/* Payment method selector matching Figma text layout (28:649) */}
+            {/* Payment method selector (Exposure removed) */}
             <div className="payment-methods-row" data-node-id="28:649">
               <span>Payment method:</span>
               {PAYMENT_METHODS.map((pm) => {
@@ -339,45 +389,115 @@ export default function Payment() {
               })}
             </div>
 
-            {/* Card / method details box (28:650) */}
+            {/* Method-specific payment entry box (28:650) */}
             <div className="payment-card-entry" data-node-id="28:650" data-name="Card entry">
-              <p className="payment-card-prompt" data-node-id="28:651">
-                {`Card number (enter BACKWARDS, one digit per screen):  digit ${digitScreen} of 16`}
-              </p>
-              <div className="payment-card-digit-row" data-node-id="28:652">
-                <input
-                  type="text"
-                  maxLength={1}
-                  className="payment-digit-input"
-                  data-node-id="28:653"
-                  value={currentDigit}
-                  onChange={(e) => setCurrentDigit(e.target.value.slice(-1))}
-                  aria-label="Single backwards card digit"
-                />
-                <button type="button" className="payment-digit-btn" onClick={handleNextCardDigit}>
-                  Next digit
-                </button>
-                <p className="payment-screens-remaining" data-node-id="28:655">
-                  {`<- ${16 - digitScreen} more screens to go`}
-                </p>
-              </div>
+              {method === "card" && (
+                <>
+                  <p className="payment-card-prompt" data-node-id="28:651">
+                    {`Card number (enter BACKWARDS, one digit per screen):  digit ${digitScreen} of 16`}
+                  </p>
+                  <div className="payment-card-digit-row" data-node-id="28:652">
+                    <input
+                      type="text"
+                      inputMode="numeric"
+                      maxLength={1}
+                      className="payment-digit-input"
+                      data-node-id="28:653"
+                      placeholder="0"
+                      value={cardDigits[digitScreen - 1]}
+                      onChange={(e) => handleCardDigitChange(e.target.value)}
+                      aria-label="Single backwards card digit"
+                    />
+                    <button type="button" className="payment-digit-btn" onClick={handlePrevCardDigit}>
+                      Prev
+                    </button>
+                    <button type="button" className="payment-digit-btn" onClick={handleNextCardDigit}>
+                      Next digit
+                    </button>
+                    <p className="payment-screens-remaining" data-node-id="28:655">
+                      {`<- ${16 - digitScreen} more screens to go`}
+                    </p>
+                  </div>
 
-              <p className="payment-cvv-label" data-node-id="28:656">
-                CVV: please enter the CVV of your CVV
-              </p>
-              <input
-                type="text"
-                maxLength={6}
-                className="payment-cvv-input"
-                data-node-id="28:657"
-                value={cvvOfCvv}
-                onChange={(e) => setCvvOfCvv(e.target.value)}
-                aria-label="CVV of your CVV"
-              />
+                  <p className="payment-cvv-label" data-node-id="28:656">
+                    CVV: please enter the CVV of your CVV
+                  </p>
+                  <input
+                    type="password"
+                    maxLength={6}
+                    className="payment-cvv-input"
+                    data-node-id="28:657"
+                    placeholder="***"
+                    value={cvvOfCvv}
+                    onChange={(e) => setCvvOfCvv(e.target.value)}
+                    aria-label="CVV of your CVV"
+                  />
+                </>
+              )}
 
-              <p className="payment-demo-note" data-node-id="28:659">
-                DEMO ONLY: use fake payment details. No real payments are processed.
-              </p>
+              {method === "gcash" && (
+                <>
+                  <p className="payment-card-prompt">
+                    GCash Mobile Number (must be memorized without looking at your phone):
+                  </p>
+                  <div className="payment-card-digit-row">
+                    <input
+                      type="tel"
+                      maxLength={11}
+                      className="payment-cvv-input"
+                      style={{ width: "180px" }}
+                      placeholder="09XXXXXXXXX"
+                      value={gcashNumber}
+                      onChange={(e) => setGcashNumber(e.target.value.replace(/\D/g, ""))}
+                      aria-label="GCash mobile number"
+                    />
+                  </div>
+                  <p className="payment-cvv-label">
+                    4-Digit MPIN (enter your favorite number, we won&apos;t judge):
+                  </p>
+                  <input
+                    type="password"
+                    maxLength={4}
+                    className="payment-cvv-input"
+                    placeholder="****"
+                    value={gcashPin}
+                    onChange={(e) => setGcashPin(e.target.value.replace(/\D/g, ""))}
+                    aria-label="GCash MPIN"
+                  />
+                </>
+              )}
+
+              {method === "pigeon" && (
+                <>
+                  <p className="payment-card-prompt">
+                    Carrier Pigeon Dispatch Details (cash must be folded into a tiny airplane):
+                  </p>
+                  <div className="payment-card-digit-row">
+                    <input
+                      type="text"
+                      maxLength={40}
+                      className="payment-cvv-input"
+                      style={{ width: "220px" }}
+                      placeholder="Pigeon's full legal name"
+                      value={pigeonName}
+                      onChange={(e) => setPigeonName(e.target.value)}
+                      aria-label="Carrier pigeon name"
+                    />
+                  </div>
+                  <p className="payment-cvv-label">
+                    Expected rooftop arrival window:
+                  </p>
+                  <input
+                    type="text"
+                    maxLength={40}
+                    className="payment-cvv-input"
+                    style={{ width: "220px" }}
+                    value={pigeonWindow}
+                    onChange={(e) => setPigeonWindow(e.target.value)}
+                    aria-label="Pigeon arrival window"
+                  />
+                </>
+              )}
             </div>
 
             {/* CAPTCHA #∞ bar (28:660) */}
@@ -386,7 +506,7 @@ export default function Payment() {
               data-node-id="28:660"
               onClick={() => {
                 setInfiniteCaptchaChecked((v) => !v);
-                bumpFrustration?.(2);
+                raiseFrustration(3);
               }}
               role="checkbox"
               aria-checked={infiniteCaptchaChecked}
@@ -406,31 +526,28 @@ export default function Payment() {
               </p>
             </div>
 
-            {/* Pay Now row (28:663) using RICKS's <ForcefieldButton> */}
+            {/* Pay Now row (28:663) — shakes while holding, triggers gauntlet ONLY when hold reaches 10s */}
             <div className="payment-pay-row" data-node-id="28:663" data-name="pay row">
               <div className="payment-pay-btn-wrap">
-                <div className="payment-forcefield-ring" data-node-id="28:712" />
-                <div className="payment-nya-badge" data-node-id="28:713">
-                  <p className="payment-nya-text" data-node-id="28:714">nya!</p>
-                </div>
                 <ForcefieldButton
                   type="button"
-                  className="payment-pay-now-btn"
+                  className={`payment-pay-now-btn ${isHolding ? "payment-pay-now-btn--holding" : ""}`}
                   data-node-id="28:664"
                   maxSpeed={0.4}
-                  onDodge={() => bumpFrustration?.(2)}
-                  onMouseDown={() => setIsHolding(true)}
-                  onMouseUp={() => setIsHolding(false)}
-                  onMouseLeave={() => setIsHolding(false)}
-                  onClick={triggerGauntlet}
+                  onDodge={() => raiseFrustration(3)}
+                  onMouseDown={handleHoldStart}
+                  onMouseUp={handleHoldEnd}
+                  onMouseLeave={handleHoldEnd}
+                  onTouchStart={handleHoldStart}
+                  onTouchEnd={handleHoldEnd}
                 >
-                  PAY NOW (hold 10s)
+                  {isHolding ? `HOLDING... (${holdSecondsDisplay}s)` : "PAY NOW (hold 10s)"}
                 </ForcefieldButton>
               </div>
 
               <div className="payment-hold-wrap" data-node-id="28:666">
                 <p className="payment-hold-label" data-node-id="28:667">
-                  {`hold progress: ${holdSeconds}s of ${targetHoldSeconds}s (forcefield pushes cursor away)`}
+                  {holdStatusMsg || `hold progress: ${holdSecondsDisplay}s of 10s (forcefield pushes cursor away)`}
                 </p>
                 <div className="payment-hold-bar-bg" data-node-id="28:668">
                   <div
@@ -448,7 +565,7 @@ export default function Payment() {
       {/* Footer from Figma (28:680) */}
       <div className="payment-footer-bar" data-node-id="28:680">
         <p className="payment-footer-text" data-node-id="28:681">
-          © 1999-2026 Bahala Na Air. All wrongs reserved. DEMO ONLY - no real bookings or payments.
+          © 1999-2026 Bahala Na Air. All wrongs reserved.
         </p>
       </div>
 
@@ -507,7 +624,7 @@ export default function Payment() {
               <Captcha
                 chain={2}
                 onPass={handleCaptchaPass}
-                onFail={() => bumpFrustration?.(5)}
+                onFail={() => raiseFrustration(5)}
               />
               {submitting && (
                 <p className="payment-demo-note">

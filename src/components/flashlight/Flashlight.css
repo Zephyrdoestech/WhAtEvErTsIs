@@ -1,0 +1,30 @@
+.flashlight {
+  position: relative;
+  isolation: isolate;
+  min-width: 0;
+}
+
+.flashlight__darkness {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  background: #000;
+  pointer-events: none;
+  /* Clear centre with a broad, soft falloff into darkness. */
+  -webkit-mask-image: radial-gradient(circle var(--flashlight-radius) at var(--flashlight-x, 50%) var(--flashlight-y, 50%), transparent 45%, rgb(0 0 0 / 15%) 60%, rgb(0 0 0 / 55%) 78%, rgb(0 0 0 / 90%) 94%, #000 115%);
+  mask-image: radial-gradient(circle var(--flashlight-radius) at var(--flashlight-x, 50%) var(--flashlight-y, 50%), transparent 45%, rgb(0 0 0 / 15%) 60%, rgb(0 0 0 / 55%) 78%, rgb(0 0 0 / 90%) 94%, #000 115%);
+}
+
+.flashlight__darkness--page {
+  position: fixed;
+  inset: 0 auto auto 0;
+  width: 100vw;
+  height: 100dvh;
+  max-width: none;
+  max-height: none;
+  margin: 0;
+  padding: 0;
+  border: 0;
+  z-index: 2147483647;
+}
+.flashlight__darkness--page::backdrop { background: transparent; pointer-events: none; }
