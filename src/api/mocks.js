@@ -1,5 +1,6 @@
 // OWNER: DIN — fake data so the frontend works even when the server is off.
 // Aligned with Figma "Screen References" page tab.
+import { computeQuote } from "../../server/quoteRules.js";
 export const MOCK_FLIGHTS = [
   {
     id: "BN 101",
@@ -102,27 +103,5 @@ export const MOCK_TERMS = [
   "30. Clause 30: Clicking 'Manage Booking' returns you to Step 1. You're welcome.",
 ];
 
-export const mockQuote = (booking = {}) => {
-  const basePrice = Number(booking?.flight?.price);
-  const baseFare = Number.isFinite(basePrice) && basePrice > 0 ? basePrice : 1;
-  const items = [
-    { label: "Base fare", amount: baseFare },
-    { label: "Breathing Privileges", amount: 499 },
-    { label: "Emotional Support Fee", amount: 350 },
-    { label: "Window Appreciation Fee", amount: 500 },
-    { label: "Convenience Fee (for convenience)", amount: 200 },
-    { label: "Fee for Fees", amount: 99 },
-    { label: "Tax on Tax", amount: 0.01 },
-  ];
-
-  if (Array.isArray(booking?.fees)) {
-    for (const fee of booking.fees) {
-      if (fee && typeof fee === "object" && fee.label && Number.isFinite(Number(fee.amount))) {
-        items.push({ label: String(fee.label), amount: Number(fee.amount) });
-      }
-    }
-  }
-
-  const total = Math.round(items.reduce((sum, i) => sum + i.amount, 0) * 100) / 100;
-  return { items, total };
-};
+// Same rules as the live API, so offline and online totals match.
+export const mockQuote = (booking = {}) => computeQuote(booking);

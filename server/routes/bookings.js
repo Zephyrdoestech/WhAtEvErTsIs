@@ -68,7 +68,7 @@ function sanitizeBookingInput(body) {
       to: String(body.flight.to || body?.search?.to || "UNKNOWN").slice(0, 60),
       depart: String(body.flight.depart || "Eventually").slice(0, 40),
       arrive: String(body.flight.arrive || "UNKNOWN").slice(0, 40),
-      price: Number(body.flight.price) || 1,
+      price: Number.isFinite(Number(body.flight.price)) && Number(body.flight.price) >= 0 ? Number(body.flight.price) : 1,
     } : {
       id: "WTS 001",
       airline: "WhAtEvErTsIs Air",
