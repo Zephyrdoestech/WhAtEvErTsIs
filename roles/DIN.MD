@@ -31,7 +31,7 @@
 Create `server/routes/flights.js` and mount it: `GET /api/flights?from=&to=&date=&passengers=` returns 4-8 flights for that route built from `server/data/flights.json` (fill in `from`/`to`, randomise times). Prices like ₱1, ₱3, ₱0.50; each has an absurd `conditions` array ("Window is a sticker", "Departs when the pilot feels ready").
 **Done when:** the endpoint returns believable-but-cursed flights for any route.
 
-### - [ ] Task 3: Quote / hidden fees API
+### - [x] Task 3: Quote / hidden fees API
 `POST /api/quote` takes the booking JSON and returns `{ items: [{label, amount}], total }`. Start at ₱1 base fare, then add extras, seat fees and `booking.fees`, plus hidden charges (Breathing Privilege Tax, Gravity Surcharge, Fee Processing Fee, Convenience Fee for the Inconvenience). Total should balloon.
 **Done when:** a ₱1 flight quote comes back as thousands of pesos with funny line items.
 
