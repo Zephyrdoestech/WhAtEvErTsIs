@@ -2,23 +2,113 @@
 // AppShell renders this once on top of all stages.
 import { useEffect, useState } from "react";
 import useBooking from "../../context/useBooking.js";
+import KachowTransition from "../transitions/KachowTransition.jsx";
 import AdPopup from "./AdPopup.jsx";
 import Airlper from "./Airlper.jsx";
 import BlackoutOverlay from "./BlackoutOverlay.jsx";
+import ChaosController from "./ChaosController.jsx";
 import "./ChaosLayer.css";
+import {
+  isControllerRoute,
+  useControllerConfig,
+} from "./controllerConfig.js";
 import Flashbang from "./Flashbang.jsx";
 import HeeHee from "./HeeHee.jsx";
-import KachowTransition from "../transitions/KachowTransition.jsx";
 import SlowImage from "./SlowImage.jsx";
 
 export default function ChaosLayer() {
   const { stage, demoMode } = useBooking() ?? {};
-  const [muted, setMuted] = useState(false);
+  const { config, toggleFeature } = useControllerConfig();
+  const [onControllerPage, setOnControllerPage] = useState(() =>
+    isControllerRoute()
+  );
   const [adOpenForStage, setAdOpenForStage] = useState(null);
-  const surpriseAdOpen = adOpenForStage !== null && adOpenForStage === stage;
 
-  // Periodically pop open a surprise AdPopup on stages that don't already have heavy modal gauntlets (01 SheaAd, 08 Guilt/Ad, 10 Payment gauntlet)
+  const muted = Boolean(config.muteAllSounds);
+  const surpriseAdOpen =
+    Boolean(config.adPopup) &&
+    adOpenForStage !== null &&
+    adOpenForStage === stage;
+
+  // Listen for browser back/forward or hash changes to /controller
   useEffect(() => {
+    function checkRoute() {
+      setOnControllerPage(isControllerRoute());
+    }
+    window.addEventListener("popstate", checkRoute);
+    window.addEventListener("hashchange", checkRoute);
+    return () => {
+      window.removeEventListener("popstate", checkRoute);
+      window.removeEventListener("hashchange", checkRoute);
+    };
+  }, []);
+
+  // Sync stage-level CSS & DOM overrides from controller config
+  useEffect(() => {
+    document.body.dataset.ctrlNoDarkness = String(!config.stage03DarkMode);
+    document.body.dataset.ctrlNoForcefield = String(!config.stage05Forcefield);
+  }, [config.stage03DarkMode, config.stage05Forcefield]);
+
+  // When Forcefield is disabled in /controller, stop mousemove from reaching ForcefieldButton's dodge sensor
+  useEffect(() => {
+    if (config.stage05Forcefield) return undefined;
+
+    function blockForcefieldDodge(event) {
+      if (
+        event.target instanceof Element &&
+        event.target.closest(".forcefield-wrap")
+      ) {
+        event.stopPropagation();
+      }
+    }
+
+    window.addEventListener("mousemove", blockForcefieldDodge, true);
+    window.addEventListener("pointermove", blockForcefieldDodge, true);
+    window.addEventListener("touchstart", blockForcefieldDodge, true);
+    return () => {
+      window.removeEventListener("mousemove", blockForcefieldDodge, true);
+      window.removeEventListener("pointermove", blockForcefieldDodge, true);
+      window.removeEventListener("touchstart", blockForcefieldDodge, true);
+    };
+  }, [config.stage05Forcefield]);
+
+  // When Stage 01 Shea Ad is disabled in /controller, auto-click the skip button as soon as it appears
+  useEffect(() => {
+    if (config.stage01SheaAd || stage !== 1 || onControllerPage) return undefined;
+
+    const timerId = window.setInterval(() => {
+      const skipBtn = document.querySelector(".shea-ad-skip");
+      if (skipBtn instanceof HTMLElement) {
+        skipBtn.click();
+      }
+    }, 120);
+
+    return () => window.clearInterval(timerId);
+  }, [config.stage01SheaAd, stage, onControllerPage]);
+
+  // When Stage 09 Slow-Scroll Terms trap is disabled in /controller, smoothly advance the terms box to unlock agreement
+  useEffect(() => {
+    if (config.stage09SlowScrollTerms || stage !== 9 || onControllerPage) {
+      return undefined;
+    }
+
+    const timerId = window.setInterval(() => {
+      const termsBox = document.querySelector(".terms-box");
+      if (termsBox instanceof HTMLElement) {
+        const maxScroll = termsBox.scrollHeight - termsBox.clientHeight;
+        if (maxScroll > 0 && termsBox.scrollTop < maxScroll - 4) {
+          termsBox.scrollTop = Math.min(maxScroll, termsBox.scrollTop + 18);
+          termsBox.dispatchEvent(new Event("scroll", { bubbles: true }));
+        }
+      }
+    }, 60);
+
+    return () => window.clearInterval(timerId);
+  }, [config.stage09SlowScrollTerms, stage, onControllerPage]);
+
+  // Periodically pop open a surprise AdPopup on stages that don't already have heavy modal gauntlets
+  useEffect(() => {
+    if (!config.adPopup || onControllerPage) return undefined;
     if (surpriseAdOpen) return undefined;
     if (stage === 1 || stage === 8 || stage === 10) return undefined;
 
@@ -28,7 +118,16 @@ export default function ChaosLayer() {
     }, delay);
 
     return () => window.clearTimeout(timerId);
-  }, [demoMode, stage, surpriseAdOpen]);
+  }, [config.adPopup, demoMode, onControllerPage, stage, surpriseAdOpen]);
+
+  // If the user navigated manually to /controller, show the full-screen Feature Controller page
+  if (onControllerPage) {
+    return (
+      <ChaosController
+        onExitController={() => setOnControllerPage(false)}
+      />
+    );
+  }
 
   return (
     <>
@@ -37,27 +136,29 @@ export default function ChaosLayer() {
         className="chaos-mute-toggle"
         aria-pressed={muted}
         aria-label={muted ? "Unmute chaos sounds" : "Mute chaos sounds"}
-        onClick={() => setMuted((current) => !current)}
+        onClick={() => toggleFeature("muteAllSounds")}
       >
         <span aria-hidden="true">{muted ? "🔇" : "🔊"}</span>
         <span>{muted ? "Chaos Muted" : "Mute Chaos"}</span>
       </button>
 
-      <Airlper />
-      <HeeHee muted={muted} />
-      <Flashbang muted={muted} />
-      <BlackoutOverlay />
-      <KachowTransition muted={muted} />
-      {stage !== 4 && (
+      {config.airlper && <Airlper />}
+      {config.heeHee && <HeeHee muted={muted} />}
+      {config.flashbang && <Flashbang muted={muted} />}
+      {config.blackout && <BlackoutOverlay />}
+      {config.kachow && <KachowTransition muted={muted} />}
+      {config.slowImage && stage !== 4 && (
         <SlowImage
           duration={demoMode ? 10000 : 30000}
           maxOpacity={0.55}
         />
       )}
-      <AdPopup
-        open={surpriseAdOpen}
-        onClose={() => setAdOpenForStage(null)}
-      />
+      {config.adPopup && (
+        <AdPopup
+          open={surpriseAdOpen}
+          onClose={() => setAdOpenForStage(null)}
+        />
+      )}
     </>
   );
 }

@@ -1,0 +1,218 @@
+/* OWNER: DAR — styles for the secret /controller page and global controller overrides */
+
+.chaos-controller-overlay {
+  position: fixed;
+  inset: 0;
+  z-index: 9500;
+  overflow-y: auto;
+  padding: 0.85rem;
+  background: var(--page, #ffff99);
+  color: var(--ink, #111);
+  font-family: var(--font-body, sans-serif);
+}
+
+.chaos-controller {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+  max-width: 1120px;
+  margin: 0 auto 2rem;
+}
+
+.chaos-controller__titlebar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.chaos-controller__pill {
+  padding: 0.12rem 0.5rem;
+  border: 1px solid var(--ink, #111);
+  background: var(--yellow, #ffee00);
+  color: var(--ink, #111);
+  font: 700 0.75rem var(--font-mono, monospace);
+}
+
+.chaos-controller__header-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+@media (min-width: 760px) {
+  .chaos-controller__header-body {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+}
+
+.chaos-controller__headline {
+  margin: 0 0 0.25rem;
+  color: var(--blue, #003399);
+  font-size: clamp(1.6rem, 4.5vw, 2.35rem);
+  line-height: 1.05;
+}
+
+.chaos-controller__intro p {
+  margin: 0;
+  font-size: 0.92rem;
+  line-height: 1.35;
+}
+
+.chaos-controller__nav-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.chaos-controller__back-btn {
+  min-height: 40px;
+}
+
+.chaos-controller__presets-body {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.5rem;
+}
+
+.chaos-controller__grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.7rem;
+}
+
+@media (min-width: 680px) {
+  .chaos-controller__grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+@media (min-width: 1020px) {
+  .chaos-controller__grid {
+    grid-template-columns: repeat(3, minmax(0, 1fr));
+  }
+}
+
+.chaos-controller__card {
+  display: flex;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 0.6rem;
+  padding: 0.7rem;
+  border: 2px solid var(--ink, #111);
+  box-shadow: 4px 4px 0 var(--ink, #111);
+  transition: transform 0.1s ease;
+}
+
+.chaos-controller__card--on {
+  background: #fffef2;
+}
+
+.chaos-controller__card--off {
+  background: #ececec;
+  opacity: 0.9;
+}
+
+.chaos-controller__card-top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.4rem;
+}
+
+.chaos-controller__badge {
+  padding: 0.1rem 0.4rem;
+  border: 1px solid var(--ink, #111);
+  background: var(--lavender, #ccccff);
+  color: var(--ink, #111);
+  font: 700 0.68rem var(--font-mono, monospace);
+}
+
+.chaos-controller__status {
+  padding: 0.1rem 0.45rem;
+  border: 1px solid var(--ink, #111);
+  font: 700 0.72rem var(--font-mono, monospace);
+}
+
+.chaos-controller__status--on {
+  background: var(--green, #22bb33);
+  color: #fff;
+}
+
+.chaos-controller__status--off {
+  background: var(--red, #cc0000);
+  color: #fff;
+}
+
+.chaos-controller__card-main {
+  flex: 1;
+}
+
+.chaos-controller__card-title {
+  margin: 0 0 0.25rem;
+  font-size: 1rem;
+}
+
+.chaos-controller__card-desc {
+  margin: 0;
+  color: #333;
+  font-size: 0.82rem;
+  line-height: 1.3;
+}
+
+.chaos-controller__toggle-btn {
+  width: 100%;
+  min-height: 38px;
+}
+
+.chaos-controller__teleporter {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.chaos-controller__stage-grid {
+  display: grid;
+  grid-template-columns: repeat(auto-fill, minmax(210px, 1fr));
+  gap: 0.45rem;
+}
+
+.chaos-controller__stage-btn {
+  text-align: left;
+  min-height: 36px;
+}
+
+.chaos-controller__state-bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.5rem 0.65rem;
+  border: 2px solid var(--ink, #111);
+  background: var(--yellow, #ffee00);
+}
+
+.chaos-controller__state-btns {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.45rem;
+}
+
+/* Global Stage Obstacle Overrides controlled by /controller */
+body[data-ctrl-no-darkness="true"] .flashlight__darkness,
+body[data-ctrl-no-darkness="true"] .seat-spotlight-mask {
+  display: none !important;
+}
+
+body[data-ctrl-no-forcefield="true"] .forcefield-btn,
+body[data-ctrl-no-forcefield="true"] .forcefield-wrap {
+  transform: none !important;
+}
+
+body[data-ctrl-no-forcefield="true"] .forcefield-ring {
+  display: none !important;
+}

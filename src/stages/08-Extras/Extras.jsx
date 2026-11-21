@@ -1,6 +1,7 @@
 // OWNER: DAR — see DAR.MD (Stage 08: Add Extras + Guilt Trips)
 import { useEffect, useMemo, useState } from "react";
 import AdPopup from "../../components/chaos/AdPopup.jsx";
+import { useControllerConfig } from "../../components/chaos/controllerConfig.js";
 import useBooking from "../../context/useBooking.js";
 import "./Extras.css";
 
@@ -142,6 +143,7 @@ function toSavedExtras(selectedIds) {
 
 export default function Extras() {
   const { booking, updateBooking, next, back, bumpFrustration } = useBooking();
+  const { config } = useControllerConfig();
 
   const [selectedIds, setSelectedIds] = useState(() => {
     if (Array.isArray(booking?.extras) && booking.extras.length > 0) {
@@ -186,6 +188,11 @@ export default function Extras() {
       return;
     }
 
+    if (!config.stage08GuiltTrips) {
+      setSelectedIds((prev) => prev.filter((id) => id !== item.id));
+      return;
+    }
+
     // Unticking an extra triggers a guilt-inducing confirm dialog (and sometimes an AdPopup!)
     const nextDeclineCount = declineCount + 1;
     setDeclineCount(nextDeclineCount);
@@ -193,7 +200,11 @@ export default function Extras() {
 
     // Every 2nd untick (except Breathing Privileges which always opens its signature dialog first),
     // also pop open a surprise AdPopup!
-    if (item.id !== "breathing-privileges" && nextDeclineCount % 2 === 0) {
+    if (
+      config.adPopup &&
+      item.id !== "breathing-privileges" &&
+      nextDeclineCount % 2 === 0
+    ) {
       setAdOpen(true);
     }
 
@@ -205,12 +216,19 @@ export default function Extras() {
   }
 
   function handleNoThanksClick() {
+    if (!config.stage08GuiltTrips) {
+      setSelectedIds([]);
+      updateBooking({ extras: [] });
+      next();
+      return;
+    }
+
     const nextDeclineCount = declineCount + 1;
     setDeclineCount(nextDeclineCount);
     bumpFrustration?.(4);
 
     // Sometimes (on even clicks) pop an AdPopup alongside the guilt dialog
-    if (nextDeclineCount % 2 === 0) {
+    if (config.adPopup && nextDeclineCount % 2 === 0) {
       setAdOpen(true);
     }
 

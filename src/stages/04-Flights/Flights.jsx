@@ -1,6 +1,7 @@
 // OWNER: DAR — see DAR.MD (Stage 04: View Available Flights)
 import { useEffect, useState } from "react";
 import { searchFlights } from "../../api/client.js";
+import { useControllerConfig } from "../../components/chaos/controllerConfig.js";
 import SlowImage from "../../components/chaos/SlowImage.jsx";
 import useBooking from "../../context/useBooking.js";
 import "./Flights.css";
@@ -57,12 +58,14 @@ function mergeConditions(flight, index) {
 
 export default function Flights() {
   const { booking, updateBooking, next, back, bumpFrustration, demoMode } = useBooking();
+  const { config } = useControllerConfig();
   const [flights, setFlights] = useState([]);
   const [apiDone, setApiDone] = useState(false);
   const [minigameDone, setMinigameDone] = useState(false);
 
   const loadDurationMs = demoMode ? 3000 : 9000;
-  const loading = !apiDone || !minigameDone;
+  const showMinigame = Boolean(config.stage04Minigame) && !minigameDone;
+  const loading = !apiDone || showMinigame;
 
   const search = booking?.search;
   const fromCity = search?.from || "Cebu (Mactan)";
@@ -137,7 +140,9 @@ export default function Flights() {
       {loading ? (
         <>
           <LuggageDodgeGame durationMs={loadDurationMs} />
-          <SlowImage duration={loadDurationMs} maxOpacity={0.55} />
+          {config.slowImage && (
+            <SlowImage duration={loadDurationMs} maxOpacity={0.55} />
+          )}
         </>
       ) : (
         <div className="flights-grid" role="list">
