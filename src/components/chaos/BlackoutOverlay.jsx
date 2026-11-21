@@ -86,6 +86,19 @@ export default function BlackoutOverlay() {
     return () => window.clearTimeout(timerId);
   }, [dark, stage, demoMode, bumpFrustration]);
 
+  // Keyboard escape hatch: the switch can be hidden by the dead beam, so Esc always restores the lights.
+  useEffect(() => {
+    if (!dark) return undefined;
+    function handleKey(event) {
+      if (event.key === "Escape") {
+        setDark(false);
+        setBeamState("on");
+      }
+    }
+    window.addEventListener("keydown", handleKey);
+    return () => window.removeEventListener("keydown", handleKey);
+  }, [dark]);
+
   // Faulty flashlight loop while dark: randomly flickers and cuts on/off.
   useEffect(() => {
     if (!dark) return undefined;
@@ -175,7 +188,7 @@ export default function BlackoutOverlay() {
       />
 
       <div className="global-blackout-pill" role="alert">
-        BROWNOUT ({flashlightStatusText}) · Find &quot;💡 Turn Lights On&quot;
+        BROWNOUT ({flashlightStatusText}) · Find &quot;💡 Turn Lights On&quot; (or press Esc)
       </div>
     </>
   );

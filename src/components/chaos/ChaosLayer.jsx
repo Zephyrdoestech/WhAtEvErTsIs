@@ -25,6 +25,10 @@ export default function ChaosLayer() {
   const [adOpenForStage, setAdOpenForStage] = useState(null);
 
   const muted = Boolean(config.muteAllSounds);
+  // Respect the OS "reduce motion" setting: no whiteouts or blackouts for those users.
+  const [reducedMotion] = useState(
+    () => window.matchMedia?.("(prefers-reduced-motion: reduce)").matches ?? false
+  );
   const surpriseAdOpen =
     Boolean(config.adPopup) &&
     adOpenForStage !== null &&
@@ -135,7 +139,7 @@ export default function ChaosLayer() {
         type="button"
         className="chaos-mute-toggle"
         aria-pressed={muted}
-        aria-label={muted ? "Unmute chaos sounds" : "Mute chaos sounds"}
+        aria-label={muted ? "Unmute chaos sounds and flashbangs" : "Mute chaos sounds and flashbangs"}
         onClick={() => toggleFeature("muteAllSounds")}
       >
         <span aria-hidden="true">{muted ? "🔇" : "🔊"}</span>
@@ -144,8 +148,9 @@ export default function ChaosLayer() {
 
       {config.airlper && <Airlper />}
       {config.heeHee && <HeeHee muted={muted} />}
-      {config.flashbang && <Flashbang muted={muted} />}
-      {config.blackout && <BlackoutOverlay />}
+      {/* Mute Chaos also stops flashbangs: the whiteout is part of the jumpscare, not just its sound. */}
+      {config.flashbang && !muted && !reducedMotion && <Flashbang muted={muted} />}
+      {config.blackout && !reducedMotion && <BlackoutOverlay />}
       {config.kachow && <KachowTransition muted={muted} />}
       {config.slowImage && stage !== 4 && (
         <SlowImage
