@@ -1,130 +1,155 @@
 .airlper {
   position: fixed;
   z-index: 30;
-  right: max(0.75rem, env(safe-area-inset-right));
-  bottom: max(0.75rem, env(safe-area-inset-bottom));
-  width: min(19rem, calc(100vw - 1.5rem));
-  color: var(--ink, #111);
-  font-family: var(--font-body, sans-serif);
-}
-
-.airlper__panel {
-  overflow: hidden;
-  border: 3px solid var(--ink, #111);
-  background: var(--page, #ffff99);
-  box-shadow: 5px 5px 0 var(--red, #cc0000);
-}
-
-.airlper__panel[hidden],
-.airlper__reopen[hidden] {
-  display: none;
-}
-
-.airlper__header {
   display: flex;
   align-items: center;
-  gap: 0.55rem;
-  padding: 0.5rem;
-  border-bottom: 2px solid var(--ink, #111);
-  background: var(--blue, #003399);
-  color: #fff;
-}
-
-.airlper__avatar {
-  display: block;
-  flex: 0 0 3rem;
-  width: 3rem;
-  height: 3rem;
-  overflow: hidden;
-  border: 2px solid var(--ink, #111);
-  border-radius: 50%;
-  background: #fff;
-}
-
-.airlper__avatar img,
-.airlper__reopen img {
-  display: block;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  object-position: center 12%;
-}
-
-.airlper__identity {
-  min-width: 0;
-  flex: 1;
-}
-
-.airlper__name,
-.airlper__stage,
-.airlper__message {
-  margin: 0;
-}
-
-.airlper__name {
-  color: var(--yellow, #ffee00);
-  font-family: var(--font-display, Impact, sans-serif);
-  font-size: 1.05rem;
-  line-height: 1.1;
-  letter-spacing: 0.03em;
-}
-
-.airlper__stage {
-  margin-top: 0.2rem;
-  font-size: 0.75rem;
-  font-weight: 700;
-}
-
-.airlper__minimize,
-.airlper__reopen {
-  display: grid;
-  flex: 0 0 auto;
-  place-items: center;
-  padding: 0;
-  border: 2px solid var(--ink, #111);
-  background: var(--yellow, #ffee00);
+  gap: 0.45rem;
+  width: max-content;
+  max-width: calc(100vw - 0.5rem);
   color: var(--ink, #111);
+  font-family: var(--font-body, sans-serif);
+  pointer-events: none;
+  transform: translate(var(--airlper-offset-x), var(--airlper-offset-y));
+}
+
+.airlper--left {
+  flex-direction: row;
+}
+
+.airlper--right {
+  flex-direction: row-reverse;
+}
+
+.airlper__face {
+  display: block;
+  flex: 0 0 auto;
+  width: auto;
+  height: clamp(9rem, 28vh, 13rem);
+  max-width: 30vw;
+  object-fit: contain;
+  filter: drop-shadow(2px 3px 0 rgb(17 17 17 / 35%));
+}
+
+.airlper__face-button {
+  display: block;
+  flex: 0 0 auto;
+  width: auto;
+  height: clamp(9rem, 28vh, 13rem);
+  max-width: 30vw;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  line-height: 0;
   cursor: pointer;
+  pointer-events: auto;
 }
 
-.airlper__minimize {
-  width: 2.5rem;
-  height: 2.5rem;
-  font: 700 1.5rem/1 var(--font-body, sans-serif);
+.airlper__face-button img {
+  display: block;
+  width: auto;
+  height: 100%;
+  max-width: 100%;
+  object-fit: contain;
+  filter: drop-shadow(2px 3px 0 rgb(17 17 17 / 35%));
 }
 
-.airlper__message {
-  padding: 0.7rem 0.8rem;
-  background: #fff;
-  font-size: 0.95rem;
-  font-weight: 700;
-  line-height: 1.3;
-}
-
-.airlper__reopen {
-  width: 4rem;
-  height: 4rem;
-  overflow: hidden;
-  margin-left: auto;
-  border-width: 3px;
-  border-radius: 50%;
-  box-shadow: 4px 4px 0 var(--red, #cc0000);
-}
-
-.airlper__minimize:hover,
-.airlper__reopen:hover {
-  transform: translateY(-2px);
-}
-
-.airlper__minimize:focus-visible,
-.airlper__reopen:focus-visible {
+.airlper__face-button:focus-visible,
+.airlper__minimize:focus-visible {
   outline: 3px solid var(--ink, #111);
   outline-offset: 3px;
 }
 
-@media (prefers-reduced-motion: reduce) {
-  .airlper__minimize:hover,
-  .airlper__reopen:hover {
-    transform: none;
+.airlper__speech {
+  position: relative;
+  flex: 0 1 auto;
+  width: min(14rem, calc(100vw - 6rem));
+  padding: 0.55rem 0.7rem;
+  border: 2px solid var(--ink, #111);
+  background: var(--yellow, #ffee00);
+  box-shadow: 4px 4px 0 var(--red, #cc0000);
+  pointer-events: auto;
+}
+
+.airlper__speech-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.35rem;
+  color: var(--blue, #003399);
+  font-family: var(--font-display, Impact, sans-serif);
+  font-size: 0.9rem;
+  letter-spacing: 0.025em;
+  line-height: 1.1;
+}
+
+.airlper__message {
+  margin: 0;
+  font-size: 0.95rem;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.airlper__minimize {
+  display: grid;
+  flex: 0 0 2rem;
+  width: 2rem;
+  height: 2rem;
+  place-items: center;
+  padding: 0;
+  border: 2px solid var(--ink, #111);
+  background: #fff;
+  color: var(--ink, #111);
+  font: 700 1.25rem/1 var(--font-body, sans-serif);
+  cursor: pointer;
+}
+
+.airlper--left .airlper__speech::before,
+.airlper--left .airlper__speech::after,
+.airlper--right .airlper__speech::before,
+.airlper--right .airlper__speech::after {
+  position: absolute;
+  top: 50%;
+  width: 0;
+  height: 0;
+  border-top: 0.45rem solid transparent;
+  border-bottom: 0.45rem solid transparent;
+  content: "";
+  transform: translateY(-50%);
+}
+
+.airlper--left .airlper__speech::before {
+  left: -0.55rem;
+  border-right: 0.55rem solid var(--ink, #111);
+}
+
+.airlper--left .airlper__speech::after {
+  left: -0.35rem;
+  border-right: 0.4rem solid var(--yellow, #ffee00);
+}
+
+.airlper--right .airlper__speech::before {
+  right: -0.55rem;
+  border-left: 0.55rem solid var(--ink, #111);
+}
+
+.airlper--right .airlper__speech::after {
+  right: -0.35rem;
+  border-left: 0.4rem solid var(--yellow, #ffee00);
+}
+
+@media (max-width: 360px) {
+  .airlper__face,
+  .airlper__face-button {
+    height: 8.5rem;
+  }
+
+  .airlper__speech {
+    width: min(13rem, calc(100vw - 5.5rem));
+    padding: 0.45rem 0.55rem;
+  }
+
+  .airlper__message {
+    font-size: 0.88rem;
   }
 }
