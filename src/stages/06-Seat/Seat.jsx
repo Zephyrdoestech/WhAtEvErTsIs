@@ -1,7 +1,6 @@
 // OWNER: RICKS — see RICKS.MD (Stage 06: Choose Seat)
 import { useEffect, useMemo, useRef, useState } from "react";
 import useBooking from "../../context/useBooking.js";
-import Flashlight from "../../components/flashlight/Flashlight.jsx";
 import "./Seat.css";
 
 const ROWS = Array.from({ length: 30 }, (_, i) => i + 1);
@@ -13,9 +12,19 @@ const WINDOW_FEE_LABEL = "Window Appreciation Fee";
 const WINDOW_FEE_AMOUNT = 299;
 const MIN_AVAILABLE_SEATS = 15;
 const HOVER_COOLDOWN_MS = 180;
-const FLASHLIGHT_RADIUS = 150;
-// Temporary local fallback while SYOS's Flashlight.jsx is still a stub.
-const USE_LOCAL_DARK_FALLBACK = true;
+const FLASHLIGHT_RADIUS = 155;
+
+function randomBetween(min, max) {
+  return min + Math.random() * (max - min);
+}
+
+function pickRandomLightSwitchPos() {
+  // Keep the switch comfortably inside the viewport, away from edges and header.
+  return {
+    leftPct: Math.round(randomBetween(10, 74)),
+    topPct: Math.round(randomBetween(16, 78)),
+  };
+}
 
 function isWindowCol(col) {
   return col === "A" || col === "F";
@@ -53,6 +62,9 @@ export default function Seat() {
   const [selectedCode, setSelectedCode] = useState(booking.seat?.code ?? null);
   const [jumpedCode, setJumpedCode] = useState(null);
   const [dark, setDark] = useState(false);
+  // Faulty flashlight state while dark: "on" | "flicker" | "off"
+  const [beamState, setBeamState] = useState("on");
+  const [switchPos, setSwitchPos] = useState(pickRandomLightSwitchPos);
   const [statusMessage, setStatusMessage] = useState(
     "Pick any available seat on board. Good luck catching one."
   );
@@ -116,41 +128,83 @@ export default function Seat() {
     }
   }, [dark]);
 
-  // Random cabin blackout every 10-20s (4-7s in demoMode) lasting a few seconds.
+  // Trigger a blackout periodically while lights are on; darkness stays until the player clicks Turn Lights On.
   useEffect(() => {
+    if (dark) return undefined;
+
+    const waitMs = demoMode ? randomBetween(4500, 8000) : randomBetween(10000, 18000);
+    const timerId = window.setTimeout(() => {
+      setSwitchPos(pickRandomLightSwitchPos());
+      setBeamState("on");
+      setDark(true);
+      setStatusMessage(
+        "⚡ Cabin blackout! Find the 'Turn Lights On' switch with your faulty flashlight."
+      );
+      bumpFrustration(2);
+    }, waitMs);
+
+    return () => window.clearTimeout(timerId);
+  }, [dark, demoMode, bumpFrustration]);
+
+  // Faulty flashlight loop while in blackout: randomly glitches, flickers, and cuts on/off.
+  useEffect(() => {
+    if (!dark) return undefined;
+
     let timerId = null;
     let cancelled = false;
 
-    function scheduleNextBlackout() {
-      const waitMs = demoMode
-        ? 4000 + Math.random() * 3000
-        : 10000 + Math.random() * 10000;
-
+    function runGlitchCycle() {
+      // Phase 1: flashlight stays on briefly
+      const onDuration = demoMode ? randomBetween(900, 2100) : randomBetween(800, 2200);
       timerId = window.setTimeout(() => {
         if (cancelled) return;
-        setDark(true);
-        setStatusMessage("⚡ Cabin power outage! Use your cursor as a flashlight.");
-        bumpFrustration(2);
 
-        const darkDurationMs = demoMode
-          ? 3000 + Math.random() * 1500
-          : 4000 + Math.random() * 2500;
-
+        // Phase 2: sputter / glitch flicker
+        setBeamState("flicker");
+        const flickerDuration = randomBetween(220, 520);
         timerId = window.setTimeout(() => {
           if (cancelled) return;
-          setDark(false);
-          setStatusMessage("💡 Backup generator kicked in. Cabin lights restored (for now).");
-          scheduleNextBlackout();
-        }, darkDurationMs);
-      }, waitMs);
+
+          // Phase 3: cut completely off (or recover right back on ~25% of the time)
+          const cutOut = Math.random() < 0.78;
+          if (!cutOut) {
+            setBeamState("on");
+            runGlitchCycle();
+            return;
+          }
+
+          setBeamState("off");
+          const offDuration = demoMode ? randomBetween(240, 580) : randomBetween(300, 820);
+          timerId = window.setTimeout(() => {
+            if (cancelled) return;
+
+            // Occasional brief double-blink before stabilizing
+            if (Math.random() < 0.45) {
+              setBeamState("flicker");
+              timerId = window.setTimeout(() => {
+                if (cancelled) return;
+                setBeamState("off");
+                timerId = window.setTimeout(() => {
+                  if (cancelled) return;
+                  setBeamState("on");
+                  runGlitchCycle();
+                }, randomBetween(140, 280));
+              }, randomBetween(90, 180));
+            } else {
+              setBeamState("on");
+              runGlitchCycle();
+            }
+          }, offDuration);
+        }, flickerDuration);
+      }, onDuration);
     }
 
-    scheduleNextBlackout();
+    runGlitchCycle();
     return () => {
       cancelled = true;
       if (timerId) window.clearTimeout(timerId);
     };
-  }, [bumpFrustration, demoMode]);
+  }, [dark, demoMode]);
 
   const selectedSeat = selectedCode ? seats[selectedCode] : null;
 
@@ -158,6 +212,12 @@ export default function Seat() {
     () => Object.values(seats).filter((s) => s.status === "available").length,
     [seats]
   );
+
+  function handleTurnLightsOn() {
+    setDark(false);
+    setBeamState("on");
+    setStatusMessage("💡 Cabin lights restored! (Until the faulty generator trips again…)");
+  }
 
   function triggerJumpHighlight(code) {
     setJumpedCode(code);
@@ -289,6 +349,13 @@ export default function Seat() {
     );
   }
 
+  const flashlightStatusText =
+    beamState === "off"
+      ? "FLASHLIGHT: DEAD"
+      : beamState === "flicker"
+        ? "FLASHLIGHT: GLITCHING..."
+        : "cursor = faulty flashlight";
+
   return (
     <section className="seat-stage">
       <div className="panel">
@@ -305,58 +372,56 @@ export default function Seat() {
           </div>
 
           <div className="seat-stage__layout">
-            <Flashlight on={dark} radius={FLASHLIGHT_RADIUS}>
-              <div className={`seat-map-shell ${dark ? "seat-map-shell--dark" : ""}`}>
-                <div className="seat-legend">
-                  <span className="seat-legend__item">
-                    <span className="seat-legend__swatch seat-legend__swatch--window" /> Window (₱
-                    {WINDOW_FEE_AMOUNT})
-                  </span>
-                  <span className="seat-legend__item">
-                    <span className="seat-legend__swatch seat-legend__swatch--business" /> Business
-                    (1–3)
-                  </span>
-                  <span className="seat-legend__item">
-                    <span className="seat-legend__swatch seat-legend__swatch--available" /> Open (OK)
-                  </span>
-                  <span className="seat-legend__item">
-                    <span className="seat-legend__swatch seat-legend__swatch--occupied" /> Taken (X)
-                  </span>
-                  <span className="seat-legend__item">
-                    <span className="seat-legend__swatch seat-legend__swatch--selected" /> Selected
-                  </span>
-                </div>
+            <div className={`seat-map-shell ${dark ? "seat-map-shell--dark" : ""}`}>
+              <div className="seat-legend">
+                <span className="seat-legend__item">
+                  <span className="seat-legend__swatch seat-legend__swatch--window" /> Window (₱
+                  {WINDOW_FEE_AMOUNT})
+                </span>
+                <span className="seat-legend__item">
+                  <span className="seat-legend__swatch seat-legend__swatch--business" /> Business
+                  (1–3)
+                </span>
+                <span className="seat-legend__item">
+                  <span className="seat-legend__swatch seat-legend__swatch--available" /> Open (OK)
+                </span>
+                <span className="seat-legend__item">
+                  <span className="seat-legend__swatch seat-legend__swatch--occupied" /> Taken (X)
+                </span>
+                <span className="seat-legend__item">
+                  <span className="seat-legend__swatch seat-legend__swatch--selected" /> Selected
+                </span>
+              </div>
 
-                <div className="seat-map__cabin">
-                  <div className="seat-map__col-headers" aria-hidden="true">
-                    {LEFT_COLS.map((c) => (
-                      <span key={c}>{c}</span>
-                    ))}
-                    <span>#</span>
-                    {RIGHT_COLS.map((c) => (
-                      <span key={c}>{c}</span>
-                    ))}
-                  </div>
-
-                  <div className="seat-map__divider seat-map__divider--business">
-                    ★ BUSINESS CLASS (Rows 1–3) ★
-                  </div>
-
-                  {ROWS.map((row) => (
-                    <div key={row}>
-                      {row === BUSINESS_MAX_ROW + 1 && (
-                        <div className="seat-map__divider">ECONOMY CLASS (Rows 4–30)</div>
-                      )}
-                      <div className="seat-map__row">
-                        {LEFT_COLS.map((col) => renderSeatButton(row, col))}
-                        <span className="seat-map__row-num">{row}</span>
-                        {RIGHT_COLS.map((col) => renderSeatButton(row, col))}
-                      </div>
-                    </div>
+              <div className="seat-map__cabin">
+                <div className="seat-map__col-headers" aria-hidden="true">
+                  {LEFT_COLS.map((c) => (
+                    <span key={c}>{c}</span>
+                  ))}
+                  <span>#</span>
+                  {RIGHT_COLS.map((c) => (
+                    <span key={c}>{c}</span>
                   ))}
                 </div>
+
+                <div className="seat-map__divider seat-map__divider--business">
+                  ★ BUSINESS CLASS (Rows 1–3) ★
+                </div>
+
+                {ROWS.map((row) => (
+                  <div key={row}>
+                    {row === BUSINESS_MAX_ROW + 1 && (
+                      <div className="seat-map__divider">ECONOMY CLASS (Rows 4–30)</div>
+                    )}
+                    <div className="seat-map__row">
+                      {LEFT_COLS.map((col) => renderSeatButton(row, col))}
+                      <span className="seat-map__row-num">{row}</span>
+                      {RIGHT_COLS.map((col) => renderSeatButton(row, col))}
+                    </div>
+                  </div>
+                ))}
               </div>
-            </Flashlight>
+            </div>
 
             <aside className="seat-sidebar">
               <div className="seat-info-box">
@@ -415,16 +480,29 @@ export default function Seat() {
         </div>
       </div>
 
-      {USE_LOCAL_DARK_FALLBACK && dark && (
+      {dark && (
         <>
+          <button
+            type="button"
+            className="btn warn seat-lights-switch"
+            style={{
+              left: `${switchPos.leftPct}%`,
+              top: `${switchPos.topPct}%`,
+            }}
+            onClick={handleTurnLightsOn}
+          >
+            💡 Turn Lights On
+          </button>
+
           <div
             ref={darkOverlayRef}
-            className="seat-dark-fallback"
+            className={`seat-dark-fallback seat-dark-fallback--${beamState}`}
             aria-hidden="true"
             style={{ "--beam-r": `${FLASHLIGHT_RADIUS}px` }}
           />
+
           <div className="seat-dark-pill" role="alert">
-            DARK MODE: ON (cursor = flashlight)
+            BLACKOUT ({flashlightStatusText}) · Find &quot;💡 Turn Lights On&quot;
           </div>
         </>
       )}
