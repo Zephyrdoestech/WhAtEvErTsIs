@@ -1,6 +1,66 @@
-/* OWNER: KYLE */
-.app-shell { min-height: 100vh; font-family: system-ui, sans-serif; background: #f4f6fb; color: #1a2340; }
-.app-header { display: flex; align-items: center; gap: 1rem; padding: 0.75rem 1.25rem; background: #0b2a5b; color: #fff; }
-.logo { font-weight: 700; }
-.step-label { flex: 1; opacity: 0.8; font-size: 0.9rem; }
-.stage-area { max-width: 960px; margin: 2rem auto; padding: 0 1rem; }
+/* OWNER: KYLE — matches docs/references. Mobile first; wider layouts kick in at 720px. */
+.app-shell { min-height: 100vh; display: flex; flex-direction: column; gap: 0.5rem; padding: 0.5rem; border: 3px solid var(--ink); }
+
+/* Marquee + news ticker */
+.ticker { overflow: hidden; border: var(--border); white-space: nowrap; }
+.ticker-track { display: inline-flex; animation: ticker 40s linear infinite; }
+.ticker-track span { padding-right: 2rem; }
+@keyframes ticker { to { transform: translateX(-50%); } }
+@media (prefers-reduced-motion: reduce) { .ticker-track { animation: none; } }
+.marquee { background: var(--red); color: var(--yellow); font-size: 0.85rem; font-weight: 700; padding: 0.25rem 0; }
+.news { background: #000; color: #33ff33; font-family: var(--font-mono); padding: 0.35rem 0; }
+
+/* Header */
+.app-header { display: flex; flex-direction: column; gap: 0.75rem; padding: 0.75rem; background: var(--blue); border: 3px solid var(--yellow); outline: var(--border); }
+.logo { margin: 0; color: var(--yellow); font-size: clamp(2.25rem, 9vw, 4rem); line-height: 1; text-transform: uppercase; text-shadow: 3px 3px 0 var(--red); }
+.tagline { margin: 0.25rem 0 0; color: #fff; font-style: italic; font-size: 0.9rem; }
+
+/* Link bar: scrolls sideways on phones instead of wrapping into a wall of links */
+.link-bar { display: flex; flex-direction: column; gap: 0.4rem; padding: 0.4rem 0.6rem; background: var(--lavender); border: var(--border); }
+.link-bar-links { display: flex; gap: 1.1rem; overflow-x: auto; font-size: 0.85rem; font-weight: 700; white-space: nowrap; scrollbar-width: none; }
+
+/* Progress squares */
+.step-progress { display: flex; gap: 4px; margin: 0; padding: 0; list-style: none; }
+.step-progress li { width: 14px; height: 14px; border: 1px solid var(--ink); background: #fff; transition: background 0.3s; }
+.step-progress li.done { background: var(--green); }
+.step-progress li.current { background: var(--red); }
+.step-progress.slipping { animation: progress-jitter 0.35s ease-in-out 2; }
+@keyframes progress-jitter {
+  0%, 100% { transform: translateX(0); }
+  25% { transform: translateX(-4px); }
+  75% { transform: translateX(3px); }
+}
+
+.stage-area { flex: 1; width: 100%; }
+
+.app-footer { padding: 0.5rem 0.75rem; background: var(--grey); border: var(--border); font-size: 0.75rem; }
+.app-footer nav { margin-bottom: 0.25rem; }
+.app-footer a { color: var(--ink); text-decoration: none; }
+.app-footer a:hover { text-decoration: underline; }
+.app-footer p { margin: 0; }
+
+.sr-only { position: absolute; width: 1px; height: 1px; overflow: hidden; clip: rect(0 0 0 0); white-space: nowrap; }
+
+@media (min-width: 720px) {
+  .app-header { flex-direction: row; align-items: center; justify-content: space-between; padding: 1rem 1.25rem; }
+  .link-bar { flex-direction: row; align-items: center; justify-content: space-between; }
+}
+
+/* Frustration meter (header) */
+.frustration-meter { width: 100%; max-width: 340px; padding: 0.4rem 0.6rem; background: #ffffcc; border: 3px solid var(--red); color: var(--red); font-size: 0.85rem; font-weight: 700; }
+.frustration-track { height: 16px; margin-top: 0.3rem; background: var(--grey); border: var(--border); }
+.frustration-fill { height: 100%; background: var(--red); transition: width 0.4s ease-out; }
+.frustration-head { display: flex; align-items: center; gap: 0.4rem; }
+.frustration-face { display: inline-block; font-size: 1.4rem; line-height: 1; animation: face-pop 0.4s ease-out; }
+@keyframes face-pop {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.6) rotate(-12deg); }
+  100% { transform: scale(1); }
+}
+.frustration-loops { display: block; margin-top: 0.25rem; color: var(--ink); font-weight: 400; }
+@media (prefers-reduced-motion: reduce) { .frustration-face { animation: none; } .frustration-fill { transition: none; } }
+
+.survivor-badge { display: inline-block; margin-top: 0.5rem; padding: 0.2rem 0.6rem; background: var(--yellow); border: var(--border); color: var(--red); font: 400 1.1rem var(--font-display); letter-spacing: 0.04em; transform: rotate(-2deg); }
+
+.dev-jumper { position: fixed; left: 0.5rem; top: 0.5rem; z-index: 2000; padding: 0.3rem 0.5rem; background: #000; color: #33ff33; border: 1px solid #33ff33; font: 0.75rem var(--font-mono); }
+.dev-jumper select { max-width: 55vw; font: inherit; }

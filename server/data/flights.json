@@ -1,6 +1,65 @@
 [
-  { "id": "WTF101", "airline": "WhAtEvErTsIs Air", "depart": "05:55", "arrive": "07:10", "price": 1,
-    "conditions": ["Pilot not included", "Wings sold separately"] },
-  { "id": "WTF202", "airline": "Budget-ish Wings", "depart": "23:59", "arrive": "00:01", "price": 3,
-    "conditions": ["Must flap arms during takeoff"] }
+  {
+    "id": "BN 101",
+    "airline": "Bahala Na Air",
+    "depart": "3:00 AM",
+    "arrive": "3:00 AM (next week)",
+    "price": 1,
+    "priceLabel": "₱1*",
+    "conditions": ["Must bring own pilot", "Wings sold separately"]
+  },
+  {
+    "id": "BN 404",
+    "airline": "WhAtEvErTsIs Air",
+    "depart": "Gate not found",
+    "arrive": "UNKNOWN",
+    "price": 0.5,
+    "priceLabel": "₱0.50",
+    "conditions": ["Plane subject to existence", "Window is a sticker"]
+  },
+  {
+    "id": "BN 777",
+    "airline": "Bahala Na Air",
+    "depart": "11:59 PM",
+    "arrive": "12:01 AM (Tue-ish)",
+    "price": 2,
+    "priceLabel": "₱2",
+    "conditions": ["Standing room only. Standing not included.", "Must flap arms during takeoff"]
+  },
+  {
+    "id": "BN 013",
+    "airline": "WhAtEvErTsIs Air",
+    "depart": "Whenever",
+    "arrive": "Eventually",
+    "price": 1,
+    "priceLabel": "₱1",
+    "conditions": ["Layover: 3 days in Cebu (the same city)", "Departs when the pilot feels ready"]
+  },
+  {
+    "id": "BN 666",
+    "airline": "Bahala Na Air",
+    "depart": "Tomorrow (yesterday)",
+    "arrive": "Never",
+    "price": 0,
+    "priceLabel": "FREE* (*₱9,999)",
+    "conditions": ["Plane may or may not land", "Parachute rental billed separately"]
+  },
+  {
+    "id": "WTS 001",
+    "airline": "WhAtEvErTsIs Air",
+    "depart": "Eventually",
+    "arrive": "UNKNOWN",
+    "price": 1,
+    "priceLabel": "₱1*",
+    "conditions": ["Pilot not included", "Turbulence: 3% extra"]
+  },
+  {
+    "id": "WTF 202",
+    "airline": "Budget-ish Wings",
+    "depart": "23:59",
+    "arrive": "00:01 (maybe)",
+    "price": 3,
+    "priceLabel": "₱3",
+    "conditions": ["Must flap arms during takeoff", "Oxygen is a DLC"]
+  }
 ]
