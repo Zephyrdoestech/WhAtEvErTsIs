@@ -59,3 +59,5 @@
 }
 .frustration-loops { display: block; margin-top: 0.25rem; color: var(--ink); font-weight: 400; }
 @media (prefers-reduced-motion: reduce) { .frustration-face { animation: none; } .frustration-fill { transition: none; } }
+
+.survivor-badge { display: inline-block; margin-top: 0.5rem; padding: 0.2rem 0.6rem; background: var(--yellow); border: var(--border); color: var(--red); font: 400 1.1rem var(--font-display); letter-spacing: 0.04em; transform: rotate(-2deg); }

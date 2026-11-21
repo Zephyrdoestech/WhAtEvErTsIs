@@ -47,6 +47,11 @@ function Marquee() {
   );
 }
 
+function SurvivorBadge() {
+  const { isSurvivor } = useBooking();
+  return isSurvivor && <span className="survivor-badge">🏅 Certified Survivor</span>;
+}
+
 export default function AppShell() {
   return (
     <BookingProvider>
@@ -56,6 +61,7 @@ export default function AppShell() {
           <div className="brand">
             <h1 className="logo display">Whatever Tsis</h1>
             <p className="tagline">You're not booking a flight. You're earning it.</p>
+            <SurvivorBadge />
           </div>
           <FrustrationMeter />
         </header>
