@@ -43,11 +43,11 @@ Build `Welcome.jsx`: hero banner "MANILA → ANYWHERE for ₱1!*" with a tiny as
 On load, show a full-screen video ad using `src/assets/videos/shea closer.mp4`. A Skip button is visible only during the first 5 seconds, then disappears; after that the user must sit through it (cap it at ~20s, or 5s when `demoMode`). Handle browsers blocking autoplay with sound (start muted with a "Tap for sound" button). `bumpFrustration(10)` if they miss the Skip window.
 **Done when:** the ad appears on every visit to Stage 01, Skip works only in the first 5 seconds, and the promo page shows after the ad ends.
 
-### - [ ] Task 6: Stage 12: Manage Booking page
+### - [x] Task 6: Stage 12: Manage Booking page
 Build `ManageBooking.jsx`: show the booking reference, flight, seat and status (use `booking` from context, plus `getBooking(booking.reference)` from the API client). Buttons: Modify, Cancel.
 **Done when:** Stage 12 shows the booking details that were entered in earlier stages.
 
-### - [ ] Task 7: Stage 12: the loop
+### - [x] Task 7: Stage 12: the loop
 Modify sends the user back to a random earlier stage (`goTo` 3 to 9) with a message like "To change your seat, please re-book your entire life." Cancel opens 3 to 5 escalating confirmations ("Are you sure?" → "Are you SURE sure?" ...), then calls `cancelBooking`, then asks "Book again?": both Yes and No call `resetBooking()` (back to the homepage).
 **Done when:** every path out of Stage 12 ends up back in the booking flow, and the loop counter goes up.
 
