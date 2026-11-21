@@ -86,8 +86,12 @@ export default function Search() {
     const player = video.current;
     player.muted = false;
     if (player.volume === 0) player.volume = 1;
-    // If the browser blocks autoplay, the clip stays paused until the user presses play.
-    player.play().catch(() => {});
+    // If the browser blocks sound (no click yet on this page), play muted so the clip still runs;
+    // "Play with sound" then unmutes it from a real click.
+    player.play().catch(() => {
+      player.muted = true;
+      player.play().catch(() => {});
+    });
   }
 
   function updateVideoSound(event) {
