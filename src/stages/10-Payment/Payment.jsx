@@ -96,7 +96,10 @@ export default function Payment() {
     String(Math.floor(Math.random() * 1000)).padStart(3, "0")
   );
   const [cvvConfirmed, setCvvConfirmed] = useState(false);
-  const [gcashNumber, setGcashNumber] = useState("");
+  const [gcashValue, setGcashValue] = useState(0);
+  const [gcashOp, setGcashOp] = useState("-");
+  const [gcashOperand, setGcashOperand] = useState("1");
+  const [gcashError, setGcashError] = useState("");
   const [gcashPin, setGcashPin] = useState("");
   const [pigeonName, setPigeonName] = useState("");
   const [pigeonWindow, setPigeonWindow] = useState("3:00 AM (approx.)");
@@ -336,6 +339,31 @@ export default function Payment() {
     raiseFrustration(2);
   };
 
+  const handleGcashApply = () => {
+    const operand = Number(gcashOperand);
+    if (!Number.isFinite(operand)) {
+      setGcashError("Enter a valid number to calculate.");
+      return;
+    }
+    if (gcashOp === "/" && operand === 0) {
+      setGcashError("Cannot divide by 0 (nice try).");
+      raiseFrustration(3);
+      return;
+    }
+    setGcashError("");
+    setGcashValue((prev) => {
+      let nextVal = prev;
+      if (gcashOp === "-") nextVal = prev - operand;
+      else if (gcashOp === "*") nextVal = prev * operand;
+      else if (gcashOp === "/") nextVal = Math.trunc(prev / operand);
+      // Keep within 11-digit integer bounds
+      return Math.max(-99999999999, Math.min(99999999999, Math.trunc(nextVal)));
+    });
+    raiseFrustration(2);
+  };
+
+  const formattedGcashNumber = `${gcashValue < 0 ? "-" : ""}${String(Math.abs(gcashValue)).padStart(11, "0")}`;
+
   const formattedCardPreview = Array.from({ length: 16 }, (_, idx) =>
     idx < cardDigits.length ? cardDigits[idx] : "_"
   )
@@ -514,20 +542,69 @@ export default function Payment() {
               {method === "gcash" && (
                 <>
                   <p className="payment-card-prompt">
-                    GCash Mobile Number (must be memorized without looking at your phone):
+                    GCash Mobile Number (starts at 00000000000 — calculate your number without using +):
                   </p>
-                  <div className="payment-card-digit-row">
-                    <input
-                      type="tel"
-                      maxLength={11}
-                      className="payment-cvv-input"
-                      style={{ width: "180px" }}
-                      placeholder="09XXXXXXXXX"
-                      value={gcashNumber}
-                      onChange={(e) => setGcashNumber(e.target.value.replace(/\D/g, ""))}
-                      aria-label="GCash mobile number"
-                    />
+                  <div className="payment-card-preview" aria-label="GCash calculated phone number">
+                    {formattedGcashNumber}
                   </div>
+                  <div className="payment-card-digit-row">
+                    <button
+                      type="button"
+                      className="payment-digit-btn"
+                      onClick={() => {
+                        setGcashError("Addition (+) is forbidden. Use -, ×, or ÷ only.");
+                        raiseFrustration(4);
+                      }}
+                      title="Addition is disabled"
+                    >
+                      + (NO)
+                    </button>
+                    {[
+                      { op: "-", label: "−" },
+                      { op: "*", label: "×" },
+                      { op: "/", label: "÷" },
+                    ].map((item) => (
+                      <button
+                        key={item.op}
+                        type="button"
+                        className={`payment-digit-btn ${
+                          gcashOp === item.op ? "payment-digit-btn--confirm" : ""
+                        }`}
+                        onClick={() => {
+                          setGcashOp(item.op);
+                          setGcashError("");
+                        }}
+                      >
+                        {item.label}
+                      </button>
+                    ))}
+                    <input
+                      type="number"
+                      className="payment-cvv-input"
+                      style={{ width: "130px" }}
+                      value={gcashOperand}
+                      onChange={(e) => setGcashOperand(e.target.value)}
+                      aria-label="Calculation operand"
+                    />
+                    <button
+                      type="button"
+                      className="payment-digit-btn payment-digit-btn--confirm"
+                      onClick={handleGcashApply}
+                    >
+                      Calculate
+                    </button>
+                    <button
+                      type="button"
+                      className="payment-digit-btn"
+                      onClick={() => {
+                        setGcashValue(0);
+                        setGcashError("");
+                      }}
+                    >
+                      Reset
+                    </button>
+                  </div>
+                  {gcashError && <p className="payment-screens-remaining">{gcashError}</p>}
                   <p className="payment-cvv-label">
                     4-Digit MPIN (enter your favorite number, we won&apos;t judge):
                   </p>
