@@ -55,7 +55,7 @@ Build `Payment.jsx`: show the quote line items (`getQuote(booking)`), with new h
 Pay Now flow: "Are you sure?" dialogs that multiply (1, then 2, then 4 stacked; closing one may spawn another, cap it). Pay Now is RICKS's `<ForcefieldButton>`. After clicking it, SYOS's `<Captcha chain={2} />`. Then `createBooking(booking)`, `updateBooking({ reference })` and `next()`.
 **Done when:** a user can fight through the confirmations, forcefield and CAPTCHA and reach Stage 11 with a booking reference.
 
-### - [ ] Task 9: Stage 11: Confirmed-ish e-ticket
+### - [x] Task 9: Stage 11: Confirmed-ish e-ticket
 Build `Confirmation.jsx`: confetti celebration, then a boarding pass card: passenger name, booking reference, seat, "Destination: UNKNOWN", "Gate: 404", "Status: Confirmed-ish", and the title **Certified Survivor**. Call `updateBooking({ survivor: true })`. A "Manage Booking" button calls `next()`.
 **Done when:** Stage 11 shows the fake boarding pass with the user's real details and the survivor title.
 
