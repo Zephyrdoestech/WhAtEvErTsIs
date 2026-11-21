@@ -42,7 +42,7 @@ Every path needs verification: Register → `<Captcha chain={2} />`, Log in → 
 Build `Search.jsx`: origin, destination, depart/return dates, passenger count, Search button. Keep an airport list in `03-Search/airports.js` with a `domestic: true/false` flag (MNL, CEB, DVO, ILO, TAG ... plus a few international ones). On search, `updateBooking({ search })` and `next()`.
 **Done when:** a search saves `booking.search` and moves to Stage 04.
 
-### - [ ] Task 6: Stage 03: "Piliin Mo ang Pilipinas"
+### - [x] Task 6: Stage 03: "Piliin Mo ang Pilipinas"
 If the destination is international, interrupt with a patriotic tourism modal: big button "Piliin ang Pilipinas!" swaps the destination to a random domestic one; the "Continue abroad" button is tiny and wanders. Allow them abroad after 3 tries, with `bumpFrustration`.
 **Done when:** choosing an international destination always triggers the modal at least once.
 

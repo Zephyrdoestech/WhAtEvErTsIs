@@ -1,13 +1,16 @@
 // OWNER: SYOS — see SYOS.MD (Stage 03: Search Flights)
-import { useId, useRef, useState } from "react";
+import { useEffect, useId, useRef, useState } from "react";
 import useBooking from "../../context/useBooking.js";
 import { airports } from "./airports.js";
 import "./Search.css";
 
 export default function Search() {
-  const { booking, updateBooking, next } = useBooking();
+  const { booking, updateBooking, next, bumpFrustration } = useBooking();
   const prefix = useId();
   const submitted = useRef(false);
+  const dialog = useRef(null);
+  const [tourism, setTourism] = useState(null);
+  const [allowedAbroad, setAllowedAbroad] = useState("");
   const [search, setSearch] = useState(() => ({
     from: booking.search?.from || "MNL",
     to: booking.search?.to || "CEB",
@@ -21,9 +24,30 @@ export default function Search() {
     return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
   });
 
+  useEffect(() => {
+    if (tourism && !dialog.current.open) {
+      dialog.current.showModal();
+      dialog.current.querySelector(".search-tourism__primary")?.focus();
+    }
+    if (!tourism && dialog.current.open) dialog.current.close();
+  }, [tourism]);
+
+  function saveSearch(value) {
+    if (submitted.current) return;
+    submitted.current = true;
+    updateBooking({ search: { ...value, passengers: Number(value.passengers) } });
+    next();
+  }
+
   function change(field, value) {
     setSearch((current) => ({ ...current, [field]: value }));
     setError("");
+    if (field === "to") {
+      setAllowedAbroad("");
+      if (airports.find((airport) => airport.code === value)?.domestic === false) {
+        setTourism({ destination: value, tries: 0, searching: false });
+      }
+    }
   }
 
   function submit(event) {
@@ -48,9 +72,34 @@ export default function Search() {
       setError("Bring between 1 and 9 passengers. Whole humans only.");
       return;
     }
-    submitted.current = true;
-    updateBooking({ search: { ...search, passengers } });
-    next();
+    if (!airports.find((airport) => airport.code === search.to).domestic && allowedAbroad !== search.to) {
+      setTourism({ destination: search.to, tries: 0, searching: true });
+      return;
+    }
+    saveSearch(search);
+  }
+
+  function choosePhilippines() {
+    const domestic = airports.filter((airport) => airport.domestic && airport.code !== search.from);
+    const destination = domestic[Math.floor(Math.random() * domestic.length)].code;
+    const changed = { ...search, to: destination };
+    setSearch(changed);
+    setAllowedAbroad("");
+    setTourism(null);
+    if (tourism.searching) saveSearch(changed);
+  }
+
+  function continueAbroad() {
+    if (!tourism) return;
+    const tries = tourism.tries + 1;
+    bumpFrustration(5);
+    if (tries >= 3) {
+      setAllowedAbroad(tourism.destination);
+      setTourism(null);
+      if (tourism.searching) saveSearch(search);
+    } else {
+      setTourism({ ...tourism, tries });
+    }
   }
 
   function airportOptions() {
@@ -99,6 +148,20 @@ export default function Search() {
           </div>
           <p className="search__error" role="alert">{error}</p>
         </form>
+        <dialog ref={dialog} className="search-tourism" aria-labelledby={`${prefix}-tourism-title`} aria-describedby={`${prefix}-tourism-description`} onCancel={() => setTourism(null)}>
+          {tourism && <>
+            <button type="button" className="btn search-tourism__close" onClick={() => setTourism(null)}>Back to search</button>
+            <div className="search-tourism__banner" aria-hidden="true">🇵🇭 ☀️ 🏝️</div>
+            <h3 className="display" id={`${prefix}-tourism-title`}>Piliin Mo ang Pilipinas!</h3>
+            <p id={`${prefix}-tourism-description`}>Going to {airports.find((airport) => airport.code === tourism.destination)?.city}? But the Philippines has beaches, sunshine, and your emotional baggage already knows the way.</p>
+            <button type="button" className="btn warn search-tourism__primary" onClick={choosePhilippines} autoFocus>Piliin ang Pilipinas!</button>
+            <p className="search-tourism__hint">We'll pick another Philippine destination for you.</p>
+            <p className="search-tourism__status" role="status" aria-live="polite">{tourism.tries === 0 ? "Still going abroad? Convince us in 3 attempts." : `Attempt ${tourism.tries} of 3. ${tourism.tries === 1 ? "But have you considered our islands?" : "One more try and we'll let you go. Probably."}`}</p>
+            <div className="search-tourism__runway" style={{ justifyContent: ["flex-start", "center", "flex-end"][tourism.tries] }}>
+              <button type="button" className="btn search-tourism__abroad" onClick={continueAbroad}>Continue abroad</button>
+            </div>
+          </>}
+        </dialog>
       </div>
     </section>
   );
