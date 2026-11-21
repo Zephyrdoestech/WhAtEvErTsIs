@@ -42,6 +42,7 @@
 .login__submit { width: 100%; min-height: 2.75rem; font-size: 1rem; }
 .login__status { margin: 1rem 0 0; padding: 0.75rem; border: 1px solid var(--blue); background: #e3f0ff; }
 .login__status:empty { display: none; }
+.login__verification { display: grid; gap: 1rem; justify-items: start; }
 .login__aside { align-self: start; padding: 1rem; border: var(--border); background: var(--lavender); }
 .login__plane { display: block; font-size: 2rem; }
 .login__aside h3 { margin: 0.75rem 0; color: var(--blue); font-size: 1.75rem; }

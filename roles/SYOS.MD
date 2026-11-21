@@ -34,7 +34,7 @@ Support `chain={n}`: after passing one, the next one appears ("Great! Now verify
 Build `Login.jsx` with three tabs: Log in, Register, Continue as Guest. Fake fields only (no real auth). Looks like a normal airline login.
 **Done when:** Stage 02 looks believable and all three tabs show their forms.
 
-### - [ ] Task 4: Stage 02: no escape
+### - [x] Task 4: Stage 02: no escape
 Every path needs verification: Register → `<Captcha chain={2} />`, Log in → `<Captcha />` then "Account not found, please register", Guest → "Guests must also prove they exist" → `<Captcha />`. On success `updateBooking({ user: { mode, name } })` and `next()`.
 **Done when:** every route through Stage 02 ends in CAPTCHAs and then reaches Stage 03.
 

@@ -1,5 +1,7 @@
 // OWNER: SYOS — see SYOS.MD (Stage 02: Login / Sign Up)
 import { useId, useRef, useState } from "react";
+import Captcha from "../../components/captcha/Captcha.jsx";
+import useBooking from "../../context/useBooking.js";
 import "./Login.css";
 
 const modes = [
@@ -10,13 +12,16 @@ const modes = [
 
 export default function Login() {
   const [active, setActive] = useState("login");
-  const [submitted, setSubmitted] = useState("");
+  const { updateBooking, next } = useBooking();
+  const [message, setMessage] = useState("");
+  const [verification, setVerification] = useState(null);
   const prefix = useId();
   const tabs = useRef([]);
 
   function selectTab(index) {
     setActive(modes[index].id);
-    setSubmitted("");
+    setMessage("");
+    setVerification(null);
     tabs.current[index]?.focus();
   }
 
@@ -34,8 +39,30 @@ export default function Login() {
 
   function submit(event, mode) {
     event.preventDefault();
-    // UI only: no authentication, storage, or stage advancement in task 3.
-    setSubmitted(mode);
+    const form = event.currentTarget;
+    const name = String(new FormData(form).get("name") || "").trim();
+    if (mode === "register" && !name) {
+      setMessage("Please enter a made-up full name. Spaces alone cannot board.");
+      return;
+    }
+    // Retain only the display name; pretend credentials never enter booking state.
+    const password = form.elements.namedItem("password");
+    if (password) password.value = "";
+    setVerification({ mode, name: name || "Guest" });
+    setMessage(mode === "guest" ? "Guests must also prove they exist" : "Please verify your humanity before continuing.");
+  }
+
+  function verified() {
+    if (!verification) return;
+    if (verification.mode === "login") {
+      setVerification(null);
+      setActive("register");
+      setMessage("Account not found, please register");
+      tabs.current[1]?.focus();
+      return;
+    }
+    updateBooking({ user: { mode: verification.mode, name: verification.name } });
+    next();
   }
 
   return (
@@ -65,6 +92,8 @@ export default function Login() {
             ))}
           </div>
 
+          <p className="login__status" role="status" aria-live="polite">{message}</p>
+
           {modes.map((mode) => (
             <div
               key={mode.id}
@@ -76,7 +105,7 @@ export default function Login() {
             >
               <h4>{mode.title}</h4>
               <p>{mode.description}</p>
-              <form onSubmit={(event) => submit(event, mode.id)} aria-describedby={`${prefix}-demo`} autoComplete="off" onChange={() => setSubmitted("")}>
+              <form hidden={verification?.mode === mode.id} onSubmit={(event) => submit(event, mode.id)} aria-describedby={`${prefix}-demo`} autoComplete="off" onChange={() => setMessage("")}>
                 {mode.id !== "login" && (
                   <div className="login__field">
                     <label htmlFor={`${prefix}-${mode.id}-name`}>{mode.id === "guest" ? "What should we call you? (optional)" : "Full name"}</label>
@@ -98,8 +127,13 @@ export default function Login() {
                 )}
                 {mode.id === "guest" && <p className="login__guest-note">No email or password needed. Even a mystery passenger deserves a seat.*</p>}
                 <button className="btn go login__submit" type="submit">{mode.submit}</button>
-                <p className="login__status" role="status" aria-live="polite">{submitted === mode.id ? "Demo details received. Thanks for checking in!" : ""}</p>
               </form>
+              {verification?.mode === mode.id && (
+                <div className="login__verification">
+                  <Captcha key={mode.id} chain={mode.id === "register" ? 2 : 1} onPass={verified} />
+                  <button type="button" className="btn" onClick={() => { setVerification(null); setMessage(""); }}>Edit details</button>
+                </div>
+              )}
             </div>
           ))}
         </div>
