@@ -23,8 +23,8 @@
 
 ## Roadmap
 ### - [x] Task 1: Ye Olde Airlper v1
-Build `Airlper.jsx`: a floating helper bubble (bottom-right) with a wizard/knight avatar that can be minimised. It speaks in exaggerated Old English from a line bank in `chaos/airlperLines.js` ("Prithee, where dost thou travel?", "Hark! A button!"). Lines change per stage (`stage` from `useBooking()`).
-**Done when:** the Airlper appears on every page and says a stage-appropriate line.
+Build `Airlper.jsx`: a floating helper with the transparent Jose Mari Chan cutout peeking from changing screen-edge positions. Every five seconds it shows a different stage-appropriate Old English line from `chaos/airlperLines.js`; minimizing hides the speech bubble while the face keeps peeking.
+**Done when:** the Airlper appears on every page, changes its line and position on schedule, and remains reopenable when minimized.
 
 ### - [ ] Task 2: Airlper forgets everything
 Add a tiny chat: the Airlper asks a question, the user types an answer, the Airlper thanks them and a few seconds later asks the same thing again ("Forgive me, what was thy name?"). It reads `booking` and gets details wrong on purpose ("Thy flight to... Narnia?").
