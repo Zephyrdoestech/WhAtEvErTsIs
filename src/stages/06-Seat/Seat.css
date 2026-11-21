@@ -1,1 +1,361 @@
 /* OWNER: RICKS — styles for Stage 06 only */
+@keyframes seat-jump-pop {
+  0% {
+    transform: scale(0.75);
+    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0.8);
+  }
+  50% {
+    transform: scale(1.16);
+    box-shadow: 0 0 0 8px rgba(34, 197, 94, 0);
+  }
+  100% {
+    transform: scale(1);
+    box-shadow: 0 0 0 0 rgba(34, 197, 94, 0);
+  }
+}
+
+.seat-stage {
+  display: flex;
+  flex-direction: column;
+  gap: 1.15rem;
+}
+
+.seat-stage__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+}
+
+.seat-stage__back {
+  padding: 0.45rem 0.9rem;
+  font-size: 0.9rem;
+  font-weight: 600;
+  color: #0b2a5b;
+  background: #ffffff;
+  border: 1px solid #cbd5e1;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.seat-stage__back:hover {
+  background: #eef2ff;
+}
+
+.seat-stage__count {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #475569;
+  background: #e2e8f0;
+  padding: 0.3rem 0.75rem;
+  border-radius: 999px;
+}
+
+.seat-stage__header {
+  display: flex;
+  flex-direction: column;
+  gap: 0.25rem;
+}
+
+.seat-stage__title {
+  margin: 0;
+  font-size: 1.75rem;
+  color: #0b2a5b;
+}
+
+.seat-stage__subtitle {
+  margin: 0;
+  color: #475569;
+  font-size: 0.95rem;
+}
+
+.seat-stage__layout {
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) 290px;
+  gap: 1.25rem;
+  align-items: start;
+}
+
+.seat-map-shell {
+  background: #ffffff;
+  border: 1px solid #dbe4f3;
+  border-radius: 16px;
+  padding: 1.25rem;
+  box-shadow: 0 10px 26px rgba(11, 42, 91, 0.07);
+}
+
+.seat-legend {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 0.9rem;
+  justify-content: center;
+  margin-bottom: 1rem;
+  font-size: 0.82rem;
+  color: #334155;
+}
+
+.seat-legend__item {
+  display: inline-flex;
+  align-items: center;
+  gap: 0.35rem;
+}
+
+.seat-legend__swatch {
+  width: 14px;
+  height: 14px;
+  border-radius: 4px;
+  display: inline-block;
+  border: 1px solid transparent;
+}
+
+.seat-legend__swatch--business {
+  background: #fef3c7;
+  border-color: #d97706;
+}
+
+.seat-legend__swatch--available {
+  background: #eff6ff;
+  border-color: #3b82f6;
+}
+
+.seat-legend__swatch--selected {
+  background: #16a34a;
+  border-color: #15803d;
+}
+
+.seat-legend__swatch--occupied {
+  background: #cbd5e1;
+  border-color: #94a3b8;
+}
+
+.seat-map__cabin {
+  max-height: 540px;
+  overflow-y: auto;
+  padding: 1rem;
+  background: #f8fafc;
+  border: 2px solid #cbd5e1;
+  border-radius: 28px 28px 16px 16px;
+}
+
+.seat-map__nose {
+  text-align: center;
+  font-size: 0.78rem;
+  font-weight: 800;
+  letter-spacing: 0.12em;
+  color: #64748b;
+  padding-bottom: 0.75rem;
+  margin-bottom: 0.5rem;
+  border-bottom: 1px dashed #cbd5e1;
+}
+
+.seat-map__col-headers,
+.seat-map__row {
+  display: grid;
+  grid-template-columns: repeat(3, minmax(38px, 1fr)) 36px repeat(3, minmax(38px, 1fr));
+  gap: 0.4rem;
+  align-items: center;
+  justify-items: center;
+}
+
+.seat-map__col-headers {
+  margin-bottom: 0.5rem;
+  font-size: 0.78rem;
+  font-weight: 800;
+  color: #475569;
+  position: sticky;
+  top: 0;
+  background: #f8fafc;
+  padding: 0.3rem 0;
+  z-index: 2;
+}
+
+.seat-map__col--window {
+  color: #0369a1;
+}
+
+.seat-map__aisle-label {
+  font-size: 0.7rem;
+  color: #94a3b8;
+}
+
+.seat-map__divider {
+  margin: 0.85rem 0 0.5rem;
+  padding: 0.3rem 0.65rem;
+  text-align: center;
+  font-size: 0.76rem;
+  font-weight: 800;
+  text-transform: uppercase;
+  letter-spacing: 0.06em;
+  color: #475569;
+  background: #e2e8f0;
+  border-radius: 999px;
+}
+
+.seat-map__divider--business {
+  color: #92400e;
+  background: #fde68a;
+}
+
+.seat-map__row {
+  margin-bottom: 0.38rem;
+}
+
+.seat-map__row--business {
+  margin-bottom: 0.55rem;
+}
+
+.seat-map__row-num {
+  font-size: 0.78rem;
+  font-weight: 700;
+  color: #64748b;
+}
+
+.seat-btn {
+  width: 100%;
+  min-height: 36px;
+  padding: 0.25rem;
+  font-size: 0.76rem;
+  font-weight: 700;
+  border-radius: 8px 8px 5px 5px;
+  border: 1.5px solid #93c5fd;
+  background: #eff6ff;
+  color: #1e3a8a;
+  cursor: pointer;
+  transition:
+    transform 0.12s ease,
+    background-color 0.14s ease,
+    border-color 0.14s ease;
+}
+
+.seat-btn--business {
+  min-height: 42px;
+  background: #fef3c7;
+  border-color: #f59e0b;
+  color: #78350f;
+}
+
+.seat-btn--available:hover {
+  transform: translateY(-2px);
+  border-color: #0b2a5b;
+}
+
+.seat-btn--occupied {
+  background: #cbd5e1;
+  border-color: #94a3b8;
+  color: #64748b;
+  cursor: not-allowed;
+  opacity: 0.72;
+}
+
+.seat-btn--selected {
+  background: #16a34a;
+  border-color: #15803d;
+  color: #ffffff;
+  box-shadow: 0 0 0 3px rgba(34, 197, 94, 0.35);
+}
+
+.seat-btn--jumped {
+  animation: seat-jump-pop 0.85s ease-out;
+  border-color: #16a34a;
+}
+
+.seat-sidebar {
+  position: sticky;
+  top: 1rem;
+}
+
+.seat-summary-card {
+  background: #ffffff;
+  border: 1px solid #dbe4f3;
+  border-radius: 16px;
+  padding: 1.25rem;
+  box-shadow: 0 10px 26px rgba(11, 42, 91, 0.07);
+  display: flex;
+  flex-direction: column;
+  gap: 0.9rem;
+}
+
+.seat-summary-card__title {
+  margin: 0;
+  font-size: 1.15rem;
+  color: #0b2a5b;
+}
+
+.seat-summary-card__status {
+  margin: 0;
+  padding: 0.7rem 0.8rem;
+  font-size: 0.86rem;
+  line-height: 1.4;
+  color: #334155;
+  background: #f1f5f9;
+  border-left: 3px solid #0b2a5b;
+  border-radius: 6px;
+}
+
+.seat-summary-card__details {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+  padding: 0.75rem;
+  background: #f8fafc;
+  border: 1px solid #e2e8f0;
+  border-radius: 10px;
+}
+
+.seat-summary-card__row {
+  display: flex;
+  justify-content: space-between;
+  font-size: 0.9rem;
+  color: #334155;
+}
+
+.seat-summary-card__cap {
+  text-transform: capitalize;
+}
+
+.seat-summary-card__fee {
+  margin-top: 0.25rem;
+  padding: 0.55rem 0.65rem;
+  font-size: 0.82rem;
+  color: #92400e;
+  background: #fffbeb;
+  border: 1px solid #fde68a;
+  border-radius: 8px;
+}
+
+.seat-summary-card__empty {
+  margin: 0;
+  font-size: 0.88rem;
+  color: #64748b;
+}
+
+.seat-confirm-btn {
+  width: 100%;
+  padding: 0.85rem 1rem;
+  font-size: 0.98rem;
+  font-weight: 800;
+  color: #ffffff;
+  background: #0b2a5b;
+  border: none;
+  border-radius: 10px;
+  cursor: pointer;
+}
+
+.seat-confirm-btn:hover:not(:disabled) {
+  background: #163f80;
+}
+
+.seat-confirm-btn:disabled {
+  background: #94a3b8;
+  cursor: not-allowed;
+}
+
+@media (max-width: 780px) {
+  .seat-stage__layout {
+    grid-template-columns: 1fr;
+  }
+
+  .seat-sidebar {
+    position: static;
+  }
+}

@@ -43,7 +43,7 @@ Build `KachowTransition.jsx`: a race-car streak across the screen with big "KA-C
 Build `SelectFlight.jsx`: show the chosen `booking.flight` as a detailed card (times, price, the absurd conditions). The Select button is a `ForcefieldButton` with `onDodge={() => bumpFrustration(3)}`. On click, show `<FireTransition onDone={next} />`.
 **Done when:** selecting the flight requires sneaking up on the button, then fire, then Stage 06.
 
-### - [ ] Task 6: Stage 06: seat map
+### - [x] Task 6: Stage 06: seat map
 Build `Seat.jsx`: a grid seat map (rows 1-30, A-F, business rows 1-3). Hovering an available seat sometimes makes it jump to another spot or turn occupied. Window seats (A/F) add a "Window Appreciation Fee" via `addFee()`. On confirm, `updateBooking({ seat: { code, cls, window } })` and `next()`.
 **Done when:** you can eventually pick a seat and it shows up in `booking.seat`, with the fee added for windows.
 
