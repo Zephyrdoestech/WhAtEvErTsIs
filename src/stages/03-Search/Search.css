@@ -1,1 +1,40 @@
 /* OWNER: SYOS — styles for Stage 03 only */
+.search { font-size: 1rem; }
+.search__eyebrow { margin: 0 0 0.5rem; color: var(--blue); font-size: 0.875rem; font-weight: 700; }
+.search__title { margin: 0; color: var(--blue); font-size: clamp(2rem, 6vw, 3rem); }
+.search__intro { margin: 0.5rem 0 1.25rem; }
+.search__form { display: grid; gap: 1.25rem; }
+.search__field { display: grid; min-width: 0; gap: 0.5rem; align-content: start; }
+.search__field label { font-weight: 700; }
+.search__field input, .search__field select {
+  width: 100%;
+  min-width: 0;
+  min-height: 2.75rem;
+  padding: 0.6rem;
+  border: var(--border);
+  background: #fff;
+  color: var(--ink);
+  font: inherit;
+}
+.search__field select {
+  appearance: none;
+  padding-right: 2rem;
+  background-image: linear-gradient(45deg, transparent 50%, var(--ink) 50%), linear-gradient(135deg, var(--ink) 50%, transparent 50%);
+  background-position: calc(100% - 1rem) 50%, calc(100% - 0.65rem) 50%;
+  background-size: 0.35rem 0.35rem;
+  background-repeat: no-repeat;
+  text-overflow: ellipsis;
+}
+.search input:focus-visible, .search select:focus-visible, .search button:focus-visible { outline: 3px solid var(--purple); outline-offset: 3px; }
+.search__help { font-size: 0.875rem; line-height: 1.4; }
+.search__actions { display: grid; align-content: end; gap: 0.75rem; }
+.search__notice { margin: 0; font-size: 0.875rem; line-height: 1.4; }
+.search__actions button { min-height: 2.75rem; font-size: 1rem; }
+.search__error { margin: 0; padding: 0.75rem; border: 1px solid var(--red); background: var(--page); font-weight: 700; }
+.search__error:empty { display: none; }
+
+@media (min-width: 720px) {
+  .search .panel-body { padding: 1.25rem; }
+  .search__form { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .search__error { grid-column: 1 / -1; }
+}

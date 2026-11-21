@@ -38,7 +38,7 @@ Build `Login.jsx` with three tabs: Log in, Register, Continue as Guest. Fake fie
 Every path needs verification: Register → `<Captcha chain={2} />`, Log in → `<Captcha />` then "Account not found, please register", Guest → "Guests must also prove they exist" → `<Captcha />`. On success `updateBooking({ user: { mode, name } })` and `next()`.
 **Done when:** every route through Stage 02 ends in CAPTCHAs and then reaches Stage 03.
 
-### - [ ] Task 5: Stage 03: search form
+### - [x] Task 5: Stage 03: search form
 Build `Search.jsx`: origin, destination, depart/return dates, passenger count, Search button. Keep an airport list in `03-Search/airports.js` with a `domestic: true/false` flag (MNL, CEB, DVO, ILO, TAG ... plus a few international ones). On search, `updateBooking({ search })` and `next()`.
 **Done when:** a search saves `booking.search` and moves to Stage 04.
 
