@@ -47,7 +47,7 @@ On load, show a full-screen video ad using `src/assets/videos/shea closer.mp4`. 
 Build `ManageBooking.jsx`: show the booking reference, flight, seat and status (use `booking` from context, plus `getBooking(booking.reference)` from the API client). Buttons: Modify, Cancel.
 **Done when:** Stage 12 shows the booking details that were entered in earlier stages.
 
-### - [ ] Task 7: Stage 12: the loop
+### - [x] Task 7: Stage 12: the loop
 Modify sends the user back to a random earlier stage (`goTo` 3 to 9) with a message like "To change your seat, please re-book your entire life." Cancel opens 3 to 5 escalating confirmations ("Are you sure?" → "Are you SURE sure?" ...), then calls `cancelBooking`, then asks "Book again?": both Yes and No call `resetBooking()` (back to the homepage).
 **Done when:** every path out of Stage 12 ends up back in the booking flow, and the loop counter goes up.
 

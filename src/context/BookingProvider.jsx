@@ -29,10 +29,15 @@ export default function BookingProvider({ children }) {
     setLoopCount((c) => c + 1);
     setStage(1);
   }, []);
+  // Like goTo, but counts a loop and keeps the booking (Stage 12 "Modify").
+  const loopBackTo = useCallback((n) => {
+    setLoopCount((c) => c + 1);
+    goTo(n);
+  }, [goTo]);
 
   const value = useMemo(
-    () => ({ stage, goTo, next, back, booking, updateBooking, addFee, frustration, bumpFrustration, loopCount, resetBooking, demoMode }),
-    [stage, goTo, next, back, booking, updateBooking, addFee, frustration, bumpFrustration, loopCount, resetBooking, demoMode]
+    () => ({ stage, goTo, next, back, booking, updateBooking, addFee, frustration, bumpFrustration, loopCount, resetBooking, loopBackTo, demoMode }),
+    [stage, goTo, next, back, booking, updateBooking, addFee, frustration, bumpFrustration, loopCount, resetBooking, loopBackTo, demoMode]
   );
   return <BookingContext.Provider value={value}>{children}</BookingContext.Provider>;
 }
