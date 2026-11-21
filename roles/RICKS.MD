@@ -35,7 +35,7 @@ Draw a visible shimmering forcefield ring around it. Make it easier when `demoMo
 Build `FireTransition.jsx`: full-screen fire effect (CSS gradients/animated emoji 🔥 or a GIF you add to assets) with a whoosh sound, ~1.5s, then `onDone()`. Make sure it only calls `onDone` once.
 **Done when:** rendering `<FireTransition onDone={next} />` plays the effect and moves on.
 
-### - [ ] Task 4: KachowTransition
+### - [x] Task 4: KachowTransition
 Build `KachowTransition.jsx`: a race-car streak across the screen with big "KA-CHOW!" text and a sound (add the audio file), ~1.5s, then `onDone()`.
 **Done when:** rendering it plays the streak + sound and then moves on.
 

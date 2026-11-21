@@ -1,0 +1,239 @@
+/* OWNER: RICKS — full-screen KachowTransition overlay */
+@keyframes kachow-backdrop {
+  0% {
+    opacity: 0;
+  }
+  12% {
+    opacity: 1;
+  }
+  80% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes kachow-speed-line {
+  0% {
+    transform: translateX(-110vw) skewX(-28deg);
+    opacity: 0;
+  }
+  20% {
+    opacity: 0.95;
+  }
+  100% {
+    transform: translateX(120vw) skewX(-28deg);
+    opacity: 0;
+  }
+}
+
+@keyframes kachow-car-streak {
+  0% {
+    transform: translate3d(-55vw, 12vh, 0) scale(0.85) rotate(-4deg);
+    opacity: 0;
+  }
+  14% {
+    opacity: 1;
+  }
+  48% {
+    transform: translate3d(2vw, -2vh, 0) scale(1.08) rotate(-2deg);
+    opacity: 1;
+  }
+  65% {
+    transform: translate3d(16vw, -4vh, 0) scale(1.12) rotate(1deg);
+    opacity: 1;
+  }
+  100% {
+    transform: translate3d(115vw, -10vh, 0) scale(1.25) rotate(4deg);
+    opacity: 0;
+  }
+}
+
+@keyframes kachow-trail {
+  0% {
+    transform: translateX(-100%) scaleY(0.6);
+    opacity: 0;
+  }
+  28% {
+    opacity: 0.95;
+  }
+  70% {
+    transform: translateX(25%) scaleY(1.15);
+    opacity: 0.85;
+  }
+  100% {
+    transform: translateX(120%) scaleY(0.5);
+    opacity: 0;
+  }
+}
+
+@keyframes kachow-text-slam {
+  0% {
+    transform: scale(0.25) skewX(-16deg) rotate(-8deg);
+    opacity: 0;
+  }
+  32% {
+    transform: scale(1.18) skewX(-14deg) rotate(-3deg);
+    opacity: 1;
+  }
+  48% {
+    transform: scale(0.96) skewX(-14deg) rotate(-2deg);
+    opacity: 1;
+  }
+  80% {
+    transform: scale(1.04) skewX(-14deg) rotate(-2deg);
+    opacity: 1;
+  }
+  100% {
+    transform: scale(1.28) translateX(12vw) skewX(-18deg);
+    opacity: 0;
+  }
+}
+
+@keyframes kachow-flash {
+  0%,
+  36% {
+    opacity: 0;
+    transform: scale(0.2) rotate(0deg);
+  }
+  46% {
+    opacity: 1;
+    transform: scale(1.35) rotate(22deg);
+  }
+  66% {
+    opacity: 0;
+    transform: scale(0.6) rotate(45deg);
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+.kachow-transition {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  background: radial-gradient(
+    ellipse at 50% 50%,
+    rgba(220, 38, 38, 0.94) 0%,
+    rgba(153, 27, 27, 0.96) 52%,
+    rgba(24, 9, 14, 0.97) 100%
+  );
+  animation: kachow-backdrop 1.5s ease-in-out forwards;
+}
+
+.kachow-transition__lines {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.kachow-transition__line {
+  position: absolute;
+  left: 0;
+  top: var(--line-y, 50%);
+  width: var(--line-w, 45vw);
+  height: var(--line-h, 6px);
+  border-radius: 999px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(254, 240, 138, 0.95) 55%,
+    #ffffff 100%
+  );
+  box-shadow: 0 0 18px rgba(250, 204, 21, 0.9);
+  animation: kachow-speed-line var(--line-dur, 0.65s) linear var(--line-delay, 0s) infinite;
+}
+
+.kachow-transition__trail {
+  position: absolute;
+  left: -10vw;
+  width: 120vw;
+  height: 110px;
+  background: linear-gradient(
+    90deg,
+    transparent 0%,
+    rgba(249, 115, 22, 0.55) 28%,
+    rgba(250, 204, 21, 0.9) 68%,
+    rgba(255, 255, 255, 0.95) 88%,
+    transparent 100%
+  );
+  filter: blur(12px);
+  transform-origin: center;
+  pointer-events: none;
+  animation: kachow-trail 1.4s cubic-bezier(0.16, 0.84, 0.44, 1) forwards;
+}
+
+.kachow-transition__car {
+  position: absolute;
+  width: min(440px, 68vw);
+  height: auto;
+  object-fit: contain;
+  user-select: none;
+  pointer-events: none;
+  filter:
+    drop-shadow(-26px 8px 18px rgba(250, 204, 21, 0.85))
+    drop-shadow(0 16px 28px rgba(0, 0, 0, 0.55));
+  animation: kachow-car-streak 1.45s cubic-bezier(0.22, 0.88, 0.36, 1) forwards;
+}
+
+.kachow-transition__text-wrap {
+  position: relative;
+  z-index: 2;
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  pointer-events: none;
+  animation: kachow-text-slam 1.48s cubic-bezier(0.16, 0.9, 0.3, 1) forwards;
+}
+
+.kachow-transition__text {
+  margin: 0;
+  font-size: clamp(3.2rem, 11vw, 7.5rem);
+  font-weight: 900;
+  font-style: italic;
+  letter-spacing: 0.04em;
+  line-height: 1;
+  color: #fde047;
+  text-transform: uppercase;
+  -webkit-text-stroke: 4px #991b1b;
+  text-shadow:
+    0 6px 0 #7f1d1d,
+    0 12px 28px rgba(0, 0, 0, 0.6),
+    0 0 36px rgba(250, 204, 21, 0.95);
+  user-select: none;
+}
+
+.kachow-transition__gleam {
+  position: absolute;
+  top: -1.4rem;
+  right: -1.8rem;
+  font-size: clamp(2.2rem, 6vw, 4.2rem);
+  filter: drop-shadow(0 0 18px #ffffff);
+  animation: kachow-flash 1.45s ease-out forwards;
+}
+
+.kachow-transition__skip {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 3;
+  padding: 0.45rem 0.9rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #fef9c3;
+  background: rgba(15, 23, 42, 0.6);
+  border: 1px solid rgba(254, 240, 138, 0.6);
+  border-radius: 999px;
+  cursor: pointer;
+  backdrop-filter: blur(4px);
+}
+
+.kachow-transition__skip:hover {
+  background: rgba(15, 23, 42, 0.85);
+}
