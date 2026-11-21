@@ -5,7 +5,6 @@ import courtJester from "../../assets/images/court-jester-dancing.png";
 import dogAcceptingFate from "../../assets/images/dog-accepting-fate-meme-hero.jpg";
 import eminemFlashbang from "../../assets/images/emenim flashbang.jpg";
 import flashedCat from "../../assets/images/flashed cat.jpg";
-import lightningMcQueen from "../../assets/images/Lightning-McQueen.png";
 import useBooking from "../../context/useBooking.js";
 
 const SLOW_IMAGE_POOL = [
@@ -13,7 +12,6 @@ const SLOW_IMAGE_POOL = [
   dogAcceptingFate,
   eminemFlashbang,
   flashedCat,
-  lightningMcQueen,
 ];
 
 const POSITIONS = [
