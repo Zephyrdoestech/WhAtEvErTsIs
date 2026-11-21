@@ -39,7 +39,7 @@ In development there's also a **DEV: jump to** dropdown in the top-left corner. 
 | 01 | Welcome | The Shea ad first (Skip exists for 5 seconds only), then the ₱1 promo with a very long asterisk | Kyle |
 | 02 | Login / Sign Up | Log in, register or "guest": every road leads to more CAPTCHAs | Precious |
 | 03 | Search Flights | Every destination becomes "Piliin Mo ang Pilipinas"; dark mode turns your cursor into a flashlight | Precious |
-| 04 | View Flights | "Suspiciously cheap flights" load slowly; dodge luggage in a minigame while you wait | Darryll |
+| 04 | View Flights | "Suspiciously cheap flights" load slowly; dodge luggage in a minigame (with Subway Surfers playing beside it) while you wait | Darryll |
 | 05 | Select Flight | Absurd fare conditions; the Select button has a forcefield and runs away | Ricksmer |
 | 06 | Choose Seat | Seat map with ₱299 window seats; random darkness | Ricksmer |
 | 07 | Passenger Details | Birthday by slider; camera "airplane pose" check (nothing is recorded or uploaded) | Precious |
@@ -49,11 +49,13 @@ In development there's also a **DEV: jump to** dropdown in the top-left corner. 
 | 11 | Confirmation | "Confirmed-ish" e-ticket to ???, gate 404, Certified Survivor | Jon Vincent |
 | 12 | Manage Booking | Modify sends you back to a random stage; Cancel asks "Are you sure?" 3-5 times; both loop you | Kyle |
 
-On every page: the frustration meter (😊 → 💀), Ye Olde Airlper (a chatbot that forgets your name), pop-up ads, "hee hee", surprise flashbangs, brownouts and Lightning McQueen driving past. The **Mute Chaos** button in the top-right corner silences the sounds and stops the flashbangs; press **Esc** during a brownout to turn the lights back on; every popup can be closed. Devices set to *reduce motion* get no flashbangs or brownouts.
+On every page (except Stage 01, so the Shea ad plays undisturbed): the frustration meter (😊 → 💀), Ye Olde Airlper (a chatbot that forgets your name), pop-up ads, "hee hee", brownouts and Lightning McQueen driving past. Press **Esc** during a brownout to turn the lights back on; every popup can be closed. Devices set to *reduce motion* get no brownouts.
+
+**Feature switchboard:** open `http://localhost:5173/controller` to turn any chaos feature on or off, including **Master Sound Mute**, which silences every chaos sound (hee hee, KA-CHOW, the forcefield dodge and the fire whoosh). Settings are saved in that browser.
 
 ## 2-minute demo route
 
-Open `http://localhost:5173/?demo` on the presenting laptop, with the API running, sound on and other tabs closed. Have **Mute Chaos** ready in case the room is loud.
+Open `http://localhost:5173/?demo` on the presenting laptop, with the API running, sound on and other tabs closed. If the room is loud, open `/controller` in another tab and switch on **Master Sound Mute**.
 
 | Time | Do this | Say this |
 |---|---|---|

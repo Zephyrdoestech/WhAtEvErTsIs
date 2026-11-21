@@ -106,7 +106,6 @@ export default function Payment() {
   const [infiniteCaptchaChecked, setInfiniteCaptchaChecked] = useState(false);
 
   // Frustration starts at 0% and gradually increases as things happen
-  const [localFrustration, setLocalFrustration] = useState(0);
 
   // Hold-to-pay progress (0 -> 10s); gauntlet ONLY pops when hold completes
   const targetHoldMs = demoMode ? 3000 : 10000;
@@ -124,7 +123,6 @@ export default function Payment() {
   const nextDialogId = useRef(1);
 
   const raiseFrustration = (delta) => {
-    setLocalFrustration((prev) => Math.min(100, prev + delta));
     bumpFrustration?.(delta);
   };
 
@@ -390,32 +388,7 @@ export default function Payment() {
 
   return (
     <div className="payment-stage-canvas" data-node-id="28:591" data-name="Screen 3 · Terms & Punishments + Payment">
-      {/* Top red marquee from Figma (28:592) */}
-      <div className="payment-marquee-bar" data-node-id="28:592">
-        <p className="payment-marquee-text" data-node-id="28:593">
-          {`>>> STEP 9 OF 12: TERMS & PUNISHMENTS >>> STEP 10 OF 12: PAYMENT >>> YOUR ₱1 FLIGHT IS NOW ${formatPeso(total)} >>> DO NOT REFRESH (we did) >>>`}
-        </p>
-      </div>
-
-      {/* Site Header from Figma (28:594) */}
-      <div className="payment-site-header" data-node-id="28:594">
-        <p className="payment-brand-title" data-node-id="28:595">
-          Whatever tsis
-        </p>
-        <div className="payment-frustration-box" data-node-id="28:596">
-          <p className="payment-frustration-label" data-node-id="28:597">
-            FRUSTRATION METER: {localFrustration}%
-          </p>
-          <div className="payment-frustration-bar-bg" data-node-id="28:598">
-            <div
-              className="payment-frustration-bar-fill"
-              data-node-id="28:599"
-              style={{ width: `${localFrustration}%` }}
-            />
-          </div>
-        </div>
-      </div>
-
+      {/* The shell already shows the marquee, logo and frustration meter, so this stage starts at the payment panel. */}
       {/* Main row with Payment Panel (28:620) */}
       <div className="payment-main-row" data-node-id="28:600">
         <div className="payment-window" data-node-id="28:620" data-name="Payment">

@@ -2,6 +2,7 @@
 // Contract: render it, it plays, then calls onDone(). <FireTransition onDone={next} />
 import { useCallback, useEffect, useRef } from "react";
 import fireWhooshSound from "../../assets/audios/fire.mp3";
+import { useControllerConfig } from "../chaos/controllerConfig.js";
 import "./FireTransition.css";
 
 const DURATION_MS = 1500;
@@ -32,7 +33,9 @@ const EMBERS = [
   { x: "92%", size: "7px", drift: "-36px", dur: "1.08s", delay: "0.1s" },
 ];
 
-export default function FireTransition({ onDone, muted = false }) {
+export default function FireTransition({ onDone, muted: mutedProp = false }) {
+  const { config } = useControllerConfig();
+  const muted = mutedProp || Boolean(config.muteAllSounds); // the global Mute Chaos switch covers this sound too
   const doneRef = useRef(false);
   const onDoneRef = useRef(onDone);
   const audioRef = useRef(null);

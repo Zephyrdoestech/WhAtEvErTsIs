@@ -1,6 +1,7 @@
 // OWNER: DAR — random "hee-hee!" sound cue about once a minute (or ~20s in demoMode) + brief page shake.
 import { useEffect, useRef, useState } from "react";
-import heeHeeSound from "../../assets/audios/Occasional MJ Hehe.mp3";
+// One 0.85s "hee-hee" cut from "Occasional MJ Hehe.mp3" (a 1-hour, 14.7 MB track that is mostly silence).
+import heeHeeSound from "../../assets/audios/hee-hee.m4a";
 import useBooking from "../../context/useBooking.js";
 
 function getNextDelayMs(demoMode) {
@@ -13,7 +14,7 @@ function getNextDelayMs(demoMode) {
 }
 
 export default function HeeHee({ muted = false }) {
-  const { demoMode, bumpFrustration } = useBooking();
+  const { stage, demoMode, bumpFrustration } = useBooking();
   const [shaking, setShaking] = useState(false);
   const audioRef = useRef(null);
   const mutedRef = useRef(muted);
@@ -32,6 +33,8 @@ export default function HeeHee({ muted = false }) {
   }, [bumpFrustration]);
 
   useEffect(() => {
+    // Skip Stage 1 so it doesn't talk over the Shea ad (same as KA-CHOW and the flashbang).
+    if (stage === 1) return undefined;
     let triggerTimerId = null;
     let shakeTimerId = null;
 
@@ -66,7 +69,7 @@ export default function HeeHee({ muted = false }) {
       window.clearTimeout(shakeTimerId);
       document.body.classList.remove("chaos-page-shake");
     };
-  }, [demoMode]);
+  }, [demoMode, stage]);
 
   return (
     <>

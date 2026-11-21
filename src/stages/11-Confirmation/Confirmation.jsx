@@ -111,62 +111,17 @@ export default function Confirmation() {
         </div>
       )}
 
-      {/* 1. Confirmation marquee (28:4) */}
-      <div className="eticket-marquee-bar" data-node-id="28:4" data-name="Confirmation marquee">
-        <p className="eticket-marquee-text" data-node-id="28:5">
-          {`>>> CONGRATULATIONS!!! >>> YOUR FLIGHT IS CONFIRMED-ISH >>> GATE 404 >>> NO REFUNDS, ONLY PERSONAL GROWTH >>>`}
+      {/* The shell already shows the marquee, logo, link bar, news ticker and footer; only the booking session panel stays. */}
+      <div className="eticket-session-panel" data-node-id="28:10" data-name="Booking session panel">
+        <p className="eticket-session-title" data-node-id="28:11">
+          {`BOOKING COMPLETE*  (terms still loading)`}
         </p>
-      </div>
-
-      {/* 2. Airline site header (28:6) */}
-      <div className="eticket-site-header" data-node-id="28:6" data-name="Airline site header">
-        <div className="eticket-identity" data-node-id="28:7" data-name="Airline identity">
-          <p className="eticket-brand" data-node-id="28:8">
-            Whatever tsis
-          </p>
-          <p className="eticket-tagline" data-node-id="28:9">
-            {`You're not booking a flight. You're earning it.`}
-          </p>
-        </div>
-
-        <div className="eticket-session-panel" data-node-id="28:10" data-name="Booking session panel">
-          <p className="eticket-session-title" data-node-id="28:11">
-            {`BOOKING COMPLETE*  (terms still loading)`}
-          </p>
-          <p className="eticket-session-ref" data-node-id="28:12">
-            {`Passenger: ${passengerName}     Ref: ${reference}`}
-          </p>
-          <p className="eticket-session-warning" data-node-id="28:13">
-            *Complete does not necessarily mean finished.
-          </p>
-        </div>
-      </div>
-
-      {/* 3. Airline navigation (28:14) */}
-      <div className="eticket-nav" data-node-id="28:14" data-name="Airline navigation">
-        {[
-          "Flights",
-          "Hotels?",
-          "Deals*",
-          "Un-Deals",
-          "Baggage",
-          "Lost Baggage",
-          "Manage Booking",
-          "Un-Cancel",
-          "Help",
-          "Un-Help",
-        ].map((item) => (
-          <button
-            key={item}
-            type="button"
-            className="eticket-nav-link"
-            onClick={() => {
-              if (item === "Manage Booking") next();
-            }}
-          >
-            {item}
-          </button>
-        ))}
+        <p className="eticket-session-ref" data-node-id="28:12">
+          {`Passenger: ${passengerName}     Ref: ${reference}`}
+        </p>
+        <p className="eticket-session-warning" data-node-id="28:13">
+          *Complete does not necessarily mean finished.
+        </p>
       </div>
 
       {/* 4. Confirmation header banner (28:25) */}
@@ -410,23 +365,6 @@ export default function Confirmation() {
             Your details have already been forgotten.
           </p>
         </div>
-      </div>
-
-      {/* 7. Flight news ticker (28:155) */}
-      <div className="eticket-news-ticker" data-node-id="28:155" data-name="Flight news ticker">
-        <p className="eticket-news-text" data-node-id="28:156">
-          {`NEWS >>> Gate 404 now open (gate not found) >>> Runway moved 2m left >>> Passengers reminded: you are the passenger >>> hee hee >>>`}
-        </p>
-      </div>
-
-      {/* 8. Airline legal footer (28:157) */}
-      <div className="eticket-legal-footer" data-node-id="28:157" data-name="Airline legal footer">
-        <p className="eticket-legal-line" data-node-id="28:158">
-          {`Privacy Policy (lost)  |  Terms & Punishments  |  Cookie Policy (crumbs only)  |  Contact (disabled)`}
-        </p>
-        <p className="eticket-legal-line" data-node-id="28:159">
-          © 1999–2026 Bahala Na Air / whatevertsis. All wrongs reserved. Fictional airline. Not valid for travel.
-        </p>
       </div>
     </div>
   );
