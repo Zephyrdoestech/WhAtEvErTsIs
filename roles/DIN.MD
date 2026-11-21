@@ -27,7 +27,7 @@
 `cd server && npm install && npm run dev`, check `http://localhost:3001/api/health`. In `vite.config.js` add `server: { proxy: { '/api': 'http://localhost:3001' } }` so the frontend can call `/api/...`.
 **Done when:** `/api/health` returns `{ ok: true }` both directly and through `http://localhost:5173/api/health`.
 
-### - [ ] Task 2: Flights API
+### - [x] Task 2: Flights API
 Create `server/routes/flights.js` and mount it: `GET /api/flights?from=&to=&date=&passengers=` returns 4-8 flights for that route built from `server/data/flights.json` (fill in `from`/`to`, randomise times). Prices like ₱1, ₱3, ₱0.50; each has an absurd `conditions` array ("Window is a sticker", "Departs when the pilot feels ready").
 **Done when:** the endpoint returns believable-but-cursed flights for any route.
 
