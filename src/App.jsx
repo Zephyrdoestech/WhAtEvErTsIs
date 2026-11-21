@@ -1,11 +1,5 @@
-import "./App.css";
+import AppShell from "./app/AppShell.jsx";
 
-function App() {
-  return (
-    <>
-      <p>Hiii</p>
-    </>
-  );
+export default function App() {
+  return <AppShell />;
 }
-
-export default App;
