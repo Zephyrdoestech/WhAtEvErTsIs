@@ -1,0 +1,6 @@
+/* OWNER: KYLE */
+.app-shell { min-height: 100vh; font-family: system-ui, sans-serif; background: #f4f6fb; color: #1a2340; }
+.app-header { display: flex; align-items: center; gap: 1rem; padding: 0.75rem 1.25rem; background: #0b2a5b; color: #fff; }
+.logo { font-weight: 700; }
+.step-label { flex: 1; opacity: 0.8; font-size: 0.9rem; }
+.stage-area { max-width: 960px; margin: 2rem auto; padding: 0 1rem; }
