@@ -5,6 +5,7 @@ import useBooking from "../context/useBooking.js";
 import { getStage } from "../stages/index.js";
 import FrustrationMeter from "../components/layout/FrustrationMeter.jsx";
 import StepProgress from "../components/layout/StepProgress.jsx";
+import DevStageJumper from "../components/layout/DevStageJumper.jsx";
 import ChaosLayer from "../components/chaos/ChaosLayer.jsx";
 import "./AppShell.css";
 
@@ -84,6 +85,7 @@ export default function AppShell() {
           <p>© 1999-2026 Bahala Na Air / WhAtEvErTsIs. All wrongs reserved. Fictional airline. Not valid for travel.</p>
         </footer>
         <ChaosLayer />
+        {import.meta.env.DEV && <DevStageJumper />}
       </div>
     </BookingProvider>
   );

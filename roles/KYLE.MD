@@ -55,7 +55,7 @@ Modify sends the user back to a random earlier stage (`goTo` 3 to 9) with a mess
 When `booking.survivor` is true, show a "🏅 Certified Survivor" badge in the header that stays even after `resetBooking()` (store it separately in the provider, for example `survivorCount`).
 **Done when:** after reaching Stage 11 once, the badge shows and survives the loop.
 
-### - [ ] Task 9: Integration pass
+### - [x] Task 9: Integration pass
 Pull everyone's work. Walk all 12 stages from the start with the real flow (no `?stage`). Fix anything in your files; for bugs in other people's files, list them and send them to the owner. Add a dev-only stage jumper (hidden unless `import.meta.env.DEV`).
 **Done when:** a full run from Stage 01 to the Stage 12 loop works without console errors.
 

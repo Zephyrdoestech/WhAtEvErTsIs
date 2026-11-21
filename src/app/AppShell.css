@@ -61,3 +61,6 @@
 @media (prefers-reduced-motion: reduce) { .frustration-face { animation: none; } .frustration-fill { transition: none; } }
 
 .survivor-badge { display: inline-block; margin-top: 0.5rem; padding: 0.2rem 0.6rem; background: var(--yellow); border: var(--border); color: var(--red); font: 400 1.1rem var(--font-display); letter-spacing: 0.04em; transform: rotate(-2deg); }
+
+.dev-jumper { position: fixed; left: 0.5rem; top: 0.5rem; z-index: 2000; padding: 0.3rem 0.5rem; background: #000; color: #33ff33; border: 1px solid #33ff33; font: 0.75rem var(--font-mono); }
+.dev-jumper select { max-width: 55vw; font: inherit; }
