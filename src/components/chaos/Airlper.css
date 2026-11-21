@@ -1,0 +1,130 @@
+.airlper {
+  position: fixed;
+  z-index: 30;
+  right: max(0.75rem, env(safe-area-inset-right));
+  bottom: max(0.75rem, env(safe-area-inset-bottom));
+  width: min(19rem, calc(100vw - 1.5rem));
+  color: var(--ink, #111);
+  font-family: var(--font-body, sans-serif);
+}
+
+.airlper__panel {
+  overflow: hidden;
+  border: 3px solid var(--ink, #111);
+  background: var(--page, #ffff99);
+  box-shadow: 5px 5px 0 var(--red, #cc0000);
+}
+
+.airlper__panel[hidden],
+.airlper__reopen[hidden] {
+  display: none;
+}
+
+.airlper__header {
+  display: flex;
+  align-items: center;
+  gap: 0.55rem;
+  padding: 0.5rem;
+  border-bottom: 2px solid var(--ink, #111);
+  background: var(--blue, #003399);
+  color: #fff;
+}
+
+.airlper__avatar {
+  display: block;
+  flex: 0 0 3rem;
+  width: 3rem;
+  height: 3rem;
+  overflow: hidden;
+  border: 2px solid var(--ink, #111);
+  border-radius: 50%;
+  background: #fff;
+}
+
+.airlper__avatar img,
+.airlper__reopen img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  object-position: center 12%;
+}
+
+.airlper__identity {
+  min-width: 0;
+  flex: 1;
+}
+
+.airlper__name,
+.airlper__stage,
+.airlper__message {
+  margin: 0;
+}
+
+.airlper__name {
+  color: var(--yellow, #ffee00);
+  font-family: var(--font-display, Impact, sans-serif);
+  font-size: 1.05rem;
+  line-height: 1.1;
+  letter-spacing: 0.03em;
+}
+
+.airlper__stage {
+  margin-top: 0.2rem;
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.airlper__minimize,
+.airlper__reopen {
+  display: grid;
+  flex: 0 0 auto;
+  place-items: center;
+  padding: 0;
+  border: 2px solid var(--ink, #111);
+  background: var(--yellow, #ffee00);
+  color: var(--ink, #111);
+  cursor: pointer;
+}
+
+.airlper__minimize {
+  width: 2.5rem;
+  height: 2.5rem;
+  font: 700 1.5rem/1 var(--font-body, sans-serif);
+}
+
+.airlper__message {
+  padding: 0.7rem 0.8rem;
+  background: #fff;
+  font-size: 0.95rem;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.airlper__reopen {
+  width: 4rem;
+  height: 4rem;
+  overflow: hidden;
+  margin-left: auto;
+  border-width: 3px;
+  border-radius: 50%;
+  box-shadow: 4px 4px 0 var(--red, #cc0000);
+}
+
+.airlper__minimize:hover,
+.airlper__reopen:hover {
+  transform: translateY(-2px);
+}
+
+.airlper__minimize:focus-visible,
+.airlper__reopen:focus-visible {
+  outline: 3px solid var(--ink, #111);
+  outline-offset: 3px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .airlper__minimize:hover,
+  .airlper__reopen:hover {
+    transform: none;
+  }
+}
