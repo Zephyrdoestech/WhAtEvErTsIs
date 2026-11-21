@@ -51,7 +51,7 @@ Build `Seat.jsx`: a grid seat map (rows 1-30, A-F, business rows 1-3). Hovering 
 Every 10-20 seconds the cabin "lights go out" for a few seconds: wrap the seat map in SYOS's `<Flashlight on={dark}>`. If SYOS's component isn't ready yet, use a simple black overlay and switch later.
 **Done when:** the seat map goes dark at random and the flashlight still lets you pick seats.
 
-### - [ ] Task 8: Stage 09: review summary
+### - [x] Task 8: Stage 09: review summary
 Build `Review.jsx`: itinerary summary from `booking` (route, flight, seat, passenger name, extras, fees). Fetch `getQuote(booking)` and show the line items and total. Save it with `updateBooking({ quote })`.
 **Done when:** Stage 09 shows a clear summary that matches what was entered earlier.
 
