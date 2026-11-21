@@ -18,4 +18,14 @@ export default defineConfig([
       parserOptions: { ecmaFeatures: { jsx: true } },
     },
   },
+  {
+    // The Express API runs in Node, not the browser.
+    files: ['server/**/*.js'],
+    languageOptions: { globals: globals.node },
+  },
+  {
+    // Standalone preview entry points render themselves and export nothing, so Fast Refresh rules don't apply.
+    files: ['**/preview.jsx'],
+    rules: { 'react-refresh/only-export-components': 'off' },
+  },
 ])

@@ -1,5 +1,6 @@
 // OWNER: KYLE — see KYLE.MD
 // The app frame from docs/references: marquee, header, link bar, current stage, news ticker, footer, and the chaos layer on top.
+import { useState } from "react";
 import BookingProvider from "../context/BookingProvider.jsx";
 import useBooking from "../context/useBooking.js";
 import { getStage } from "../stages/index.js";
@@ -7,6 +8,7 @@ import FrustrationMeter from "../components/layout/FrustrationMeter.jsx";
 import StepProgress from "../components/layout/StepProgress.jsx";
 import DevStageJumper from "../components/layout/DevStageJumper.jsx";
 import ChaosLayer from "../components/chaos/ChaosLayer.jsx";
+import { StageNavSlot } from "./stageNavSlot.js";
 import "./AppShell.css";
 
 const NAV_LINKS = ["Flights", "Hotels?", "Deals*", "Un-Deals", "Baggage", "Lost Baggage", "Manage Booking", "Un-Cancel", "Help", "Un-Help"];
@@ -54,8 +56,10 @@ function SurvivorBadge() {
 }
 
 export default function AppShell() {
+  const [navSlot, setNavSlot] = useState(null); // callback ref: set once the link bar mounts
   return (
     <BookingProvider>
+      <StageNavSlot.Provider value={navSlot}>
       <div className="app-shell">
         <Marquee />
         <header className="app-header">
@@ -72,6 +76,7 @@ export default function AppShell() {
               <a key={label} href="#">{label}</a>
             ))}
           </div>
+          <div ref={setNavSlot} className="link-bar-slot" />
           <StepProgress />
         </nav>
         <main className="stage-area">
@@ -87,6 +92,7 @@ export default function AppShell() {
         <ChaosLayer />
         {import.meta.env.DEV && <DevStageJumper />}
       </div>
+      </StageNavSlot.Provider>
     </BookingProvider>
   );
 }

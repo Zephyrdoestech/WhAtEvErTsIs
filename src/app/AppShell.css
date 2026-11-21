@@ -64,3 +64,4 @@
 
 .dev-jumper { position: fixed; left: 0.5rem; top: 0.5rem; z-index: 2000; padding: 0.3rem 0.5rem; background: #000; color: #33ff33; border: 1px solid #33ff33; font: 0.75rem var(--font-mono); }
 .dev-jumper select { max-width: 55vw; font: inherit; }
+.link-bar-slot:empty { display: none; }
