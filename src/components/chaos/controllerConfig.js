@@ -12,7 +12,7 @@ export const CONTROLLER_FEATURES = [
     badge: "AUDIO · ALL PAGES",
     icon: "🔇",
     description:
-      "When ON, mutes all chaos sound cues (Hee-Hee, Flashbang, Ka-Chow, and page media).",
+      "When ON, mutes all chaos sound cues (Hee-Hee, Ka-Chow, and page media).",
     defaultEnabled: false,
   },
   {
@@ -33,16 +33,6 @@ export const CONTROLLER_FEATURES = [
     icon: "🕺",
     description:
       "Fires random 'hee-hee!' sound cues and shakes the entire page layout.",
-    defaultEnabled: true,
-  },
-  {
-    key: "flashbang",
-    label: "Eminem Flashbang → Flashed Cat",
-    category: "global",
-    badge: "CHAOS · ALL PAGES",
-    icon: "💥",
-    description:
-      "Throws a surprise flashbang with whiteout, ear ringing, and dazed cat reveal.",
     defaultEnabled: true,
   },
   {

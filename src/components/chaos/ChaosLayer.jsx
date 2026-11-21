@@ -12,7 +12,6 @@ import {
   isControllerRoute,
   useControllerConfig,
 } from "./controllerConfig.js";
-import Flashbang from "./Flashbang.jsx";
 import HeeHee from "./HeeHee.jsx";
 import SlowImage from "./SlowImage.jsx";
 
@@ -137,8 +136,6 @@ export default function ChaosLayer() {
     <>
       {config.airlper && <Airlper />}
       {config.heeHee && <HeeHee muted={muted} />}
-      {/* Mute Chaos also stops flashbangs: the whiteout is part of the jumpscare, not just its sound. */}
-      {config.flashbang && !muted && !reducedMotion && <Flashbang muted={muted} />}
       {config.blackout && !reducedMotion && <BlackoutOverlay />}
       {config.kachow && <KachowTransition muted={muted} />}
       {config.slowImage && stage !== 4 && (
