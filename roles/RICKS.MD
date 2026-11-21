@@ -39,7 +39,7 @@ Build `FireTransition.jsx`: full-screen fire effect (CSS gradients/animated emoj
 Build `KachowTransition.jsx`: a race-car streak across the screen with big "KA-CHOW!" text and a sound (add the audio file), ~1.5s, then `onDone()`.
 **Done when:** rendering it plays the streak + sound and then moves on.
 
-### - [ ] Task 5: Stage 05: select flight
+### - [x] Task 5: Stage 05: select flight
 Build `SelectFlight.jsx`: show the chosen `booking.flight` as a detailed card (times, price, the absurd conditions). The Select button is a `ForcefieldButton` with `onDodge={() => bumpFrustration(3)}`. On click, show `<FireTransition onDone={next} />`.
 **Done when:** selecting the flight requires sneaking up on the button, then fire, then Stage 06.
 
