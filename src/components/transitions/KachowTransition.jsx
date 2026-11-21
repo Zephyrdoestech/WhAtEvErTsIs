@@ -59,7 +59,7 @@ export default function KachowTransition({ muted = false }) {
         if (cancelled) return;
 
         const direction = Math.random() < 0.5 ? "ltr" : "rtl";
-        const durationMs = Math.round(randomBetween(1250, 1750));
+        const durationMs = Math.round(randomBetween(500, 800));
         const topVh = Math.round(randomBetween(14, 72));
         runIdRef.current += 1;
 
