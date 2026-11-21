@@ -23,7 +23,7 @@
 - You set `booking.reference`, `booking.quote` (if needed) and `booking.survivor`.
 
 ## Roadmap
-### - [ ] Task 1: Server boots + Vite proxy
+### - [x] Task 1: Server boots + Vite proxy
 `cd server && npm install && npm run dev`, check `http://localhost:3001/api/health`. In `vite.config.js` add `server: { proxy: { '/api': 'http://localhost:3001' } }` so the frontend can call `/api/...`.
 **Done when:** `/api/health` returns `{ ok: true }` both directly and through `http://localhost:5173/api/health`.
 
