@@ -1,3 +1,9 @@
+@property --flashlight-dim {
+  syntax: "<number>";
+  inherits: false;
+  initial-value: 0;
+}
+
 .flashlight {
   position: relative;
   isolation: isolate;
@@ -11,8 +17,8 @@
   background: #000;
   pointer-events: none;
   /* Clear centre with a broad, soft falloff into darkness. */
-  -webkit-mask-image: radial-gradient(circle var(--flashlight-radius) at var(--flashlight-x, 50%) var(--flashlight-y, 50%), transparent 45%, rgb(0 0 0 / 15%) 60%, rgb(0 0 0 / 55%) 78%, rgb(0 0 0 / 90%) 94%, #000 115%);
-  mask-image: radial-gradient(circle var(--flashlight-radius) at var(--flashlight-x, 50%) var(--flashlight-y, 50%), transparent 45%, rgb(0 0 0 / 15%) 60%, rgb(0 0 0 / 55%) 78%, rgb(0 0 0 / 90%) 94%, #000 115%);
+  -webkit-mask-image: radial-gradient(circle var(--flashlight-radius) at var(--flashlight-x, 50%) var(--flashlight-y, 50%), rgb(0 0 0 / var(--flashlight-dim)) 45%, rgb(0 0 0 / calc(var(--flashlight-dim) + 0.15)) 60%, rgb(0 0 0 / calc(var(--flashlight-dim) + 0.55)) 78%, rgb(0 0 0 / calc(var(--flashlight-dim) + 0.9)) 94%, #000 115%);
+  mask-image: radial-gradient(circle var(--flashlight-radius) at var(--flashlight-x, 50%) var(--flashlight-y, 50%), rgb(0 0 0 / var(--flashlight-dim)) 45%, rgb(0 0 0 / calc(var(--flashlight-dim) + 0.15)) 60%, rgb(0 0 0 / calc(var(--flashlight-dim) + 0.55)) 78%, rgb(0 0 0 / calc(var(--flashlight-dim) + 0.9)) 94%, #000 115%);
 }
 
 .flashlight__darkness--page {

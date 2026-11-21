@@ -83,6 +83,41 @@ export default function Flashlight({ on = false, radius = 120, children, fullPag
     };
   }, [on, fullPage]);
 
+  useEffect(() => {
+    if (!on || !overlay.current?.animate) return;
+    const layer = overlay.current;
+    const reducedMotion = window.matchMedia("(prefers-reduced-motion: reduce)");
+    let timer;
+    let flicker;
+    function schedule() {
+      timer = setTimeout(() => {
+        if (document.visibilityState === "visible") {
+          // Dim the beam, never reveal the whole page by fading the overlay.
+          flicker = layer.animate([
+            { "--flashlight-dim": "0", offset: 0 },
+            { "--flashlight-dim": "0.55", offset: 0.3 },
+            { "--flashlight-dim": "0.15", offset: 0.6 },
+            { "--flashlight-dim": "0.35", offset: 0.8 },
+            { "--flashlight-dim": "0", offset: 1 },
+          ], { duration: 700, easing: "ease-in-out" });
+        }
+        schedule();
+      }, 8000 + Math.random() * 6000);
+    }
+    function updatePreference() {
+      clearTimeout(timer);
+      flicker?.cancel();
+      if (!reducedMotion.matches) schedule();
+    }
+    updatePreference();
+    reducedMotion.addEventListener("change", updatePreference);
+    return () => {
+      clearTimeout(timer);
+      flicker?.cancel();
+      reducedMotion.removeEventListener("change", updatePreference);
+    };
+  }, [on, fullPage]);
+
   const darkness = on && <div ref={overlay} className={`flashlight__darkness${fullPage ? " flashlight__darkness--page" : ""}`} style={{ "--flashlight-radius": `${safeRadius}px` }} popover={fullPage ? "manual" : undefined} aria-hidden="true" />;
 
   return (

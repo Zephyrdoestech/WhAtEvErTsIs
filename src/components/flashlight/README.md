@@ -15,3 +15,5 @@ The overlay covers only its children. Mouse movement and touch/pointer presses a
 The beam now fades softly at its edges. Add `fullPage` to darken the entire viewport, including the app shell and native dialogs. This additive prop defaults to `false`, preserving the Stage 06 child-only behaviour. Page mode listens for pointer/touch and keyboard focus throughout the document, and removes its overlay/listeners when disabled or unmounted.
 
 Keep an accessible light/skip toggle. Stage 03 provides a page-wide example at `/?stage=3`, with Escape restoring the lights (Escape closes an open tourism dialog first).
+
+While enabled, the beam briefly dims for 700ms at random intervals of 8–14 seconds. It never brightens the surrounding page. Flicker is disabled with the system's reduced-motion preference; turning off or unmounting the flashlight cancels its timer and animation.
