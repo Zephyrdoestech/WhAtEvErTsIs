@@ -7,6 +7,123 @@ import useBooking from "../../context/useBooking.js";
 import dodgeSound from "../../assets/audios/sfx/Pou Nah Sound Effect.mp3";
 import "./ForcefieldButton.css";
 
+// Shared audio state so every ForcefieldButton plays the trimmed MP3 cleanly without
+// stale 206 range caching or HTMLAudio short-MP3 seek bugs.
+let sharedAudioCtx = null;
+let sharedArrayBuffer = null;
+let sharedBlobUrl = null;
+let sharedDecodedBuffer = null;
+let sharedLoadPromise = null;
+let audioUnlockBound = false;
+
+function getSharedAudioContext() {
+  if (typeof window === "undefined") return null;
+  if (!sharedAudioCtx) {
+    const AudioCtx = window.AudioContext || window.webkitAudioContext;
+    if (AudioCtx) {
+      sharedAudioCtx = new AudioCtx();
+    }
+  }
+  return sharedAudioCtx;
+}
+
+function loadDodgeSoundAsset() {
+  if (sharedLoadPromise) return sharedLoadPromise;
+  sharedLoadPromise = fetch(dodgeSound, { cache: "no-store" })
+    .then((res) => {
+      if (!res.ok) throw new Error(`HTTP ${res.status}`);
+      return res.arrayBuffer();
+    })
+    .then((buf) => {
+      sharedArrayBuffer = buf;
+      if (!sharedBlobUrl) {
+        sharedBlobUrl = URL.createObjectURL(new Blob([buf], { type: "audio/mpeg" }));
+      }
+      const ctx = getSharedAudioContext();
+      if (ctx) {
+        return ctx
+          .decodeAudioData(buf.slice(0))
+          .then((decoded) => {
+            sharedDecodedBuffer = decoded;
+          })
+          .catch(() => {});
+      }
+      return undefined;
+    })
+    .catch(() => {
+      sharedLoadPromise = null;
+    });
+  return sharedLoadPromise;
+}
+
+function bindAudioUnlock() {
+  loadDodgeSoundAsset();
+  if (typeof window === "undefined" || audioUnlockBound) return;
+  audioUnlockBound = true;
+
+  const unlock = () => {
+    const ctx = getSharedAudioContext();
+    if (ctx && ctx.state === "suspended") {
+      ctx.resume().catch(() => {});
+    }
+    if (ctx && sharedArrayBuffer && !sharedDecodedBuffer) {
+      ctx
+        .decodeAudioData(sharedArrayBuffer.slice(0))
+        .then((decoded) => {
+          sharedDecodedBuffer = decoded;
+        })
+        .catch(() => {});
+    }
+  };
+
+  window.addEventListener("pointerdown", unlock, { capture: true, passive: true });
+  window.addEventListener("keydown", unlock, { capture: true, passive: true });
+  window.addEventListener("touchstart", unlock, { capture: true, passive: true });
+}
+
+function startDecodedBuffer(ctx, buffer) {
+  const source = ctx.createBufferSource();
+  const gain = ctx.createGain();
+  source.buffer = buffer;
+  gain.gain.value = 1.5;
+  source.connect(gain);
+  gain.connect(ctx.destination);
+  source.start(0);
+}
+
+function playFreshHtmlAudio() {
+  try {
+    const audio = new Audio(sharedBlobUrl || dodgeSound);
+    audio.volume = 1;
+    audio.play().catch(() => {});
+  } catch {
+    // Ignore autoplay/environment errors
+  }
+}
+
+function playDodgeSound() {
+  const ctx = getSharedAudioContext();
+  if (ctx && sharedDecodedBuffer) {
+    if (ctx.state === "running") {
+      startDecodedBuffer(ctx, sharedDecodedBuffer);
+      return;
+    }
+    const requestedAt = performance.now();
+    ctx
+      .resume()
+      .then(() => {
+        if (performance.now() - requestedAt < 150 && ctx.state === "running" && sharedDecodedBuffer) {
+          startDecodedBuffer(ctx, sharedDecodedBuffer);
+        }
+      })
+      .catch(() => {});
+    return;
+  }
+
+  loadDodgeSoundAsset();
+  playFreshHtmlAudio();
+}
+
 const DEFAULT_MAX_SPEED = 0.15;
 const DEMO_MIN_MAX_SPEED = 0.55;
 const TRIGGER_RADIUS = 130;
@@ -133,7 +250,6 @@ export default function ForcefieldButton({
   const suppressNextClickRef = useRef(false);
   const onDodgeRef = useRef(onDodge);
   const mutedRef = useRef(muted);
-  const audioRef = useRef(null);
 
   const [offset, setOffset] = useState({ x: 0, y: 0 });
   const [scale, setScale] = useState(1);
@@ -237,11 +353,7 @@ export default function ForcefieldButton({
       setOffset(nextOffset);
       setScale(nextScale);
       if (!mutedRef.current) {
-        if (!audioRef.current) {
-          audioRef.current = new Audio(dodgeSound);
-        }
-        audioRef.current.currentTime = 0;
-        audioRef.current.play().catch(() => {});
+        playDodgeSound();
       }
       onDodgeRef.current?.();
     },
@@ -257,6 +369,8 @@ export default function ForcefieldButton({
       setProximityStyle(btnOnMount, 0);
       return undefined;
     }
+
+    bindAudioUnlock();
 
     function handleMouseMove(event) {
       const now = performance.now();
