@@ -1,14 +1,16 @@
-// OWNER: KYLE — temporary stand-in each stage shows until its owner builds it.
+// OWNER: KYLE — temporary stand-in each stage shows until its owner builds it. Also shows the .panel pattern from index.css.
 import useBooking from "../../context/useBooking.js";
 
 export default function StagePlaceholder({ number, title, owner, children }) {
   const { next } = useBooking();
   return (
-    <section style={{ background: "#fff", padding: "2rem", borderRadius: 12 }}>
-      <h2>Stage {String(number).padStart(2, "0")}: {title}</h2>
-      <p style={{ opacity: 0.6 }}>Owner: {owner}. Not built yet, see {owner}.MD.</p>
-      {children}
-      <button onClick={next}>Next (placeholder)</button>
+    <section className="panel">
+      <h2 className="panel-title">{title} - Step {number} of 12</h2>
+      <div className="panel-body">
+        <p>Owner: {owner}. Not built yet, see roles/{owner}.MD.</p>
+        {children}
+        <button className="btn go" onClick={next}>Next (placeholder)</button>
+      </div>
     </section>
   );
 }
