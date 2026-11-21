@@ -1,4 +1,4 @@
-# WhAtEvErTsIs (Bahala Na Air)
+# WhAtEvErTsIs
 
 A perfectly normal airline website where you book a **₱1 flight**. Every one of the 12 booking steps fights back: an unskippable ad, CAPTCHAs that never end, a Select button that runs away from your cursor, seats that move, terms you must scroll *slowly*, and fees that keep appearing. Survive all 12 and you get a "Confirmed-ish" e-ticket and the title **Certified Survivor**. Then Manage Booking loops you back to the start.
 
@@ -6,23 +6,58 @@ Built for the Malfunction hackathon. Fictional airline, fake data, fake payments
 
 ## Run it
 
-You need [Node.js](https://nodejs.org) 22 or newer (Vite 8 needs it).
+### Requirements
+
+| What | Version | Check with |
+|---|---|---|
+| [Node.js](https://nodejs.org) (includes npm) | 20.19+ or 22.12+ (the LTS download works) | `node -v` |
+| [Git](https://git-scm.com) | any recent version | `git --version` |
+| A browser | recent Chrome, Edge, Firefox or Safari | |
+
+Optional: speakers (the site has sound) and a webcam (Stage 07 asks for one, but you can continue without it).
+
+### 1. Get the code
 
 ```bash
 git clone https://github.com/Zephyrdoestech/WhAtEvErTsIs.git
 cd WhAtEvErTsIs
+```
 
-# Terminal 1: website → http://localhost:5173
-npm install
-npm run dev
+### 2. Install (once)
 
-# Terminal 2: API → http://localhost:3001 (recommended; without it the site falls back to mock data)
-cd server
-npm install
+```bash
+npm install                 # website
+cd server && npm install    # API
+cd ..
+```
+
+### 3. Run
+
+Use two terminals, both starting in the `WhAtEvErTsIs` folder:
+
+```bash
+# Terminal 1: website
 npm run dev
 ```
 
-Useful URLs:
+```bash
+# Terminal 2: API
+cd server
+npm run dev
+```
+
+Then open **http://localhost:5173** in your browser. The API runs on http://localhost:3001; the website talks to it automatically.
+
+The API is optional but recommended: without it the site still works and falls back to built-in mock data. Stop either one with `Ctrl+C`.
+
+### Troubleshooting
+
+- **`npm run dev` fails with a Node version error:** update Node.js to 20.19+ or 22.12+, then run `npm install` again.
+- **Port 5173 is busy:** Vite picks the next free port (5174, ...); use the URL it prints.
+- **Port 3001 is busy:** start the API on another port (macOS/Linux: `PORT=3002 npm run dev`; Windows PowerShell: `$env:PORT=3002; npm run dev`), and change the `/api` target in `vite.config.js` to match.
+- **No sound:** click anywhere on the page once (browsers block sound until you interact), and check that **Master Sound Mute** is off at `/controller`.
+
+### Useful URLs
 
 | URL | What it does |
 |---|---|
@@ -69,7 +104,7 @@ Open `http://localhost:5173/?demo` on the presenting laptop, with the API runnin
 | 1:45 | Stage 11: e-ticket, Certified Survivor badge in the header. | "You survived. Unfortunately." |
 | 1:50 | Stage 12: **Cancel** → "Are you sure?" × 3-5 → "Book again?" → back to Stage 01. Loop counter goes up. | "And that's the loop. Thank you!" |
 
-**If something breaks live:** use the DEV dropdown (top-left, dev server only) or type `?stage=N&demo` in the address bar to skip ahead and keep talking.
+**If something breaks live:** type `?stage=N&demo` in the address bar (for example `http://localhost:5173/?stage=10&demo`) to skip ahead and keep talking.
 
 ## What gets stored
 
@@ -103,4 +138,4 @@ Team rules and shared contracts: [TEAM.MD](TEAM.MD). Design guide: [docs/referen
 | Darryll B. Eral | Chaos on every page: Stages 04, 08; Ye Olde Airlper, HeeHee, pop-up ads |
 | Jon Vincent F. Din | Backend (Node + Express) and checkout: Stages 10, 11 |
 
-*Bahala Na Air is not a real airline. Please do not try to fly with it.*
+*This is not a real airline. Please do not try to fly with it.*
