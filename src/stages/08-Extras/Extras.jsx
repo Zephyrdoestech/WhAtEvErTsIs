@@ -146,13 +146,11 @@ export default function Extras() {
   const { config } = useControllerConfig();
 
   const [selectedIds, setSelectedIds] = useState(() => {
-    if (Array.isArray(booking?.extras) && booking.extras.length > 0) {
-      const existingIds = booking.extras
+    // A return visit restores exactly what was saved, including "no extras at all".
+    if (booking?.extrasVisited && Array.isArray(booking.extras)) {
+      return booking.extras
         .map((item) => item?.id || EXTRAS_CATALOG.find((c) => c.label === item?.label)?.id)
         .filter(Boolean);
-      if (existingIds.length > 0) {
-        return existingIds;
-      }
     }
     return EXTRAS_CATALOG.filter((item) => item.defaultSelected).map(
       (item) => item.id
@@ -167,7 +165,7 @@ export default function Extras() {
 
   // Sync selected extras into booking.extras whenever selection changes
   useEffect(() => {
-    updateBooking({ extras: toSavedExtras(selectedIds) });
+    updateBooking({ extras: toSavedExtras(selectedIds), extrasVisited: true });
   }, [selectedIds, updateBooking]);
 
   const selectedExtras = useMemo(

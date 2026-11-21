@@ -9,6 +9,7 @@ export const EMPTY_BOOKING = {
   seat: null,        // { code: "12A", cls: "economy", window: true }         — Stage 06 (RICKS)
   passenger: null,   // { firstName, lastName, email, ... }                   — Stage 07 (SYOS)
   extras: [],        // [{ id, label, price }]                                — Stage 08 (DAR)
+  extrasVisited: false, // true once Stage 08 saved a choice (so [] means "declined", not "not asked yet")
   fees: [],          // [{ label, amount }] surprise fees added along the way — anyone
   quote: null,       // { items, total } from api.getQuote                    — Stage 09/10
   reference: null,   // booking reference from api.createBooking             — Stage 10 (DIN)
