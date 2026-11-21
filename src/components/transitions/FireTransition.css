@@ -1,4 +1,4 @@
-/* OWNER: RICKS — full-screen FireTransition overlay */
+/* OWNER: RICKS — full-screen FireTransition overlay (matched to docs/references) */
 @keyframes fire-backdrop-surge {
   0% {
     opacity: 0;
@@ -85,12 +85,13 @@
   z-index: 9999;
   overflow: hidden;
   pointer-events: auto;
+  border: 4px solid var(--yellow, #ffee00);
   background: radial-gradient(
     ellipse at 50% 100%,
-    rgba(255, 247, 173, 0.96) 0%,
-    rgba(255, 138, 0, 0.94) 30%,
-    rgba(220, 38, 38, 0.92) 62%,
-    rgba(28, 6, 4, 0.95) 100%
+    rgba(255, 238, 0, 0.96) 0%,
+    rgba(255, 128, 0, 0.94) 30%,
+    rgba(204, 0, 0, 0.94) 62%,
+    rgba(24, 4, 4, 0.96) 100%
   );
   animation:
     fire-backdrop-surge 1.5s ease-in-out forwards,
@@ -101,15 +102,15 @@
   position: absolute;
   inset: -15% -10% 0;
   background:
-    radial-gradient(circle at 18% 95%, rgba(255, 241, 118, 0.95) 0%, transparent 45%),
-    radial-gradient(circle at 48% 92%, rgba(255, 167, 38, 0.95) 0%, transparent 50%),
-    radial-gradient(circle at 80% 96%, rgba(255, 238, 88, 0.92) 0%, transparent 46%),
+    radial-gradient(circle at 18% 95%, rgba(255, 238, 0, 0.95) 0%, transparent 45%),
+    radial-gradient(circle at 48% 92%, rgba(255, 145, 0, 0.95) 0%, transparent 50%),
+    radial-gradient(circle at 80% 96%, rgba(255, 238, 0, 0.92) 0%, transparent 46%),
     linear-gradient(
       to top,
-      #fff7ae 0%,
-      #ff9800 28%,
-      #ef4444 62%,
-      rgba(127, 29, 29, 0.65) 88%,
+      #ffee00 0%,
+      #ff8800 28%,
+      #cc0000 62%,
+      rgba(120, 0, 0, 0.65) 88%,
       transparent 100%
     );
   mix-blend-mode: screen;
@@ -140,9 +141,9 @@
   left: var(--ember-x, 50%);
   width: var(--ember-size, 8px);
   height: var(--ember-size, 8px);
-  border-radius: 999px;
-  background: #fef08a;
-  box-shadow: 0 0 12px 3px rgba(251, 146, 60, 0.95);
+  background: var(--yellow, #ffee00);
+  border: 1px solid var(--ink, #111);
+  box-shadow: 0 0 12px 3px rgba(255, 145, 0, 0.95);
   animation: fire-ember-float var(--ember-dur, 1.2s) ease-out var(--ember-delay, 0s) forwards;
 }
 
@@ -151,17 +152,18 @@
   top: 1rem;
   right: 1rem;
   z-index: 2;
-  padding: 0.45rem 0.9rem;
-  font-size: 0.85rem;
+  min-height: 2.25rem;
+  padding: 0.35rem 0.9rem;
+  font-family: var(--font-body);
+  font-size: 0.9rem;
   font-weight: 700;
-  color: #fff7ed;
-  background: rgba(15, 23, 42, 0.55);
-  border: 1px solid rgba(255, 237, 213, 0.5);
-  border-radius: 999px;
+  color: var(--ink, #111);
+  background: var(--yellow, #ffee00);
+  border: 2px solid var(--ink, #111);
+  box-shadow: 3px 3px 0 var(--ink, #111);
   cursor: pointer;
-  backdrop-filter: blur(4px);
 }
 
 .fire-transition__skip:hover {
-  background: rgba(15, 23, 42, 0.8);
+  background: #fff;
 }

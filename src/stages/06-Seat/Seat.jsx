@@ -32,7 +32,6 @@ function createInitialSeats() {
   for (const row of ROWS) {
     for (const col of ALL_COLS) {
       const code = `${row}${col}`;
-      // Deterministic mix (~45% initially occupied) so both cabins have plenty of open seats
       const hash = (row * 37 + col.charCodeAt(0) * 17) % 11;
       seats[code] = {
         code,
@@ -54,7 +53,7 @@ export default function Seat() {
   const [selectedCode, setSelectedCode] = useState(booking.seat?.code ?? null);
   const [jumpedCode, setJumpedCode] = useState(null);
   const [dark, setDark] = useState(false);
-  const [beamPos, setBeamPos] = useState({ x: 240, y: 240 });
+  const [beamPos, setBeamPos] = useState({ x: 200, y: 200 });
   const [statusMessage, setStatusMessage] = useState(
     "Pick any available seat on board. Good luck catching one."
   );
@@ -85,7 +84,7 @@ export default function Seat() {
       timerId = window.setTimeout(() => {
         if (cancelled) return;
         setDark(true);
-        setStatusMessage("⚡ Cabin power outage! Use your flashlight to find a seat.");
+        setStatusMessage("⚡ Cabin power outage! Use your cursor as a flashlight.");
         bumpFrustration(2);
 
         const darkDurationMs = demoMode
@@ -108,6 +107,13 @@ export default function Seat() {
     };
   }, [bumpFrustration, demoMode]);
 
+  const selectedSeat = selectedCode ? seats[selectedCode] : null;
+
+  const availableCount = useMemo(
+    () => Object.values(seats).filter((s) => s.status === "available").length,
+    [seats]
+  );
+
   function handleMapPointerMove(event) {
     const shell = seatMapShellRef.current;
     if (!shell) return;
@@ -118,13 +124,6 @@ export default function Seat() {
     });
   }
 
-  const selectedSeat = selectedCode ? seats[selectedCode] : null;
-
-  const availableCount = useMemo(
-    () => Object.values(seats).filter((s) => s.status === "available").length,
-    [seats]
-  );
-
   function triggerJumpHighlight(code) {
     setJumpedCode(code);
     if (jumpHighlightTimerRef.current) {
@@ -132,7 +131,7 @@ export default function Seat() {
     }
     jumpHighlightTimerRef.current = window.setTimeout(() => {
       setJumpedCode(null);
-    }, 900);
+    }, 950);
   }
 
   function handleSeatHover(code) {
@@ -147,11 +146,11 @@ export default function Seat() {
 
     lastMischiefAtRef.current = now;
 
-    // Decide whether the seat jumps to another spot or turns occupied
     const occupiedCodes = Object.keys(seats).filter(
       (k) => seats[k].status === "occupied" && k !== code
     );
-    const shouldJump = occupiedCodes.length > 0 && (availableCount <= MIN_AVAILABLE_SEATS || Math.random() < 0.5);
+    const shouldJump =
+      occupiedCodes.length > 0 && (availableCount <= MIN_AVAILABLE_SEATS || Math.random() < 0.5);
 
     if (shouldJump) {
       const targetCode = occupiedCodes[Math.floor(Math.random() * occupiedCodes.length)];
@@ -182,7 +181,7 @@ export default function Seat() {
     setSelectedCode(code);
     if (seat.window) {
       setStatusMessage(
-        `Selected ${code} (${seat.cls}, Window). A ₱${WINDOW_FEE_AMOUNT} ${WINDOW_FEE_LABEL} applies.`
+        `Selected ${code} (${seat.cls}, Window). +₱${WINDOW_FEE_AMOUNT} ${WINDOW_FEE_LABEL} applies.`
       );
     } else {
       setStatusMessage(`Selected ${code} (${seat.cls}, ${getSeatPositionLabel(seat.col)}).`);
@@ -228,6 +227,13 @@ export default function Seat() {
       .filter(Boolean)
       .join(" ");
 
+    let label = "OK";
+    if (isOccupied) label = "X";
+    else if (isSelected) label = code;
+    else if (isJumped) label = "!";
+    else if (seat.window) label = `₱${WINDOW_FEE_AMOUNT}`;
+    else if (isBusiness) label = "BIZ";
+
     return (
       <button
         key={code}
@@ -235,7 +241,7 @@ export default function Seat() {
         disabled={isOccupied}
         className={className}
         title={`${code} · ${isBusiness ? "Business" : "Economy"} · ${getSeatPositionLabel(col)}${
-          seat.window ? ` (+₱${WINDOW_FEE_AMOUNT} Window Appreciation Fee)` : ""
+          seat.window ? ` (+₱${WINDOW_FEE_AMOUNT} ${WINDOW_FEE_LABEL})` : ""
         }`}
         aria-label={`Seat ${code}, ${isBusiness ? "business" : "economy"}, ${
           isOccupied ? "occupied" : isSelected ? "selected" : "available"
@@ -243,154 +249,158 @@ export default function Seat() {
         onMouseEnter={() => handleSeatHover(code)}
         onClick={() => handleSeatClick(code)}
       >
-        {isOccupied ? "✕" : code}
+        {label}
       </button>
     );
   }
 
   return (
     <section className="seat-stage">
-      <div className="seat-stage__top">
-        <button type="button" className="seat-stage__back" onClick={back}>
-          ← Back to Flight
-        </button>
-        <span className="seat-stage__count">{availableCount} seats left (allegedly)</span>
-      </div>
+      <div className="panel">
+        <h2 className="panel-title purple">
+          CHOOSE SEAT - Step 6 of 12 (random darkness may occur)
+        </h2>
 
-      <header className="seat-stage__header">
-        <h1 className="seat-stage__title">Choose Your Seat</h1>
-        <p className="seat-stage__subtitle">
-          Select an available seat in Business (Rows 1–3) or Economy (Rows 4–30).
-        </p>
-      </header>
-
-      <div className="seat-stage__layout">
-        <Flashlight on={dark} radius={FLASHLIGHT_RADIUS}>
-          <div
-            ref={seatMapShellRef}
-            className={`seat-map-shell ${dark ? "seat-map-shell--dark" : ""}`}
-            onMouseMove={handleMapPointerMove}
-            onPointerMove={handleMapPointerMove}
-          >
-            {dark && (
-              <div className="seat-blackout-banner" role="alert">
-                ⚡ Cabin lights out — sweep your cursor to illuminate seats!
-              </div>
-            )}
-
-            <div className="seat-legend">
-              <span className="seat-legend__item">
-                <span className="seat-legend__swatch seat-legend__swatch--business" /> Business (1–3)
-              </span>
-              <span className="seat-legend__item">
-                <span className="seat-legend__swatch seat-legend__swatch--available" /> Economy
-              </span>
-              <span className="seat-legend__item">
-                <span className="seat-legend__swatch seat-legend__swatch--selected" /> Selected
-              </span>
-              <span className="seat-legend__item">
-                <span className="seat-legend__swatch seat-legend__swatch--occupied" /> Occupied
-              </span>
-            </div>
-
-            <div className="seat-map__cabin">
-              <div className="seat-map__nose" aria-hidden="true">
-                ✈ FRONT OF AIRCRAFT
-              </div>
-
-              <div className="seat-map__col-headers" aria-hidden="true">
-                {LEFT_COLS.map((c) => (
-                  <span key={c} className={isWindowCol(c) ? "seat-map__col--window" : ""}>
-                    {c}
-                    {isWindowCol(c) ? " 🪟" : ""}
-                  </span>
-                ))}
-                <span className="seat-map__aisle-label">Row</span>
-                {RIGHT_COLS.map((c) => (
-                  <span key={c} className={isWindowCol(c) ? "seat-map__col--window" : ""}>
-                    {c}
-                    {isWindowCol(c) ? " 🪟" : ""}
-                  </span>
-                ))}
-              </div>
-
-              <div className="seat-map__divider seat-map__divider--business">
-                ✦ Business Class (Rows 1–3)
-              </div>
-
-              {ROWS.map((row) => (
-                <div key={row}>
-                  {row === BUSINESS_MAX_ROW + 1 && (
-                    <div className="seat-map__divider">Economy Class (Rows 4–30)</div>
-                  )}
-                  <div
-                    className={`seat-map__row ${
-                      row <= BUSINESS_MAX_ROW ? "seat-map__row--business" : ""
-                    }`}
-                  >
-                    {LEFT_COLS.map((col) => renderSeatButton(row, col))}
-                    <span className="seat-map__row-num">{row}</span>
-                    {RIGHT_COLS.map((col) => renderSeatButton(row, col))}
-                  </div>
-                </div>
-              ))}
-            </div>
-
-            {USE_LOCAL_DARK_FALLBACK && dark && (
-              <div
-                className="seat-dark-fallback"
-                aria-hidden="true"
-                style={{
-                  "--beam-x": `${beamPos.x}px`,
-                  "--beam-y": `${beamPos.y}px`,
-                  "--beam-r": `${FLASHLIGHT_RADIUS}px`,
-                }}
-              />
-            )}
+        <div className="panel-body">
+          <div className="seat-stage__bar">
+            <button type="button" className="btn" onClick={back}>
+              ← Back to Flight
+            </button>
+            <span className="seat-stage__count">{availableCount} seats left (allegedly)</span>
           </div>
-        </Flashlight>
 
-        <aside className="seat-sidebar">
-          <div className="seat-summary-card">
-            <h2 className="seat-summary-card__title">Seat Selection</h2>
-            <p className="seat-summary-card__status" role="status" aria-live="polite">
-              {statusMessage}
-            </p>
+          <div className="seat-stage__layout">
+            <Flashlight on={dark} radius={FLASHLIGHT_RADIUS}>
+              <div
+                ref={seatMapShellRef}
+                className={`seat-map-shell ${dark ? "seat-map-shell--dark" : ""}`}
+                onMouseMove={handleMapPointerMove}
+                onPointerMove={handleMapPointerMove}
+              >
+                <div className="seat-legend">
+                  <span className="seat-legend__item">
+                    <span className="seat-legend__swatch seat-legend__swatch--window" /> Window (₱
+                    {WINDOW_FEE_AMOUNT})
+                  </span>
+                  <span className="seat-legend__item">
+                    <span className="seat-legend__swatch seat-legend__swatch--business" /> Business
+                    (1–3)
+                  </span>
+                  <span className="seat-legend__item">
+                    <span className="seat-legend__swatch seat-legend__swatch--available" /> Open (OK)
+                  </span>
+                  <span className="seat-legend__item">
+                    <span className="seat-legend__swatch seat-legend__swatch--occupied" /> Taken (X)
+                  </span>
+                  <span className="seat-legend__item">
+                    <span className="seat-legend__swatch seat-legend__swatch--selected" /> Selected
+                  </span>
+                </div>
 
-            {selectedSeat ? (
-              <div className="seat-summary-card__details">
-                <div className="seat-summary-card__row">
-                  <span>Seat</span>
-                  <strong>{selectedSeat.code}</strong>
+                <div className="seat-map__cabin">
+                  <div className="seat-map__col-headers" aria-hidden="true">
+                    {LEFT_COLS.map((c) => (
+                      <span key={c}>{c}</span>
+                    ))}
+                    <span>#</span>
+                    {RIGHT_COLS.map((c) => (
+                      <span key={c}>{c}</span>
+                    ))}
+                  </div>
+
+                  <div className="seat-map__divider seat-map__divider--business">
+                    ★ BUSINESS CLASS (Rows 1–3) ★
+                  </div>
+
+                  {ROWS.map((row) => (
+                    <div key={row}>
+                      {row === BUSINESS_MAX_ROW + 1 && (
+                        <div className="seat-map__divider">ECONOMY CLASS (Rows 4–30)</div>
+                      )}
+                      <div className="seat-map__row">
+                        {LEFT_COLS.map((col) => renderSeatButton(row, col))}
+                        <span className="seat-map__row-num">{row}</span>
+                        {RIGHT_COLS.map((col) => renderSeatButton(row, col))}
+                      </div>
+                    </div>
+                  ))}
                 </div>
-                <div className="seat-summary-card__row">
-                  <span>Cabin</span>
-                  <strong className="seat-summary-card__cap">{selectedSeat.cls}</strong>
-                </div>
-                <div className="seat-summary-card__row">
-                  <span>Position</span>
-                  <strong>{getSeatPositionLabel(selectedSeat.col)}</strong>
-                </div>
-                {selectedSeat.window && (
-                  <div className="seat-summary-card__fee">
-                    🪟 <strong>{WINDOW_FEE_LABEL}:</strong> +₱{WINDOW_FEE_AMOUNT}
+
+                {USE_LOCAL_DARK_FALLBACK && dark && (
+                  <div
+                    className="seat-dark-fallback"
+                    aria-hidden="true"
+                    style={{
+                      "--beam-x": `${beamPos.x}px`,
+                      "--beam-y": `${beamPos.y}px`,
+                      "--beam-r": `${FLASHLIGHT_RADIUS}px`,
+                    }}
+                  />
+                )}
+
+                {dark && (
+                  <div className="seat-dark-pill" role="alert">
+                    DARK MODE: ON (cursor = flashlight)
                   </div>
                 )}
               </div>
-            ) : (
-              <p className="seat-summary-card__empty">No seat selected yet.</p>
-            )}
+            </Flashlight>
 
-            <button
-              type="button"
-              className="seat-confirm-btn"
-              disabled={!selectedSeat}
-              onClick={handleConfirm}
-            >
-              Confirm Seat →
-            </button>
+            <aside className="seat-sidebar">
+              <div className="seat-info-box">
+                <p className="seat-info-box__fee-line">
+                  <strong>
+                    {WINDOW_FEE_LABEL}: ₱{WINDOW_FEE_AMOUNT}
+                  </strong>{" "}
+                  (appreciation not included)
+                </p>
+                <p className="seat-info-box__sub">
+                  Aisle: SOLD OUT · Middle: MANDATORY · Standing: ₱1
+                </p>
+                <p className="seat-info-box__warn">
+                  Seats marked ! are currently jumping. Please wait for them to land.
+                </p>
+
+                <p className="seat-info-box__status" role="status" aria-live="polite">
+                  {statusMessage}
+                </p>
+
+                {selectedSeat ? (
+                  <div className="seat-selected-box">
+                    <div className="seat-selected-box__row">
+                      <span>Seat:</span>
+                      <strong>{selectedSeat.code}</strong>
+                    </div>
+                    <div className="seat-selected-box__row">
+                      <span>Class:</span>
+                      <strong className="seat-selected-box__cap">{selectedSeat.cls}</strong>
+                    </div>
+                    <div className="seat-selected-box__row">
+                      <span>Position:</span>
+                      <strong>{getSeatPositionLabel(selectedSeat.col)}</strong>
+                    </div>
+                    {selectedSeat.window && (
+                      <div className="seat-selected-box__fee">
+                        +₱{WINDOW_FEE_AMOUNT} {WINDOW_FEE_LABEL}
+                      </div>
+                    )}
+                  </div>
+                ) : (
+                  <p className="seat-info-box__empty">No seat selected yet.</p>
+                )}
+
+                <button
+                  type="button"
+                  className="btn warn seat-confirm-btn"
+                  disabled={!selectedSeat}
+                  onClick={handleConfirm}
+                >
+                  Confirm Seat (seat may change)
+                </button>
+              </div>
+            </aside>
           </div>
-        </aside>
+        </div>
       </div>
     </section>
   );
