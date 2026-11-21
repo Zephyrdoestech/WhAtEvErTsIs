@@ -12,7 +12,9 @@ export default function Search() {
   const prefix = useId();
   const submitted = useRef(false);
   const dialog = useRef(null);
+  const video = useRef(null);
   const [tourism, setTourism] = useState(null);
+  const [videoMuted, setVideoMuted] = useState(false);
   const [abroadWait, setAbroadWait] = useState(0);
   const [allowedAbroad, setAllowedAbroad] = useState("");
   const [dark, setDark] = useState(false);
@@ -53,6 +55,19 @@ export default function Search() {
   const tourismOpen = tourism !== null;
   useEffect(() => {
     if (!tourismOpen) return;
+    const player = video.current;
+    player.play().catch((error) => {
+      if (error.name !== "NotAllowedError" || video.current !== player) return;
+      player.muted = true;
+      player.play().catch(() => {
+        // The controls still let the user start playback.
+      });
+    });
+    return () => player.pause();
+  }, [tourismOpen]);
+
+  useEffect(() => {
+    if (!tourismOpen) return;
     const timers = [2, 1, 0].map((seconds, index) =>
       window.setTimeout(() => setAbroadWait(seconds), (index + 1) * 1000)
     );
@@ -60,8 +75,19 @@ export default function Search() {
   }, [tourismOpen]);
 
   function openTourism(destination, searching) {
+    setVideoMuted(false);
     setAbroadWait(3);
     setTourism({ destination, tries: 0, searching });
+  }
+
+  function toggleVideoSound() {
+    const player = video.current;
+    player.muted = !player.muted;
+    if (!player.muted) {
+      player.play().catch(() => {
+        if (video.current === player) player.muted = true;
+      });
+    }
   }
 
   function saveSearch(value) {
@@ -193,7 +219,8 @@ export default function Search() {
             <button type="button" className="btn search-tourism__close" onClick={() => setTourism(null)}>Back to search</button>
             <h3 className="display" id={`${prefix}-tourism-title`}>Piliin Mo ang Pilipinas!</h3>
             <div className="search-tourism__content">
-              <video className="search-tourism__video" src={tourismVideo} autoPlay muted playsInline controls aria-label="Piliin Mo ang Pilipinas tourism video" />
+              <video ref={video} className="search-tourism__video" src={tourismVideo} playsInline controls aria-label="Piliin Mo ang Pilipinas tourism video" onVolumeChange={(event) => setVideoMuted(event.currentTarget.muted)} />
+              <button type="button" className="btn search-tourism__sound" onClick={toggleVideoSound}>{videoMuted ? "Play with sound" : "Mute video"}</button>
               <p id={`${prefix}-tourism-description`}>Going to {airports.find((airport) => airport.code === tourism.destination)?.city}? Try a surprise destination in the Philippines.</p>
             </div>
             <div className="search-tourism__actions">
