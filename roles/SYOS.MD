@@ -26,7 +26,7 @@
 Build `Captcha.jsx`: a fake image-grid CAPTCHA ("Select all squares with airplanes") using emoji or simple images. The correct answer is absurd (for example the only correct square is the one with a cloud shaped like a plane). Keep a question bank in `components/captcha/questions.js`. Call `onPass()` on success, `onFail()` and `bumpFrustration(5)` on failure, with a new question each time.
 **Done when:** `<Captcha onPass={...} />` renders a working, silly CAPTCHA you can pass and fail.
 
-### - [ ] Task 2: CAPTCHA chaining and variants
+### - [x] Task 2: CAPTCHA chaining and variants
 Support `chain={n}`: after passing one, the next one appears ("Great! Now verify you verified."). Add at least 3 more variants: nonsense math ("What is 7 + Tuesday?"), wobbly-text typing, and "Are you a robot? Yes / No" where the first answer is always wrong. Keep the props contract unchanged.
 **Done when:** `<Captcha chain={3} />` makes the user solve 3 different CAPTCHAs before `onPass` fires.
 
