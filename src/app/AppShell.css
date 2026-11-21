@@ -50,3 +50,12 @@
 .frustration-meter { width: 100%; max-width: 340px; padding: 0.4rem 0.6rem; background: #ffffcc; border: 3px solid var(--red); color: var(--red); font-size: 0.85rem; font-weight: 700; }
 .frustration-track { height: 16px; margin-top: 0.3rem; background: var(--grey); border: var(--border); }
 .frustration-fill { height: 100%; background: var(--red); transition: width 0.4s ease-out; }
+.frustration-head { display: flex; align-items: center; gap: 0.4rem; }
+.frustration-face { display: inline-block; font-size: 1.4rem; line-height: 1; animation: face-pop 0.4s ease-out; }
+@keyframes face-pop {
+  0% { transform: scale(1); }
+  40% { transform: scale(1.6) rotate(-12deg); }
+  100% { transform: scale(1); }
+}
+.frustration-loops { display: block; margin-top: 0.25rem; color: var(--ink); font-weight: 400; }
+@media (prefers-reduced-motion: reduce) { .frustration-face { animation: none; } .frustration-fill { transition: none; } }
