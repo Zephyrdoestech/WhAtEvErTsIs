@@ -62,7 +62,7 @@
 .search-tourism__content { min-height: 0; overflow-y: auto; }
 .search-tourism__content p { margin: 0.5rem 0 0; }
 .search-tourism__video { display: block; width: 100%; aspect-ratio: 16 / 9; max-height: 32dvh; object-fit: contain; background: #000; }
-.search-tourism__sound { margin-top: 0.5rem; }
+.search-tourism__sound { margin-bottom: 0.5rem; }
 .search-tourism__actions { flex-shrink: 0; }
 .search-tourism__primary { width: 100%; min-height: 3rem; font-size: 1.3rem; }
 .search-tourism__status { margin: 0.5rem 0; }
