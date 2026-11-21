@@ -492,3 +492,7 @@
     min-height: 66px;
   }
 }
+
+/* Subway Surfers panel shown while flights load */
+.flights-subway { margin-top: 0.75rem; }
+.flights-subway__video { display: block; width: 100%; max-height: 50vh; object-fit: contain; background: #000; }

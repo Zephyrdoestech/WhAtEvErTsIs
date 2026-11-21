@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import { searchFlights } from "../../api/client.js";
 import { useControllerConfig } from "../../components/chaos/controllerConfig.js";
 import SlowImage from "../../components/chaos/SlowImage.jsx";
+import subwaySurfers from "../../assets/videos/subway_surfer.mp4";
 import useBooking from "../../context/useBooking.js";
 import "./Flights.css";
 import LuggageDodgeGame from "./LuggageDodgeGame.jsx";
@@ -140,6 +141,11 @@ export default function Flights() {
       {loading ? (
         <>
           <LuggageDodgeGame durationMs={loadDurationMs} />
+          {/* From docs/references/01: something to watch while flights "load". Muted, so it can't fight other sounds. */}
+          <section className="panel flights-subway">
+            <h3 className="panel-title purple">Subway Surfers (loading flights... still)</h3>
+            <video className="flights-subway__video" src={subwaySurfers} autoPlay muted loop playsInline aria-hidden="true" />
+          </section>
           {config.slowImage && (
             <SlowImage duration={loadDurationMs} maxOpacity={0.55} />
           )}
