@@ -31,7 +31,7 @@ Build `ForcefieldButton.jsx`: track the mouse with `mousemove` on `window`; meas
 Draw a visible shimmering forcefield ring around it. Make it easier when `demoMode` (higher `maxSpeed`). On touch devices (no mouse), make it dodge the first 2 taps then allow it. Tell DIN it's ready.
 **Done when:** the button looks shielded, works on touch, and is demo-friendly.
 
-### - [ ] Task 3: FireTransition
+### - [x] Task 3: FireTransition
 Build `FireTransition.jsx`: full-screen fire effect (CSS gradients/animated emoji 🔥 or a GIF you add to assets) with a whoosh sound, ~1.5s, then `onDone()`. Make sure it only calls `onDone` once.
 **Done when:** rendering `<FireTransition onDone={next} />` plays the effect and moves on.
 

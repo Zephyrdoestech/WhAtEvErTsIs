@@ -1,0 +1,167 @@
+/* OWNER: RICKS — full-screen FireTransition overlay */
+@keyframes fire-backdrop-surge {
+  0% {
+    opacity: 0;
+  }
+  18% {
+    opacity: 1;
+  }
+  74% {
+    opacity: 1;
+  }
+  100% {
+    opacity: 0;
+  }
+}
+
+@keyframes fire-wall-rise {
+  0% {
+    transform: translateY(105%) scaleY(0.8);
+    opacity: 0.2;
+  }
+  30% {
+    transform: translateY(0%) scaleY(1.12);
+    opacity: 1;
+  }
+  72% {
+    transform: translateY(-6%) scaleY(1.18);
+    opacity: 1;
+  }
+  100% {
+    transform: translateY(-28%) scaleY(1.3);
+    opacity: 0;
+  }
+}
+
+@keyframes fire-flicker {
+  0%,
+  100% {
+    filter: brightness(1) saturate(1.15);
+  }
+  33% {
+    filter: brightness(1.22) saturate(1.35);
+  }
+  66% {
+    filter: brightness(0.92) saturate(1.25);
+  }
+}
+
+@keyframes fire-emoji-rise {
+  0% {
+    transform: translate3d(0, 115vh, 0) scale(var(--flame-scale, 1)) rotate(var(--flame-rot, 0deg));
+    opacity: 0;
+  }
+  15% {
+    opacity: 1;
+  }
+  78% {
+    opacity: 0.95;
+  }
+  100% {
+    transform: translate3d(var(--flame-drift, 0px), -25vh, 0)
+      scale(calc(var(--flame-scale, 1) * 1.25))
+      rotate(calc(var(--flame-rot, 0deg) * -1));
+    opacity: 0;
+  }
+}
+
+@keyframes fire-ember-float {
+  0% {
+    transform: translate3d(0, 105vh, 0) scale(0.6);
+    opacity: 0;
+  }
+  20% {
+    opacity: 1;
+  }
+  100% {
+    transform: translate3d(var(--ember-drift, 24px), -10vh, 0) scale(1.2);
+    opacity: 0;
+  }
+}
+
+.fire-transition {
+  position: fixed;
+  inset: 0;
+  z-index: 9999;
+  overflow: hidden;
+  pointer-events: auto;
+  background: radial-gradient(
+    ellipse at 50% 100%,
+    rgba(255, 247, 173, 0.96) 0%,
+    rgba(255, 138, 0, 0.94) 30%,
+    rgba(220, 38, 38, 0.92) 62%,
+    rgba(28, 6, 4, 0.95) 100%
+  );
+  animation:
+    fire-backdrop-surge 1.5s ease-in-out forwards,
+    fire-flicker 0.16s linear infinite;
+}
+
+.fire-transition__wall {
+  position: absolute;
+  inset: -15% -10% 0;
+  background:
+    radial-gradient(circle at 18% 95%, rgba(255, 241, 118, 0.95) 0%, transparent 45%),
+    radial-gradient(circle at 48% 92%, rgba(255, 167, 38, 0.95) 0%, transparent 50%),
+    radial-gradient(circle at 80% 96%, rgba(255, 238, 88, 0.92) 0%, transparent 46%),
+    linear-gradient(
+      to top,
+      #fff7ae 0%,
+      #ff9800 28%,
+      #ef4444 62%,
+      rgba(127, 29, 29, 0.65) 88%,
+      transparent 100%
+    );
+  mix-blend-mode: screen;
+  animation: fire-wall-rise 1.5s cubic-bezier(0.2, 0.8, 0.25, 1) forwards;
+}
+
+.fire-transition__flames {
+  position: absolute;
+  inset: 0;
+  pointer-events: none;
+}
+
+.fire-transition__flame {
+  position: absolute;
+  top: 0;
+  left: var(--flame-x, 50%);
+  font-size: var(--flame-size, 5rem);
+  line-height: 1;
+  user-select: none;
+  filter: drop-shadow(0 0 22px rgba(255, 120, 0, 0.95));
+  animation: fire-emoji-rise var(--flame-dur, 1.35s) cubic-bezier(0.18, 0.72, 0.3, 1)
+    var(--flame-delay, 0s) forwards;
+}
+
+.fire-transition__ember {
+  position: absolute;
+  top: 0;
+  left: var(--ember-x, 50%);
+  width: var(--ember-size, 8px);
+  height: var(--ember-size, 8px);
+  border-radius: 999px;
+  background: #fef08a;
+  box-shadow: 0 0 12px 3px rgba(251, 146, 60, 0.95);
+  animation: fire-ember-float var(--ember-dur, 1.2s) ease-out var(--ember-delay, 0s) forwards;
+}
+
+.fire-transition__skip {
+  position: absolute;
+  top: 1rem;
+  right: 1rem;
+  z-index: 2;
+  padding: 0.45rem 0.9rem;
+  font-size: 0.85rem;
+  font-weight: 700;
+  color: #fff7ed;
+  background: rgba(15, 23, 42, 0.55);
+  border: 1px solid rgba(255, 237, 213, 0.5);
+  border-radius: 999px;
+  cursor: pointer;
+  backdrop-filter: blur(4px);
+}
+
+.fire-transition__skip:hover {
+  background: rgba(15, 23, 42, 0.8);
+}
