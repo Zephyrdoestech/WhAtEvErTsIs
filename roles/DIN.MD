@@ -47,7 +47,7 @@ Create `server/routes/flights.js` and mount it: `GET /api/flights?from=&to=&date
 Change `src/api/client.js` to call the real endpoints with `fetch('/api/...')`, but fall back to the mocks in `mocks.js` if the server is down or errors, so the demo never dies. Keep every function signature the same. Tell the team it's live.
 **Done when:** with the server running, stages get real data; with it stopped, they still work on mocks.
 
-### - [ ] Task 7: Stage 10: payment page
+### - [x] Task 7: Stage 10: payment page
 Build `Payment.jsx`: show the quote line items (`getQuote(booking)`), with new hidden charges appearing one by one while the user watches. Payment methods: "Card (demo)", "GCrash", "Pay with Exposure". Show a clear "DEMO: no real payment" note; don't validate or store real card numbers.
 **Done when:** Stage 10 looks like a checkout and the total keeps growing.
 
