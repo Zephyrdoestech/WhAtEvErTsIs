@@ -72,8 +72,6 @@ export default function Flights() {
 
   useEffect(() => {
     let cancelled = false;
-    setApiDone(false);
-    setMinigameDone(false);
 
     const timerId = window.setTimeout(() => {
       if (!cancelled) {
