@@ -46,6 +46,16 @@ export const CONTROLLER_FEATURES = [
     defaultEnabled: true,
   },
   {
+    key: "flashbang",
+    label: "Eminem Flashbang & Flashed Cat",
+    category: "global",
+    badge: "CHAOS · ALL PAGES",
+    icon: "💥",
+    description:
+      "Occasional Eminem pop, brief white flash, flashbang sound, and flashed-cat afterimage. Skipped when reduced motion is enabled.",
+    defaultEnabled: true,
+  },
+  {
     key: "kachow",
     label: "Lightning McQueen 'KA-CHOW!' Drive-By",
     category: "global",

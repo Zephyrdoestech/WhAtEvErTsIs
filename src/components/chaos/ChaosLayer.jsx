@@ -7,6 +7,7 @@ import AdPopup from "./AdPopup.jsx";
 import Airlper from "./Airlper.jsx";
 import BlackoutOverlay from "./BlackoutOverlay.jsx";
 import ChaosController from "./ChaosController.jsx";
+import Flashbang from "./Flashbang.jsx";
 import "./ChaosLayer.css";
 import {
   isControllerRoute,
@@ -137,6 +138,7 @@ export default function ChaosLayer() {
       {config.airlper && <Airlper />}
       {config.heeHee && <HeeHee muted={muted} />}
       {config.blackout && !reducedMotion && <BlackoutOverlay />}
+      {config.flashbang && !reducedMotion && <Flashbang muted={muted} />}
       {config.kachow && <KachowTransition muted={muted} />}
       {config.slowImage && stage !== 4 && (
         <SlowImage

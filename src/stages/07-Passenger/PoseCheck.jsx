@@ -90,6 +90,8 @@ export default function PoseCheck({ onDone, demoMode = false }) {
       if (!active.current || ticket !== request.current) return;
       setMessage("Your refusal has been noted. Pose anyway.");
       setPhase("ready");
+    } finally {
+      running.current = false;
     }
   }
 
@@ -121,6 +123,7 @@ export default function PoseCheck({ onDone, demoMode = false }) {
       {phase === "idle" && <button type="button" className="btn go" onClick={enableCamera}>Use camera preview</button>}
       {(phase === "idle" || phase === "requesting") && <button type="button" className="btn" onClick={noCamera}>Continue without camera</button>}
       {phase === "ready" && <button type="button" className="btn go" onClick={() => { if (phase === "ready") setPhase("counting"); }}>Start 3-2-1 pose check</button>}
+      {phase === "ready" && !hasCamera && <button type="button" className="btn" onClick={enableCamera}>Try camera again</button>}
       {phase !== "done" && <button type="button" className="btn" onClick={skip}>Skip pose check</button>}
       {phase === "done" && <button type="button" className="btn go" onClick={() => {
         if (finished.current) return;

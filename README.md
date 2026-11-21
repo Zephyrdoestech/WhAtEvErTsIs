@@ -27,10 +27,8 @@ Useful URLs:
 | URL | What it does |
 |---|---|
 | `http://localhost:5173/?demo` | **Demo mode:** shortens every timer (ad, holds, popups) for a live presentation |
-| `http://localhost:5173/?stage=7` | Jump straight to stage 7 (any number 1-12) |
+| `http://localhost:5173/?stage=7` | Open stage 7 directly; save the passenger form to reach the airplane pose and camera check |
 | `http://localhost:5173/?stage=12&demo` | Combine both |
-
-In development there's also a **DEV: jump to** dropdown in the top-left corner. It doesn't appear in the production build (`npm run build`).
 
 ## The 12 stages
 
@@ -49,9 +47,9 @@ In development there's also a **DEV: jump to** dropdown in the top-left corner. 
 | 11 | Confirmation | "Confirmed-ish" e-ticket to ???, gate 404, Certified Survivor | Jon Vincent |
 | 12 | Manage Booking | Modify sends you back to a random stage; Cancel asks "Are you sure?" 3-5 times; both loop you | Kyle |
 
-On every page (except Stage 01, so the Shea ad plays undisturbed): the frustration meter (😊 → 💀), Ye Olde Airlper (a chatbot that forgets your name), pop-up ads, "hee hee", brownouts and Lightning McQueen driving past. Press **Esc** during a brownout to turn the lights back on; every popup can be closed. Devices set to *reduce motion* get no brownouts.
+On every page (except Stage 01, so the Shea ad plays undisturbed): the frustration meter (😊 → 💀), Ye Olde Airlper (a chatbot that forgets your name), pop-up ads, "hee hee", occasional flashbangs, brownouts and Lightning McQueen driving past. Press **Esc** during a brownout to turn the lights back on; every popup can be closed. Devices set to *reduce motion* get no flashbangs or brownouts.
 
-**Feature switchboard:** open `http://localhost:5173/controller` to turn any chaos feature on or off, including **Master Sound Mute**, which silences every chaos sound (hee hee, KA-CHOW, the forcefield dodge and the fire whoosh). Settings are saved in that browser.
+**Feature switchboard:** open `http://localhost:5173/controller` to turn any chaos feature on or off, including **Master Sound Mute**, which silences every chaos sound (hee hee, flashbang, KA-CHOW, the forcefield dodge and the fire whoosh). Settings are saved in that browser.
 
 ## 2-minute demo route
 
