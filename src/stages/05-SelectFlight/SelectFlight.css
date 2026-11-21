@@ -1,1 +1,21 @@
 /* OWNER: RICKS — styles for Stage 05 only */
+.select-flight-action {
+  display: flex;
+  justify-content: center;
+  padding: 2rem 0;
+}
+
+.select-flight-btn {
+  padding: 0.85rem 1.6rem;
+  font-size: 1rem;
+  font-weight: 700;
+  color: #ffffff;
+  background: #0b2a5b;
+  border: none;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.select-flight-btn:hover {
+  background: #163f80;
+}
