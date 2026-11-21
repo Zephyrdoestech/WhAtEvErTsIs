@@ -23,7 +23,7 @@
 - You read `booking.flight` (set by DAR on Stage 04) and write `booking.seat`, `booking.quote`.
 
 ## Roadmap
-### - [ ] Task 1: ForcefieldButton v1
+### - [x] Task 1: ForcefieldButton v1
 Build `ForcefieldButton.jsx`: track the mouse with `mousemove` on `window`; measure cursor speed (px/ms). If the cursor is within ~120px and moving faster than `maxSpeed`, the button jumps to a random nearby spot (stay inside the viewport), plays a "nya" sound (add `src/assets/audios/nya.mp3`) and calls `onDodge()`. Slow approach lets you click it. Pass other props through to the `<button>`.
 **Done when:** moving fast toward the button makes it flee with a sound; creeping slowly lets you click.
 
