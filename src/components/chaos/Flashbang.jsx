@@ -1,4 +1,4 @@
-// Random Eminem flashbang -> blinding whiteout + fading flashed cat overlay.
+// Random Eminem flashbang -> brief pure-white blind + Flashbang Sfx -> white fades out to reveal flashed cat.
 import { useCallback, useEffect, useRef, useState } from "react";
 import useBooking from "../../context/useBooking.js";
 import eminemImg from "../../assets/images/emenim flashbang.jpg";
@@ -7,7 +7,7 @@ import flashbangSfx from "../../assets/audios/sfx/Flashbang Sfx.mp3";
 import "./Flashbang.css";
 
 const THROW_DURATION_MS = 650;
-const BLIND_DURATION_MS = 5150;
+const BLIND_DURATION_MS = 5850;
 
 function randomBetween(min, max) {
   return min + Math.random() * (max - min);
@@ -55,20 +55,21 @@ export default function Flashbang({ muted = false }) {
       setPhase("throw");
       bumpFrustration?.(4);
 
-      if (!mutedRef.current) {
-        try {
-          stopAudio();
-          const audio = new Audio(flashbangSfx);
-          audio.volume = 0.85;
-          audioRef.current = audio;
-          audio.play().catch(() => {});
-        } catch {
-          // Ignore autoplay/headless audio errors
-        }
-      }
-
       const blindTimer = window.setTimeout(() => {
+        // Trigger full-screen pure white flash AND play Flashbang Sfx at the exact same moment.
         setPhase("blind");
+
+        if (!mutedRef.current) {
+          try {
+            stopAudio();
+            const audio = new Audio(flashbangSfx);
+            audio.volume = 0.85;
+            audioRef.current = audio;
+            audio.play().catch(() => {});
+          } catch {
+            // Ignore autoplay/headless audio errors
+          }
+        }
 
         const endTimer = window.setTimeout(() => {
           stopAudio();
@@ -87,10 +88,13 @@ export default function Flashbang({ muted = false }) {
     };
   }, [stage, demoMode, phase, bumpFrustration]);
 
-  useEffect(() => () => {
-    clearAllTimers();
-    stopAudio();
-  }, []);
+  useEffect(
+    () => () => {
+      clearAllTimers();
+      stopAudio();
+    },
+    []
+  );
 
   if (phase === "idle") return null;
 
@@ -109,8 +113,9 @@ export default function Flashbang({ muted = false }) {
 
       {phase === "blind" && (
         <div className="flashbang__blind-wrap">
-          <div className="flashbang__whiteout" />
+          {/* Flashed cat sits underneath the solid white flash so it appears as the white fades out */}
           <img src={flashedCatImg} alt="Blinded cat" className="flashbang__cat" />
+          <div className="flashbang__whiteout" />
         </div>
       )}
 
