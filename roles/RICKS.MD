@@ -59,6 +59,6 @@ Build `Review.jsx`: itinerary summary from `booking` (route, flight, seat, passe
 Load `getTerms()` into a fixed-height scroll box. Measure scroll speed: scrolling too fast resets it to the top ("Please read responsibly"). The "I agree" checkbox only enables after reaching the bottom slowly. `bumpFrustration` on each reset.
 **Done when:** you can only agree by scrolling slowly to the very end.
 
-### - [ ] Task 10: Stage 09: agree → Ka-chow
+### - [x] Task 10: Stage 09: agree → Ka-chow
 Checking "I agree" + Continue plays `<KachowTransition onDone={next} />` and goes to Stage 10.
 **Done when:** Stage 09 ends with the Ka-chow transition into Payment.

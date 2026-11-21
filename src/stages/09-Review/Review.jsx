@@ -2,6 +2,7 @@
 import { useEffect, useRef, useState } from "react";
 import useBooking from "../../context/useBooking.js";
 import { getQuote, getTerms } from "../../api/client.js";
+import KachowTransition from "../../components/transitions/KachowTransition.jsx";
 import "./Review.css";
 
 const FALLBACK_SUPPLEMENTAL_TERMS = [
@@ -49,6 +50,7 @@ export default function Review() {
   const [scrollProgress, setScrollProgress] = useState(0);
   const [reachedBottom, setReachedBottom] = useState(false);
   const [agreed, setAgreed] = useState(false);
+  const [showKachow, setShowKachow] = useState(false);
   const [termsWarning, setTermsWarning] = useState("");
   const [resetCount, setResetCount] = useState(0);
 
@@ -362,13 +364,15 @@ export default function Review() {
           <button
             type="button"
             className="review-continue-btn"
-            disabled={!agreed}
-            onClick={next}
+            disabled={!agreed || showKachow}
+            onClick={() => setShowKachow(true)}
           >
             {agreed ? "Continue to Payment →" : "Read & Agree to Continue"}
           </button>
         </aside>
       </div>
+
+      {showKachow && <KachowTransition onDone={next} />}
     </section>
   );
 }
