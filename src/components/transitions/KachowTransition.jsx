@@ -1,99 +1,113 @@
-// OWNER: RICKS — see RICKS.MD. Used after agreeing in Stage 09.
-// Contract: <KachowTransition onDone={next} />
-import { useCallback, useEffect, useRef } from "react";
+// OWNER: RICKS — see RICKS.MD (Task 4).
+// Non-blocking ambient Lightning McQueen drive-by: crosses the full screen from left or right
+// at varying intervals and plays kachow.mp3 each time.
+import { useEffect, useRef, useState } from "react";
+import useBooking from "../../context/useBooking.js";
 import lightningImg from "../../assets/images/Lightning-McQueen.png";
 import kachowSound from "../../assets/audios/kachow.mp3";
 import "./KachowTransition.css";
 
-const DURATION_MS = 1500;
+function randomBetween(min, max) {
+  return min + Math.random() * (max - min);
+}
 
-const SPEED_LINES = [
-  { y: "14%", w: "42vw", h: "5px", dur: "0.55s", delay: "0s" },
-  { y: "26%", w: "58vw", h: "8px", dur: "0.48s", delay: "0.08s" },
-  { y: "39%", w: "36vw", h: "4px", dur: "0.6s", delay: "0.14s" },
-  { y: "52%", w: "64vw", h: "10px", dur: "0.44s", delay: "0.04s" },
-  { y: "66%", w: "48vw", h: "6px", dur: "0.52s", delay: "0.12s" },
-  { y: "78%", w: "54vw", h: "7px", dur: "0.5s", delay: "0.06s" },
-  { y: "88%", w: "38vw", h: "5px", dur: "0.58s", delay: "0.16s" },
-];
-
-export default function KachowTransition({ onDone, muted = false }) {
-  const doneRef = useRef(false);
-  const onDoneRef = useRef(onDone);
+export default function KachowTransition({ muted = false }) {
+  const { demoMode } = useBooking();
+  const [run, setRun] = useState(null);
+  const runIdRef = useRef(0);
   const audioRef = useRef(null);
+  const mutedRef = useRef(muted);
 
   useEffect(() => {
-    onDoneRef.current = onDone;
-  }, [onDone]);
-
-  const finish = useCallback(() => {
-    if (doneRef.current) return;
-    doneRef.current = true;
-    if (audioRef.current) {
+    mutedRef.current = muted;
+    if (muted && audioRef.current) {
       audioRef.current.pause();
       audioRef.current = null;
     }
-    onDoneRef.current?.();
-  }, []);
+  }, [muted]);
 
   useEffect(() => {
-    if (!muted) {
+    let waitTimer = null;
+    let clearTimer = null;
+    let cancelled = false;
+
+    function playKachowAudio() {
+      if (mutedRef.current) return;
       try {
+        if (audioRef.current) {
+          audioRef.current.pause();
+        }
         const audio = new Audio(kachowSound);
         audio.volume = 0.9;
         audioRef.current = audio;
         audio.play().catch(() => {});
       } catch {
-        // Ignore autoplay or headless audio errors
+        // Ignore browser autoplay or headless audio errors
       }
     }
 
-    const timer = window.setTimeout(finish, DURATION_MS);
+    function scheduleNextRun(isFirst) {
+      const delayMs = isFirst
+        ? demoMode
+          ? randomBetween(1000, 2200)
+          : randomBetween(1500, 3500)
+        : demoMode
+          ? randomBetween(3000, 7000)
+          : randomBetween(5000, 14000);
+
+      waitTimer = window.setTimeout(() => {
+        if (cancelled) return;
+
+        const direction = Math.random() < 0.5 ? "ltr" : "rtl";
+        const durationMs = Math.round(randomBetween(1250, 1750));
+        const topVh = Math.round(randomBetween(14, 72));
+        runIdRef.current += 1;
+
+        setRun({
+          id: runIdRef.current,
+          direction,
+          durationMs,
+          topVh,
+        });
+        playKachowAudio();
+
+        clearTimer = window.setTimeout(() => {
+          if (cancelled) return;
+          setRun(null);
+          scheduleNextRun(false);
+        }, durationMs + 120);
+      }, delayMs);
+    }
+
+    scheduleNextRun(true);
+
     return () => {
-      window.clearTimeout(timer);
+      cancelled = true;
+      if (waitTimer) window.clearTimeout(waitTimer);
+      if (clearTimer) window.clearTimeout(clearTimer);
       if (audioRef.current) {
         audioRef.current.pause();
         audioRef.current = null;
       }
     };
-  }, [finish, muted]);
+  }, [demoMode]);
+
+  if (!run) return null;
 
   return (
-    <div className="kachow-transition" role="status" aria-live="polite" aria-label="Ka-chow!">
-      <div className="kachow-transition__lines" aria-hidden="true">
-        {SPEED_LINES.map((line, index) => (
-          <span
-            key={`line-${index}`}
-            className="kachow-transition__line"
-            style={{
-              "--line-y": line.y,
-              "--line-w": line.w,
-              "--line-h": line.h,
-              "--line-dur": line.dur,
-              "--line-delay": line.delay,
-            }}
-          />
-        ))}
+    <div className="kachow-layer" aria-hidden="true">
+      <div
+        key={run.id}
+        className={`kachow-runner kachow-runner--${run.direction}`}
+        style={{
+          "--kachow-top": `${run.topVh}vh`,
+          "--kachow-dur": `${run.durationMs}ms`,
+        }}
+      >
+        <div className="kachow-runner__trail" />
+        <img src={lightningImg} alt="" className="kachow-runner__car" />
+        <span className="kachow-runner__callout display">KA-CHOW!</span>
       </div>
-
-      <div className="kachow-transition__trail" aria-hidden="true" />
-      <img
-        src={lightningImg}
-        alt=""
-        aria-hidden="true"
-        className="kachow-transition__car"
-      />
-
-      <div className="kachow-transition__text-wrap">
-        <p className="kachow-transition__text">⚡ KA-CHOW! ⚡</p>
-        <span className="kachow-transition__gleam" aria-hidden="true">
-          ✨
-        </span>
-      </div>
-
-      <button type="button" className="kachow-transition__skip" onClick={finish}>
-        Skip
-      </button>
     </div>
   );
 }

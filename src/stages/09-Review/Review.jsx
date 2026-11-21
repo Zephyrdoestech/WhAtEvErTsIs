@@ -52,7 +52,6 @@ export default function Review() {
   const [scrollProgress, setScrollProgress] = useState(0);
   const [reachedBottom, setReachedBottom] = useState(false);
   const [agreed, setAgreed] = useState(false);
-  const [showKachow, setShowKachow] = useState(false);
   const [termsWarning, setTermsWarning] = useState("");
   const [resetCount, setResetCount] = useState(0);
 
@@ -204,9 +203,8 @@ export default function Review() {
 
             <div
               ref={termsBoxRef}
-              className={`terms-box ${termsWarning ? "terms-box--warned" : ""} ${
-                reachedBottom ? "terms-box--done" : ""
-              }`}
+              className={`terms-box ${termsWarning ? "terms-box--warned" : ""} ${reachedBottom ? "terms-box--done" : ""
+                }`}
               onScroll={handleTermsScroll}
               tabIndex={0}
               aria-label="Terms and Punishments"
@@ -245,8 +243,8 @@ export default function Review() {
               <button
                 type="button"
                 className={`btn ${agreed ? "go" : ""} review-agree-btn`}
-                disabled={!agreed || showKachow}
-                onClick={() => setShowKachow(true)}
+                disabled={!agreed}
+                onClick={next}
               >
                 {agreed ? "I AGREE — CONTINUE TO PAYMENT →" : "I AGREE (locked)"}
               </button>
@@ -352,7 +350,7 @@ export default function Review() {
         </section>
       </div>
 
-      {showKachow && <KachowTransition onDone={next} />}
+      <KachowTransition />
     </section>
   );
 }

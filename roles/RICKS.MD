@@ -35,9 +35,9 @@ Draw a visible shimmering forcefield ring around it. Make it easier when `demoMo
 Build `FireTransition.jsx`: full-screen fire effect (CSS gradients/animated emoji 🔥 or a GIF you add to assets) with a whoosh sound, ~1.5s, then `onDone()`. Make sure it only calls `onDone` once.
 **Done when:** rendering `<FireTransition onDone={next} />` plays the effect and moves on.
 
-### - [x] Task 4: KachowTransition
-Build `KachowTransition.jsx`: a race-car streak across the screen with big "KA-CHOW!" text and a sound (add the audio file), ~1.5s, then `onDone()`.
-**Done when:** rendering it plays the streak + sound and then moves on.
+### - [x] Task 4: KachowTransition (Lightning McQueen random drive-by)
+Build `KachowTransition.jsx`: non-blocking overlay where `Lightning-McQueen.png` zooms across the entire screen from either left or right at varying intervals and plays `kachow.mp3` each time.
+**Done when:** Lightning McQueen periodically runs across the whole screen from left or right with the Ka-chow sound.
 
 ### - [x] Task 5: Stage 05: select flight
 Build `SelectFlight.jsx`: show the chosen `booking.flight` as a detailed card (times, price, the absurd conditions). The Select button is a `ForcefieldButton` with `onDodge={() => bumpFrustration(3)}`. On click, show `<FireTransition onDone={next} />`.
