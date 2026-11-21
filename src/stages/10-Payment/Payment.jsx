@@ -90,10 +90,16 @@ export default function Payment() {
   const [method, setMethod] = useState("card");
 
   // Payment method states
-  const [digitScreen, setDigitScreen] = useState(1);
-  const [cardDigits, setCardDigits] = useState(Array(16).fill(""));
-  const [cvvOfCvv, setCvvOfCvv] = useState("");
-  const [gcashNumber, setGcashNumber] = useState("");
+  const [cardDigits, setCardDigits] = useState([]);
+  const [rolledDigit, setRolledDigit] = useState(() => Math.floor(Math.random() * 10));
+  const [rolledCvv, setRolledCvv] = useState(() =>
+    String(Math.floor(Math.random() * 1000)).padStart(3, "0")
+  );
+  const [cvvConfirmed, setCvvConfirmed] = useState(false);
+  const [gcashValue, setGcashValue] = useState(0);
+  const [gcashOp, setGcashOp] = useState("-");
+  const [gcashOperand, setGcashOperand] = useState("1");
+  const [gcashError, setGcashError] = useState("");
   const [gcashPin, setGcashPin] = useState("");
   const [pigeonName, setPigeonName] = useState("");
   const [pigeonWindow, setPigeonWindow] = useState("3:00 AM (approx.)");
@@ -134,19 +140,36 @@ export default function Payment() {
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
-  // Add new hidden charges one by one while the user watches, gradually increasing frustration
+  // Keep adding hidden charges indefinitely the longer the user takes
   useEffect(() => {
     let cursor = 0;
+    const ENDLESS_FEE_LABELS = [
+      "Extended Indecision Fee",
+      "Still Here? Surcharge",
+      "Chair Sitting Rental",
+      "Server Hamster Overtime",
+      "Wifi Breathing Fee",
+      "Patience Depreciation Tax",
+      "Mouse Battery Drain Fee",
+      "Emotional Damage Insurance",
+    ];
     const timer = setInterval(() => {
-      if (cursor >= EXTRA_CREEPING_FEES.length) return;
-      const nextFee = EXTRA_CREEPING_FEES[cursor];
+      let nextFee;
+      if (cursor < EXTRA_CREEPING_FEES.length) {
+        nextFee = EXTRA_CREEPING_FEES[cursor];
+      } else {
+        const extraRound = cursor - EXTRA_CREEPING_FEES.length + 1;
+        const label = ENDLESS_FEE_LABELS[(extraRound - 1) % ENDLESS_FEE_LABELS.length];
+        const amount = 49 + ((extraRound * 37) % 350);
+        nextFee = { label: `${label} #${extraRound}`, amount };
+      }
       cursor += 1;
       setItems((prev) => {
         const updated = [...prev, { ...nextFee, isNew: true }];
         setNewestIdx(updated.length - 1);
         return updated;
       });
-      raiseFrustration(5);
+      raiseFrustration(4);
     }, 3500);
 
     return () => clearInterval(timer);
@@ -289,26 +312,79 @@ export default function Payment() {
     raiseFrustration(3);
   };
 
-  const handleCardDigitChange = (val) => {
-    const clean = val.replace(/\D/g, "").slice(-1);
-    setCardDigits((prev) => {
-      const copy = [...prev];
-      copy[digitScreen - 1] = clean;
-      return copy;
-    });
+  const handleShuffleDigit = () => {
+    setRolledDigit(Math.floor(Math.random() * 10));
+    raiseFrustration(1);
   };
 
-  const handleNextCardDigit = () => {
+  const handleConfirmDigit = () => {
+    if (cardDigits.length >= 16) return;
+    setCardDigits((prev) => [...prev, String(rolledDigit)]);
+    setRolledDigit(Math.floor(Math.random() * 10));
     raiseFrustration(2);
-    setDigitScreen((prev) => (prev >= 16 ? 1 : prev + 1));
   };
 
-  const handlePrevCardDigit = () => {
-    setDigitScreen((prev) => (prev <= 1 ? 16 : prev - 1));
+  const handleUndoDigit = () => {
+    setCardDigits((prev) => prev.slice(0, -1));
   };
+
+  const handleShuffleCvv = () => {
+    setCvvConfirmed(false);
+    setRolledCvv(String(Math.floor(Math.random() * 1000)).padStart(3, "0"));
+    raiseFrustration(1);
+  };
+
+  const handleToggleCvvConfirm = () => {
+    setCvvConfirmed((prev) => !prev);
+    raiseFrustration(2);
+  };
+
+  const handleGcashApply = () => {
+    const operand = Number(gcashOperand);
+    if (!Number.isFinite(operand)) {
+      setGcashError("Enter a valid number to calculate.");
+      return;
+    }
+    if (gcashOp === "/" && operand === 0) {
+      setGcashError("Cannot divide by 0 (nice try).");
+      raiseFrustration(3);
+      return;
+    }
+    setGcashError("");
+    setGcashValue((prev) => {
+      let nextVal = prev;
+      if (gcashOp === "-") nextVal = prev - operand;
+      else if (gcashOp === "*") nextVal = prev * operand;
+      else if (gcashOp === "/") nextVal = Math.trunc(prev / operand);
+      // Keep within 11-digit integer bounds
+      return Math.max(-99999999999, Math.min(99999999999, Math.trunc(nextVal)));
+    });
+    raiseFrustration(2);
+  };
+
+  const formattedGcashNumber = `${gcashValue < 0 ? "-" : ""}${String(Math.abs(gcashValue)).padStart(11, "0")}`;
+
+  const formattedCardPreview = Array.from({ length: 16 }, (_, idx) =>
+    idx < cardDigits.length ? cardDigits[idx] : "_"
+  )
+    .join("")
+    .replace(/(.{4})/g, "$1 ")
+    .trim();
 
   const holdSecondsDisplay = (holdMs / 1000).toFixed(1);
   const holdPercent = Math.min(100, Math.round((holdMs / targetHoldMs) * 100));
+  const holdRatio = Math.min(1, holdMs / targetHoldMs);
+  // Interpolate Pay Now button from green (#33cc33) to red (#cc0000) the longer it is held
+  const payBtnR = Math.round(51 + (204 - 51) * holdRatio);
+  const payBtnG = Math.round(204 - 204 * holdRatio);
+  const payBtnB = Math.round(51 - 51 * holdRatio);
+  const payBtnStyle =
+    holdMs > 0
+      ? {
+          backgroundColor: `rgb(${payBtnR}, ${payBtnG}, ${payBtnB})`,
+          color: holdRatio > 0.55 ? "#ffffff" : "#000000",
+        }
+      : undefined;
 
   return (
     <div className="payment-stage-canvas" data-node-id="28:591" data-name="Screen 3 · Terms & Punishments + Payment">
@@ -394,64 +470,141 @@ export default function Payment() {
               {method === "card" && (
                 <>
                   <p className="payment-card-prompt" data-node-id="28:651">
-                    {`Card number (enter BACKWARDS, one digit per screen):  digit ${digitScreen} of 16`}
+                    {`Card number (no typing allowed — shuffle until your digit appears): ${cardDigits.length} of 16 selected`}
                   </p>
+
+                  <div className="payment-card-preview" aria-label="Selected card digits preview">
+                    {formattedCardPreview}
+                  </div>
+
                   <div className="payment-card-digit-row" data-node-id="28:652">
-                    <input
-                      type="text"
-                      inputMode="numeric"
-                      maxLength={1}
-                      className="payment-digit-input"
-                      data-node-id="28:653"
-                      placeholder="0"
-                      value={cardDigits[digitScreen - 1]}
-                      onChange={(e) => handleCardDigitChange(e.target.value)}
-                      aria-label="Single backwards card digit"
-                    />
-                    <button type="button" className="payment-digit-btn" onClick={handlePrevCardDigit}>
-                      Prev
+                    <div className="payment-shuffle-display" data-node-id="28:653" aria-live="polite">
+                      {rolledDigit}
+                    </div>
+                    <button
+                      type="button"
+                      className="payment-digit-btn"
+                      onClick={handleShuffleDigit}
+                      disabled={cardDigits.length >= 16}
+                    >
+                      Shuffle Digit
                     </button>
-                    <button type="button" className="payment-digit-btn" onClick={handleNextCardDigit}>
-                      Next digit
+                    <button
+                      type="button"
+                      className="payment-digit-btn payment-digit-btn--confirm"
+                      onClick={handleConfirmDigit}
+                      disabled={cardDigits.length >= 16}
+                    >
+                      This is correct ✓
                     </button>
-                    <p className="payment-screens-remaining" data-node-id="28:655">
-                      {`<- ${16 - digitScreen} more screens to go`}
-                    </p>
+                    {cardDigits.length > 0 && (
+                      <button type="button" className="payment-digit-btn" onClick={handleUndoDigit}>
+                        Undo
+                      </button>
+                    )}
+                    {cardDigits.length >= 16 ? (
+                      <p className="payment-confirmed-tag">All 16 digits selected!</p>
+                    ) : (
+                      <p className="payment-screens-remaining" data-node-id="28:655">
+                        {`<- ${16 - cardDigits.length} more digits to go`}
+                      </p>
+                    )}
                   </div>
 
                   <p className="payment-cvv-label" data-node-id="28:656">
-                    CVV: please enter the CVV of your CVV
+                    CVV (shuffle 3 digits until it matches yours):
                   </p>
-                  <input
-                    type="password"
-                    maxLength={6}
-                    className="payment-cvv-input"
-                    data-node-id="28:657"
-                    placeholder="***"
-                    value={cvvOfCvv}
-                    onChange={(e) => setCvvOfCvv(e.target.value)}
-                    aria-label="CVV of your CVV"
-                  />
+                  <div className="payment-card-digit-row">
+                    <div className="payment-shuffle-display" data-node-id="28:657" aria-live="polite">
+                      {rolledCvv}
+                    </div>
+                    <button
+                      type="button"
+                      className="payment-digit-btn"
+                      onClick={handleShuffleCvv}
+                    >
+                      Shuffle CVV
+                    </button>
+                    <button
+                      type="button"
+                      className="payment-digit-btn payment-digit-btn--confirm"
+                      onClick={handleToggleCvvConfirm}
+                    >
+                      {cvvConfirmed ? "CVV Confirmed ✓" : "Yes, this is my CVV ✓"}
+                    </button>
+                    {cvvConfirmed && (
+                      <p className="payment-confirmed-tag">Locked in: {rolledCvv}</p>
+                    )}
+                  </div>
                 </>
               )}
 
               {method === "gcash" && (
                 <>
                   <p className="payment-card-prompt">
-                    GCash Mobile Number (must be memorized without looking at your phone):
+                    GCash Mobile Number (starts at 00000000000 — calculate your number without using +):
                   </p>
-                  <div className="payment-card-digit-row">
-                    <input
-                      type="tel"
-                      maxLength={11}
-                      className="payment-cvv-input"
-                      style={{ width: "180px" }}
-                      placeholder="09XXXXXXXXX"
-                      value={gcashNumber}
-                      onChange={(e) => setGcashNumber(e.target.value.replace(/\D/g, ""))}
-                      aria-label="GCash mobile number"
-                    />
+                  <div className="payment-card-preview" aria-label="GCash calculated phone number">
+                    {formattedGcashNumber}
                   </div>
+                  <div className="payment-card-digit-row">
+                    <button
+                      type="button"
+                      className="payment-digit-btn"
+                      onClick={() => {
+                        setGcashError("Addition (+) is forbidden. Use -, ×, or ÷ only.");
+                        raiseFrustration(4);
+                      }}
+                      title="Addition is disabled"
+                    >
+                      + (NO)
+                    </button>
+                    {[
+                      { op: "-", label: "−" },
+                      { op: "*", label: "×" },
+                      { op: "/", label: "÷" },
+                    ].map((item) => (
+                      <button
+                        key={item.op}
+                        type="button"
+                        className={`payment-digit-btn ${
+                          gcashOp === item.op ? "payment-digit-btn--confirm" : ""
+                        }`}
+                        onClick={() => {
+                          setGcashOp(item.op);
+                          setGcashError("");
+                        }}
+                      >
+                        {item.label}
+                      </button>
+                    ))}
+                    <input
+                      type="number"
+                      className="payment-cvv-input"
+                      style={{ width: "130px" }}
+                      value={gcashOperand}
+                      onChange={(e) => setGcashOperand(e.target.value)}
+                      aria-label="Calculation operand"
+                    />
+                    <button
+                      type="button"
+                      className="payment-digit-btn payment-digit-btn--confirm"
+                      onClick={handleGcashApply}
+                    >
+                      Calculate
+                    </button>
+                    <button
+                      type="button"
+                      className="payment-digit-btn"
+                      onClick={() => {
+                        setGcashValue(0);
+                        setGcashError("");
+                      }}
+                    >
+                      Reset
+                    </button>
+                  </div>
+                  {gcashError && <p className="payment-screens-remaining">{gcashError}</p>}
                   <p className="payment-cvv-label">
                     4-Digit MPIN (enter your favorite number, we won&apos;t judge):
                   </p>
@@ -532,6 +685,7 @@ export default function Payment() {
                 <ForcefieldButton
                   type="button"
                   className={`payment-pay-now-btn ${isHolding ? "payment-pay-now-btn--holding" : ""}`}
+                  style={payBtnStyle}
                   data-node-id="28:664"
                   maxSpeed={0.4}
                   onDodge={() => raiseFrustration(3)}

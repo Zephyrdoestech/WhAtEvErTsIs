@@ -13,10 +13,10 @@ const BARCODE_WIDTHS = [
 
 const CONFETTI_COLORS = ["#cc0000", "#ffee00", "#003399", "#33cc33", "#ff66cc", "#660099"];
 
-const CONFETTI_PIECES = Array.from({ length: 42 }, (_, idx) => ({
+const CONFETTI_PIECES = Array.from({ length: 80 }, (_, idx) => ({
   id: idx,
-  left: `${(idx * 17) % 100}%`,
-  delay: `${(idx % 10) * 0.18}s`,
+  left: `${(idx * 13) % 100}%`,
+  delay: `${(idx % 12) * 0.14}s`,
   color: CONFETTI_COLORS[idx % CONFETTI_COLORS.length],
 }));
 
@@ -32,15 +32,22 @@ function getAirportCode(cityOrCode) {
 
 export default function Confirmation() {
   const { booking, updateBooking, next } = useBooking();
-  const [showConfetti, setShowConfetti] = useState(true);
+  // wave 1: immediate giant blast, wave 0: quiet pause so user thinks it's done, wave 2: ambush second blast!
+  const [congratsWave, setCongratsWave] = useState(1);
 
-  // Mark user as Certified Survivor on mount
+  // Mark user as Certified Survivor on mount + schedule fakeout second congrats blast
   useEffect(() => {
     if (!booking?.survivor) {
       updateBooking({ survivor: true });
     }
-    const timer = setTimeout(() => setShowConfetti(false), 4500);
-    return () => clearTimeout(timer);
+    const endWave1 = setTimeout(() => setCongratsWave(0), 4200);
+    const startWave2 = setTimeout(() => setCongratsWave(2), 6800);
+    const endWave2 = setTimeout(() => setCongratsWave(0), 11200);
+    return () => {
+      clearTimeout(endWave1);
+      clearTimeout(startWave2);
+      clearTimeout(endWave2);
+    };
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
 
@@ -77,12 +84,12 @@ export default function Confirmation() {
       data-node-id="28:3"
       data-name="WhAtEvErTsIs — Fictional e-ticket"
     >
-      {/* Confetti celebration */}
-      {showConfetti && (
-        <div className="eticket-confetti-layer" aria-hidden="true">
+      {/* Giant obstructive confetti + CONGRATULATIONS blast (fires again after user thinks it's done!) */}
+      {congratsWave > 0 && (
+        <div key={`wave-${congratsWave}`} className="eticket-confetti-layer" aria-hidden="true">
           {CONFETTI_PIECES.map((piece) => (
             <div
-              key={piece.id}
+              key={`${congratsWave}-${piece.id}`}
               className="eticket-confetti-piece"
               style={{
                 left: piece.left,
@@ -91,6 +98,16 @@ export default function Confirmation() {
               }}
             />
           ))}
+          <div className="eticket-congrats-blast">
+            <p className="eticket-congrats-blast-title">
+              {congratsWave === 1 ? "CONGRATULATIONS!!!" : "WAIT—CONGRATS AGAIN!!!"}
+            </p>
+            <p className="eticket-congrats-blast-sub">
+              {congratsWave === 1
+                ? "YOU SURVIVED CHECKOUT!! GOOD LUCK READING YOUR TICKET!!"
+                : "YOU THOUGHT IT WAS OVER?! CERTIFIED SURVIVOR!!"}
+            </p>
+          </div>
         </div>
       )}
 

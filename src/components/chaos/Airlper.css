@@ -33,7 +33,7 @@
 }
 
 .airlper--bottom {
-  bottom: 0;
+  bottom: env(safe-area-inset-bottom, 0px);
   align-items: flex-end;
 }
 
@@ -215,18 +215,72 @@
   border-left: 0.4rem solid var(--yellow, #ffee00);
 }
 
-@media (max-width: 360px) {
+@media (max-width: 640px) {
+  .airlper {
+    gap: 0.3rem;
+    max-width: calc(100vw - 0.35rem);
+  }
+
   .airlper__face,
   .airlper__face-button {
-    height: 8.5rem;
+    height: clamp(5.75rem, 17vh, 7.75rem);
+    max-width: 24vw;
   }
 
   .airlper__speech {
-    width: min(13rem, calc(100vw - 5.5rem));
+    width: min(12.75rem, calc(100vw - 4.75rem));
     padding: 0.45rem 0.55rem;
+    box-shadow: 3px 3px 0 var(--red, #cc0000);
+  }
+
+  .airlper__speech-heading {
+    font-size: 0.8rem;
+    margin-bottom: 0.25rem;
   }
 
   .airlper__message {
-    font-size: 0.88rem;
+    font-size: 0.82rem;
+    line-height: 1.2;
+  }
+
+  .airlper__chat {
+    margin-top: 0.35rem;
+    padding-top: 0.35rem;
+  }
+
+  .airlper__chat-prompt {
+    font-size: 0.78rem;
+    margin-bottom: 0.3rem;
+  }
+
+  .airlper__chat-form {
+    flex-wrap: wrap;
+    gap: 0.25rem;
+  }
+
+  /* 16px prevents iOS Safari from auto-zooming the page on input focus */
+  .airlper__chat-form input {
+    min-height: 2.25rem;
+    font-size: 1rem;
+    padding: 0.25rem 0.4rem;
+  }
+
+  .airlper__submit {
+    min-height: 2.25rem;
+    padding: 0.25rem 0.5rem;
+    font-size: 0.78rem;
+  }
+
+  .airlper__minimize {
+    flex: 0 0 1.85rem;
+    width: 1.85rem;
+    height: 1.85rem;
+  }
+}
+
+@media (min-width: 1024px) {
+  .airlper__speech {
+    width: 15.25rem;
+    padding: 0.65rem 0.8rem;
   }
 }

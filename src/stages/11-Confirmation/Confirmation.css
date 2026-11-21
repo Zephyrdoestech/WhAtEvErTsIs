@@ -46,34 +46,77 @@ body:has(.eticket-canvas) {
   box-sizing: border-box;
 }
 
-/* Confetti celebration overlay */
+/* Oversized obstructive confetti & congrats celebration overlay */
 .eticket-confetti-layer {
   position: fixed;
   inset: 0;
   pointer-events: none;
   z-index: 40;
   overflow: hidden;
+  display: flex;
+  align-items: center;
+  justify-content: center;
 }
 
 .eticket-confetti-piece {
   position: absolute;
-  top: -20px;
-  width: 10px;
-  height: 16px;
-  border: 1px solid #000000;
-  animation: eticket-confetti-fall 3.8s ease-in forwards;
+  top: -80px;
+  width: 44px;
+  height: 68px;
+  border: 3px solid #000000;
+  box-shadow: 4px 4px 0px rgba(0, 0, 0, 0.35);
+  animation: eticket-confetti-fall 4.2s ease-in forwards;
+}
+
+.eticket-congrats-blast {
+  position: relative;
+  z-index: 45;
+  background: #ffff00;
+  border: 6px solid #000000;
+  box-shadow: 12px 12px 0px #cc0000, -10px -10px 0px #003399;
+  padding: 28px 48px;
+  text-align: center;
+  transform: rotate(-4deg);
+  animation: eticket-congrats-pulse 0.35s ease-in-out infinite alternate;
+}
+
+.eticket-congrats-blast-title {
+  font-family: 'Bangers', Impact, cursive, sans-serif;
+  font-size: clamp(56px, 11vw, 130px);
+  line-height: 0.95;
+  color: #cc0000;
+  text-shadow: 5px 5px 0px #000000;
+  margin: 0;
+  letter-spacing: 3px;
+}
+
+.eticket-congrats-blast-sub {
+  font-family: 'Comic Neue', 'Comic Sans MS', cursive, sans-serif;
+  font-weight: 700;
+  font-size: clamp(18px, 3vw, 32px);
+  color: #003399;
+  margin: 10px 0 0;
+}
+
+@keyframes eticket-congrats-pulse {
+  0% {
+    transform: rotate(-4deg) scale(0.96);
+  }
+  100% {
+    transform: rotate(3deg) scale(1.08);
+  }
 }
 
 @keyframes eticket-confetti-fall {
   0% {
-    transform: translateY(-20px) rotate(0deg);
+    transform: translateY(-80px) rotate(0deg) scale(1);
     opacity: 1;
   }
   85% {
     opacity: 1;
   }
   100% {
-    transform: translateY(105vh) rotate(540deg);
+    transform: translateY(115vh) rotate(620deg) scale(1.3);
     opacity: 0;
   }
 }
