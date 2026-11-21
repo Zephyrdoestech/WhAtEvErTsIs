@@ -7,6 +7,7 @@ import nyaSound from "../../assets/audios/nya.mp3";
 import "./ForcefieldButton.css";
 
 const TRIGGER_RADIUS = 120;
+const SPEED_WINDOW_MS = 60;
 const DODGE_COOLDOWN_MS = 220;
 const MIN_JUMP_DIST = 130;
 const MAX_JUMP_DIST = 260;
@@ -66,7 +67,7 @@ export default function ForcefieldButton({
 }) {
   const buttonRef = useRef(null);
   const offsetRef = useRef({ x: 0, y: 0 });
-  const lastPointerRef = useRef(null);
+  const pointerSamplesRef = useRef([]);
   const lastDodgeAtRef = useRef(0);
   const onDodgeRef = useRef(onDodge);
   const audioRef = useRef(null);
@@ -90,14 +91,26 @@ export default function ForcefieldButton({
 
     function handleMouseMove(event) {
       const now = performance.now();
-      const prev = lastPointerRef.current;
-      lastPointerRef.current = { x: event.clientX, y: event.clientY, t: now };
+      const samples = pointerSamplesRef.current;
+      samples.push({ x: event.clientX, y: event.clientY, t: now });
+      while (samples.length > 1 && now - samples[0].t > SPEED_WINDOW_MS) {
+        samples.shift();
+      }
+      if (samples.length < 2) return;
 
-      if (!prev) return;
-      const dt = now - prev.t;
-      if (dt <= 0 || dt > 150) return;
+      const dt = now - samples[0].t;
+      if (dt <= 0) return;
 
-      const speed = Math.hypot(event.clientX - prev.x, event.clientY - prev.y) / dt;
+      let totalDist = 0;
+      for (let i = 1; i < samples.length; i += 1) {
+        totalDist += Math.hypot(
+          samples[i].x - samples[i - 1].x,
+          samples[i].y - samples[i - 1].y
+        );
+      }
+      if (dt < 8 && totalDist < 12) return;
+
+      const speed = totalDist / dt;
       if (speed <= maxSpeed) return;
       if (now - lastDodgeAtRef.current < DODGE_COOLDOWN_MS) return;
 
