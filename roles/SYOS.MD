@@ -30,7 +30,7 @@ Build `Captcha.jsx`: a fake image-grid CAPTCHA ("Select all squares with airplan
 Support `chain={n}`: after passing one, the next one appears ("Great! Now verify you verified."). Add at least 3 more variants: nonsense math ("What is 7 + Tuesday?"), wobbly-text typing, and "Are you a robot? Yes / No" where the first answer is always wrong. Keep the props contract unchanged.
 **Done when:** `<Captcha chain={3} />` makes the user solve 3 different CAPTCHAs before `onPass` fires.
 
-### - [ ] Task 3: Stage 02: login page UI
+### - [x] Task 3: Stage 02: login page UI
 Build `Login.jsx` with three tabs: Log in, Register, Continue as Guest. Fake fields only (no real auth). Looks like a normal airline login.
 **Done when:** Stage 02 looks believable and all three tabs show their forms.
 
