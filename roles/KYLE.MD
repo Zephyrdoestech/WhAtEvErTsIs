@@ -23,7 +23,7 @@
 - DIN sets `booking.survivor = true` on Stage 11; you show the Certified Survivor badge.
 
 ## Roadmap
-### - [ ] Task 1: Wire up the app shell
+### - [x] Task 1: Wire up the app shell
 Replace the contents of `src/App.jsx` so it just renders `<AppShell />` from `./app/AppShell.jsx`. Run `npm install` and `npm run dev`. Click through all 12 placeholder stages with the Next button and try `?stage=7`.
 **Done when:** the app shows the airline header, "Step 1 of 12", and you can click Next through all 12 placeholders without errors. Tell the team to pull.
 
