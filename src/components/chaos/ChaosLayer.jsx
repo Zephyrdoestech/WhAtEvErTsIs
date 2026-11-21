@@ -9,21 +9,27 @@ import HeeHee from "./HeeHee.jsx";
 import SlowImage from "./SlowImage.jsx";
 
 export default function ChaosLayer() {
-  const { demoMode } = useBooking() ?? {};
+  const { stage, demoMode } = useBooking() ?? {};
   const [muted, setMuted] = useState(false);
   const [surpriseAdOpen, setSurpriseAdOpen] = useState(false);
 
-  // Periodically pop open a surprise AdPopup when none is open
+  // Close any lingering global ad popup when moving to a new stage so nothing stacks across stages
+  useEffect(() => {
+    setSurpriseAdOpen(false);
+  }, [stage]);
+
+  // Periodically pop open a surprise AdPopup on stages that don't already have heavy modal gauntlets (01 SheaAd, 08 Guilt/Ad, 10 Payment gauntlet)
   useEffect(() => {
     if (surpriseAdOpen) return undefined;
+    if (stage === 1 || stage === 8 || stage === 10) return undefined;
 
-    const delay = demoMode ? 14000 : 40000;
+    const delay = demoMode ? 16000 : 42000;
     const timerId = window.setTimeout(() => {
       setSurpriseAdOpen(true);
     }, delay);
 
     return () => window.clearTimeout(timerId);
-  }, [demoMode, surpriseAdOpen]);
+  }, [demoMode, stage, surpriseAdOpen]);
 
   return (
     <>
@@ -40,10 +46,12 @@ export default function ChaosLayer() {
 
       <Airlper />
       <HeeHee muted={muted} />
-      <SlowImage
-        duration={demoMode ? 10000 : 30000}
-        maxOpacity={0.6}
-      />
+      {stage !== 4 && (
+        <SlowImage
+          duration={demoMode ? 10000 : 30000}
+          maxOpacity={0.55}
+        />
+      )}
       <AdPopup
         open={surpriseAdOpen}
         onClose={() => setSurpriseAdOpen(false)}

@@ -85,7 +85,8 @@ export default function Airlper() {
       data-position={position.name}
       aria-label="Airlper flight helper"
       style={{
-        left: position.x,
+        left: position.side === "left" ? position.x : "auto",
+        right: position.side === "right" ? "0%" : "auto",
         top: position.y,
         "--airlper-offset-x": position.side === "left" ? "-12%" : "12%",
         "--airlper-offset-y": position.offsetY,

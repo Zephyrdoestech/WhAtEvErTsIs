@@ -46,18 +46,18 @@ Build `AdPopup.jsx`: a fake surprise ad ("HOT SINGLES IN YOUR SEAT ROW" style bu
 Build `Flights.jsx`: call `searchFlights(booking.search)` and render flight cards (airline, times, price). Prices look suspiciously cheap; each card has fine print with absurd conditions (from the API, plus your own extras). Clicking a card: `updateBooking({ flight })` and `next()`.
 **Done when:** Stage 04 lists flights for the search, and picking one moves to Stage 05 with `booking.flight` set.
 
-### - [ ] Task 7: Stage 04: loading minigame
+### - [x] Task 7: Stage 04: loading minigame
 Before results show, a fake 8-10s loading screen (3s in `demoMode`) with a tiny original endless-runner: a little plane in 3 lanes dodging luggage, arrow keys or swipe to move. Meanwhile a `SlowImage` fades in. Results appear when loading ends, even mid-game.
 **Done when:** the minigame is playable during loading and the results always appear afterwards.
 
-### - [ ] Task 8: Stage 08: extras menu
+### - [x] Task 8: Stage 08: extras menu
 Build `Extras.jsx`: add-ons with prices: Checked Baggage, Meal, Travel Insurance, "Breathing Privileges", "Emotional Support Fee", "Armrest Rights", "Gravity Insurance". Selected ones go into `updateBooking({ extras })`.
 **Done when:** selected extras are saved in `booking.extras`.
 
-### - [ ] Task 9: Stage 08: guilt trips
+### - [x] Task 9: Stage 08: guilt trips
 Unticking an extra or pressing "No thanks" triggers guilt-inducing confirm dialogs (custom modals, not `window.confirm`): "Are you sure you don't want to breathe?" → "Your lungs will remember this." Sometimes an `AdPopup` appears instead. Continue → `next()`.
 **Done when:** declining anything causes guilt dialogs or ads, and the user can still continue.
 
-### - [ ] Task 10: Chaos tuning
+### - [x] Task 10: Chaos tuning
 Play through all 12 stages with the chaos on. Make sure nothing covers buttons permanently, nothing stacks forever, and `demoMode` keeps it lively but short. Give KYLE a list of anything that clashes with other stages.
 **Done when:** a full run is chaotic but always finishable.

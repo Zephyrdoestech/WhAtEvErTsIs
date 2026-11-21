@@ -1,8 +1,10 @@
 // OWNER: DAR — see DAR.MD (Stage 04: View Available Flights)
 import { useEffect, useState } from "react";
 import { searchFlights } from "../../api/client.js";
+import SlowImage from "../../components/chaos/SlowImage.jsx";
 import useBooking from "../../context/useBooking.js";
 import "./Flights.css";
+import LuggageDodgeGame from "./LuggageDodgeGame.jsx";
 
 const EXTRA_FINE_PRINT = [
   [
@@ -54,9 +56,13 @@ function mergeConditions(flight, index) {
 }
 
 export default function Flights() {
-  const { booking, updateBooking, next, back, bumpFrustration } = useBooking();
+  const { booking, updateBooking, next, back, bumpFrustration, demoMode } = useBooking();
   const [flights, setFlights] = useState([]);
-  const [loading, setLoading] = useState(true);
+  const [apiDone, setApiDone] = useState(false);
+  const [minigameDone, setMinigameDone] = useState(false);
+
+  const loadDurationMs = demoMode ? 3000 : 9000;
+  const loading = !apiDone || !minigameDone;
 
   const search = booking?.search;
   const fromCity = search?.from || "Cebu (Mactan)";
@@ -66,23 +72,32 @@ export default function Flights() {
 
   useEffect(() => {
     let cancelled = false;
+    setApiDone(false);
+    setMinigameDone(false);
+
+    const timerId = window.setTimeout(() => {
+      if (!cancelled) {
+        setMinigameDone(true);
+      }
+    }, loadDurationMs);
 
     searchFlights(search)
       .then((results) => {
         if (cancelled) return;
         setFlights(Array.isArray(results) ? results : []);
-        setLoading(false);
+        setApiDone(true);
       })
       .catch(() => {
         if (cancelled) return;
         setFlights([]);
-        setLoading(false);
+        setApiDone(true);
       });
 
     return () => {
       cancelled = true;
+      window.clearTimeout(timerId);
     };
-  }, [search]);
+  }, [search, loadDurationMs]);
 
   function handleSelectFlight(flight, conditions) {
     updateBooking({
@@ -122,14 +137,10 @@ export default function Flights() {
       </section>
 
       {loading ? (
-        <section className="panel">
-          <h3 className="panel-title">Scanning Radar for Surviving Aircraft…</h3>
-          <div className="panel-body">
-            <p className="flights-loading">
-              Bribing air traffic control and counting wings… please hold.
-            </p>
-          </div>
-        </section>
+        <>
+          <LuggageDodgeGame durationMs={loadDurationMs} />
+          <SlowImage duration={loadDurationMs} maxOpacity={0.55} />
+        </>
       ) : (
         <div className="flights-grid" role="list">
           {flights.map((flight, index) => {
