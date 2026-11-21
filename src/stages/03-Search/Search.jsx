@@ -13,6 +13,14 @@ export default function Search() {
   const [tourism, setTourism] = useState(null);
   const [allowedAbroad, setAllowedAbroad] = useState("");
   const [dark, setDark] = useState(false);
+  useEffect(() => {
+    if (!dark) return;
+    function exitDarkMode(event) {
+      if (event.key === "Escape" && !dialog.current?.open) setDark(false);
+    }
+    document.addEventListener("keydown", exitDarkMode);
+    return () => document.removeEventListener("keydown", exitDarkMode);
+  }, [dark]);
   const [search, setSearch] = useState(() => ({
     from: booking.search?.from || "MNL",
     to: booking.search?.to || "CEB",
@@ -123,9 +131,9 @@ export default function Search() {
         <p className="search__intro">Pick your route. We'll provide the plot twists.</p>
         <div className="search__lighting">
           <button type="button" className="btn" aria-pressed={dark} aria-controls={`${prefix}-form`} onClick={() => setDark((value) => !value)}>🌙 Dark Mode {dark ? "On" : "Off"}</button>
-          <p id={`${prefix}-light-help`}>{dark ? "Move your pointer, tap the form, or use Tab to aim the flashlight. Turn Dark Mode off here anytime." : "Our lights work. For now."}</p>
+          <p id={`${prefix}-light-help`}>{dark ? "Move your pointer, tap anywhere, or use Tab to aim the page flashlight. Press Escape or toggle Dark Mode off to restore the lights." : "Our lights work. For now."}</p>
         </div>
-        <Flashlight on={dark} radius={110}>
+        <Flashlight on={dark} radius={190} fullPage>
         <form id={`${prefix}-form`} onSubmit={submit} className="search__form" aria-describedby={`${prefix}-light-help`}>
           <div className="search__field">
             <label htmlFor={`${prefix}-from`}>Origin</label>
