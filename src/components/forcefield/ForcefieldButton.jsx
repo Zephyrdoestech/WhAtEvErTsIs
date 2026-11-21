@@ -2,16 +2,21 @@
 // Contract: works like a normal <button>, plus:
 //   <ForcefieldButton onClick={...} onDodge={() => {}} maxSpeed={0.15}>Select</ForcefieldButton>
 //   onDodge fires every time the button runs away. maxSpeed is in px per ms.
-import { useEffect, useRef, useState } from "react";
+import { useCallback, useEffect, useRef, useState } from "react";
+import useBooking from "../../context/useBooking.js";
 import { playDodgeAudio, primeDodgeAudio } from "./dodgeAudio.js";
 import "./ForcefieldButton.css";
 
 const DEFAULT_MAX_SPEED = 0.15;
+const DEMO_MIN_MAX_SPEED = 0.55;
 const TRIGGER_RADIUS = 130;
 const SPEED_WINDOW_MS = 60;
 const DODGE_COOLDOWN_MS = 220;
 const SHRINK_FACTOR = 0.9; // 10% smaller per dodge
 const MIN_SCALE = 0.25;
+const DEMO_MIN_SCALE = 0.5;
+const MAX_TOUCH_DODGES = 2;
+const SYNTHETIC_MOUSE_IGNORE_MS = 500;
 const MAX_SHAKE_PX = 11;
 const MAX_SHAKE_DEG = 4.5;
 const VIEWPORT_PADDING = 16;
@@ -26,7 +31,10 @@ function getCenterBounds(width, height) {
   const halfH = height / 2;
   const minCenterX = VIEWPORT_PADDING + halfW;
   const maxCenterX = Math.max(minCenterX, window.innerWidth - VIEWPORT_PADDING - halfW);
-  const maxCenterY = Math.max(VIEWPORT_PADDING + halfH, window.innerHeight - VIEWPORT_PADDING - halfH);
+  const maxCenterY = Math.max(
+    VIEWPORT_PADDING + halfH,
+    window.innerHeight - VIEWPORT_PADDING - halfH
+  );
   const minCenterY = Math.min(HEADER_CLEARANCE + halfH, maxCenterY);
   return { minCenterX, maxCenterX, minCenterY, maxCenterY };
 }
@@ -48,7 +56,7 @@ function pickFarDodgeCenter({
   let best = { x: currentCenterX, y: currentCenterY, score: -Infinity };
 
   // Sample across the entire viewport and prefer spots far from the original position,
-  // current position, and cursor.
+  // current position, and pointer.
   for (let i = 0; i < 32; i += 1) {
     const candX = minCenterX + Math.random() * spanX;
     const candY = minCenterY + Math.random() * spanY;
@@ -77,6 +85,7 @@ function resetThreatStyles(button) {
 export default function ForcefieldButton({
   onClick,
   onDodge,
+  onPointerDown,
   maxSpeed = DEFAULT_MAX_SPEED,
   disabled = false,
   muted = false,
@@ -85,6 +94,10 @@ export default function ForcefieldButton({
   children,
   ...rest
 }) {
+  const { demoMode } = useBooking();
+  const effectiveMaxSpeed = demoMode ? Math.max(maxSpeed * 3, DEMO_MIN_MAX_SPEED) : maxSpeed;
+  const minScale = demoMode ? DEMO_MIN_SCALE : MIN_SCALE;
+
   const buttonRef = useRef(null);
   const offsetRef = useRef({ x: 0, y: 0 });
   const scaleRef = useRef(1);
@@ -94,6 +107,9 @@ export default function ForcefieldButton({
   const shakeRef = useRef({ x: 0, y: 0 });
   const lastFastAtRef = useRef(0);
   const rafIdRef = useRef(null);
+  const touchDodgesRef = useRef(0);
+  const lastTouchAtRef = useRef(0);
+  const suppressNextClickRef = useRef(false);
   const onDodgeRef = useRef(onDodge);
   const mutedRef = useRef(muted);
 
@@ -108,20 +124,11 @@ export default function ForcefieldButton({
     mutedRef.current = muted;
   }, [muted]);
 
-  useEffect(() => {
-    const btnOnMount = buttonRef.current;
-    if (disabled) {
-      threatRef.current = 0;
-      resetThreatStyles(btnOnMount);
-      return undefined;
-    }
+  const startThreatPulse = useCallback((nextThreat) => {
+    threatRef.current = Math.max(threatRef.current * 0.85, nextThreat);
+    lastFastAtRef.current = performance.now();
 
-    primeDodgeAudio();
-
-    function playDodgeSound() {
-      if (mutedRef.current) return;
-      playDodgeAudio();
-    }
+    if (rafIdRef.current !== null) return;
 
     function tickThreat() {
       const button = buttonRef.current;
@@ -154,14 +161,73 @@ export default function ForcefieldButton({
       rafIdRef.current = window.requestAnimationFrame(tickThreat);
     }
 
-    function startThreatLoop() {
-      if (rafIdRef.current === null) {
-        rafIdRef.current = window.requestAnimationFrame(tickThreat);
+    rafIdRef.current = window.requestAnimationFrame(tickThreat);
+  }, []);
+
+  const triggerDodge = useCallback(
+    (pointerX, pointerY) => {
+      const button = buttonRef.current;
+      if (!button) return;
+
+      const rect = button.getBoundingClientRect();
+      const currentOffset = offsetRef.current;
+      const currentScale = scaleRef.current;
+      const nextScale = Math.max(minScale, currentScale * SHRINK_FACTOR);
+
+      const currentCenterX = rect.left + rect.width / 2 - shakeRef.current.x * currentScale;
+      const currentCenterY = rect.top + rect.height / 2 - shakeRef.current.y * currentScale;
+      const baseCenterX = currentCenterX - currentOffset.x;
+      const baseCenterY = currentCenterY - currentOffset.y;
+
+      const baseWidth = button.offsetWidth || rect.width / currentScale;
+      const baseHeight = button.offsetHeight || rect.height / currentScale;
+      const nextWidth = baseWidth * nextScale;
+      const nextHeight = baseHeight * nextScale;
+
+      const targetCenter = pickFarDodgeCenter({
+        baseCenterX,
+        baseCenterY,
+        currentCenterX,
+        currentCenterY,
+        cursorX: pointerX,
+        cursorY: pointerY,
+        nextWidth,
+        nextHeight,
+      });
+
+      const nextOffset = {
+        x: Math.round(targetCenter.x - baseCenterX),
+        y: Math.round(targetCenter.y - baseCenterY),
+      };
+
+      offsetRef.current = nextOffset;
+      scaleRef.current = nextScale;
+      lastDodgeAtRef.current = performance.now();
+      setOffset(nextOffset);
+      setScale(nextScale);
+      if (!mutedRef.current) {
+        playDodgeAudio();
       }
+      onDodgeRef.current?.();
+    },
+    [minScale]
+  );
+
+  useEffect(() => {
+    const btnOnMount = buttonRef.current;
+    if (disabled) {
+      threatRef.current = 0;
+      shakeRef.current = { x: 0, y: 0 };
+      resetThreatStyles(btnOnMount);
+      return undefined;
     }
+
+    primeDodgeAudio();
 
     function handleMouseMove(event) {
       const now = performance.now();
+      if (now - lastTouchAtRef.current < SYNTHETIC_MOUSE_IGNORE_MS) return;
+
       const samples = pointerSamplesRef.current;
       samples.push({ x: event.clientX, y: event.clientY, t: now });
       while (samples.length > 1 && now - samples[0].t > SPEED_WINDOW_MS) {
@@ -182,14 +248,12 @@ export default function ForcefieldButton({
       if (dt < 8 && totalDist < 12) return;
 
       const speed = totalDist / dt;
-      if (speed <= maxSpeed) return;
+      if (speed <= effectiveMaxSpeed) return;
 
       // Scale visual threat (shake + red glow) from 0..1 based on how far above maxSpeed the cursor is.
-      const excessRatio = (speed - maxSpeed) / Math.max(maxSpeed * 6, 0.5);
+      const excessRatio = (speed - effectiveMaxSpeed) / Math.max(effectiveMaxSpeed * 6, 0.5);
       const nextThreat = clamp(0.15 + excessRatio * 0.85, 0.15, 1);
-      threatRef.current = Math.max(threatRef.current * 0.85, nextThreat);
-      lastFastAtRef.current = now;
-      startThreatLoop();
+      startThreatPulse(nextThreat);
 
       if (now - lastDodgeAtRef.current < DODGE_COOLDOWN_MS) return;
 
@@ -202,43 +266,7 @@ export default function ForcefieldButton({
       const distToButton = Math.hypot(event.clientX - closestX, event.clientY - closestY);
       if (distToButton > TRIGGER_RADIUS) return;
 
-      const currentOffset = offsetRef.current;
-      const currentScale = scaleRef.current;
-      const nextScale = Math.max(MIN_SCALE, currentScale * SHRINK_FACTOR);
-
-      const currentCenterX = rect.left + rect.width / 2 - shakeRef.current.x * currentScale;
-      const currentCenterY = rect.top + rect.height / 2 - shakeRef.current.y * currentScale;
-      const baseCenterX = currentCenterX - currentOffset.x;
-      const baseCenterY = currentCenterY - currentOffset.y;
-
-      const baseWidth = button.offsetWidth || rect.width / currentScale;
-      const baseHeight = button.offsetHeight || rect.height / currentScale;
-      const nextWidth = baseWidth * nextScale;
-      const nextHeight = baseHeight * nextScale;
-
-      const targetCenter = pickFarDodgeCenter({
-        baseCenterX,
-        baseCenterY,
-        currentCenterX,
-        currentCenterY,
-        cursorX: event.clientX,
-        cursorY: event.clientY,
-        nextWidth,
-        nextHeight,
-      });
-
-      const nextOffset = {
-        x: Math.round(targetCenter.x - baseCenterX),
-        y: Math.round(targetCenter.y - baseCenterY),
-      };
-
-      offsetRef.current = nextOffset;
-      scaleRef.current = nextScale;
-      lastDodgeAtRef.current = now;
-      setOffset(nextOffset);
-      setScale(nextScale);
-      playDodgeSound();
-      onDodgeRef.current?.();
+      triggerDodge(event.clientX, event.clientY);
     }
 
     function handleResize() {
@@ -278,7 +306,33 @@ export default function ForcefieldButton({
       }
       resetThreatStyles(btnOnMount);
     };
-  }, [disabled, maxSpeed]);
+  }, [disabled, effectiveMaxSpeed, startThreatPulse, triggerDodge]);
+
+  function handlePointerDown(event) {
+    onPointerDown?.(event);
+    if (disabled) return;
+
+    if (event.pointerType === "touch") {
+      lastTouchAtRef.current = performance.now();
+      if (touchDodgesRef.current < MAX_TOUCH_DODGES) {
+        touchDodgesRef.current += 1;
+        suppressNextClickRef.current = true;
+        event.preventDefault();
+        startThreatPulse(0.75);
+        triggerDodge(event.clientX, event.clientY);
+      }
+    }
+  }
+
+  function handleClick(event) {
+    if (suppressNextClickRef.current) {
+      suppressNextClickRef.current = false;
+      event.preventDefault();
+      event.stopPropagation();
+      return;
+    }
+    onClick?.(event);
+  }
 
   const isDodged = offset.x !== 0 || offset.y !== 0 || scale !== 1;
   const mergedStyle = {
@@ -290,6 +344,7 @@ export default function ForcefieldButton({
   const mergedClassName = [
     "forcefield-button",
     isDodged ? "forcefield-button--dodged" : "",
+    demoMode ? "forcefield-button--demo" : "",
     className,
   ]
     .filter(Boolean)
@@ -299,7 +354,8 @@ export default function ForcefieldButton({
     <button
       ref={buttonRef}
       disabled={disabled}
-      onClick={onClick}
+      onPointerDown={handlePointerDown}
+      onClick={handleClick}
       className={mergedClassName}
       style={mergedStyle}
       {...rest}
