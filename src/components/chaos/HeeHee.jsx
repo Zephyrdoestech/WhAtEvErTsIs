@@ -70,7 +70,7 @@ export default function HeeHee({ muted = false }) {
 
   return (
     <>
-      <audio ref={audioRef} src={heeHeeSound} preload="auto" muted={muted} />
+      <audio ref={audioRef} src={heeHeeSound} preload="metadata" muted={muted} />
       {shaking && (
         <div className="heehee-toast" role="status" aria-live="polite">
           🎶 HEE-HEE!

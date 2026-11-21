@@ -93,7 +93,7 @@ export default function Airlper() {
         "--airlper-scale-y": scaleY,
       }}
     >
-      <img className="airlper__face" src={JoseMariChan} alt="Jose Mari Chan" />
+      <img className="airlper__face" src={JoseMariChan} alt="Jose Mari Chan" decoding="async" />
 
       <div className="airlper__speech" id="airlper-message">
         <div className="airlper__speech-heading">

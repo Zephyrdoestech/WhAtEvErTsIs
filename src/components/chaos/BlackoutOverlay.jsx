@@ -50,11 +50,9 @@ export default function BlackoutOverlay() {
       if (touch) updateBeam(touch.clientX, touch.clientY);
     }
 
-    window.addEventListener("mousemove", handlePointerMove, { passive: true });
     window.addEventListener("pointermove", handlePointerMove, { passive: true });
     window.addEventListener("touchmove", handleTouchMove, { passive: true });
     return () => {
-      window.removeEventListener("mousemove", handlePointerMove);
       window.removeEventListener("pointermove", handlePointerMove);
       window.removeEventListener("touchmove", handleTouchMove);
     };

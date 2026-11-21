@@ -88,7 +88,7 @@ export default function SlowImage({ src, duration = 30000, maxOpacity = 0.6 }) {
         transition: fadingIn ? `opacity ${safeDuration}ms linear` : "none",
       }}
     >
-      <img className="slow-image__img" src={activeSrc} alt="" />
+      <img className="slow-image__img" src={activeSrc} alt="" decoding="async" />
       <span className="slow-image__hint" aria-hidden="true">
         Click to shoo
       </span>
