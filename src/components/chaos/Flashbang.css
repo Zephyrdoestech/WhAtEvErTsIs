@@ -1,31 +1,20 @@
-/* Eminem flashbang throw -> pure solid white screen -> fades out to reveal flashed cat */
-@keyframes flashbang-eminem-throw {
+/* Eminem flashbang (0.2s, no backdrop) -> blinding glowing white overlay -> opens flashed cat fading out */
+@keyframes flashbang-eminem-pop {
   0% {
-    transform: translateY(35vh) scale(0.35) rotate(-8deg);
-    opacity: 0;
-  }
-  25% {
-    opacity: 1;
-  }
-  75% {
-    transform: translateY(0) scale(1.08) rotate(3deg);
-    opacity: 1;
+    transform: scale(0.75);
+    opacity: 0.9;
   }
   100% {
-    transform: translateY(-6vh) scale(1.45) rotate(6deg);
+    transform: scale(1.08);
     opacity: 1;
   }
 }
 
-/* Pure white screen holds briefly (0..22%), then fades out (22..56%) revealing the flashed cat underneath */
-@keyframes flashbang-white-fade {
+@keyframes flashbang-white-dissolve {
   0% {
     opacity: 1;
   }
-  22% {
-    opacity: 1;
-  }
-  56% {
+  30% {
     opacity: 0;
   }
   100% {
@@ -33,72 +22,82 @@
   }
 }
 
-/* Flashed cat stays fully visible as the white clears, then smoothly fades out into the page */
 @keyframes flashbang-cat-fade {
   0% {
     opacity: 1;
+    filter: brightness(2.2) contrast(0.85);
+  }
+  24% {
+    opacity: 1;
+    filter: brightness(1.1) contrast(1);
   }
   58% {
-    opacity: 0.94;
+    opacity: 0.85;
+    filter: brightness(1) contrast(1);
   }
   100% {
     opacity: 0;
+    filter: brightness(1) contrast(1);
   }
 }
 
 .flashbang {
   position: fixed;
   inset: 0;
-  z-index: 9800;
+  z-index: 2147483647;
+  display: grid;
+  place-items: center;
+  background: transparent;
   pointer-events: none;
   overflow: hidden;
 }
 
-.flashbang__throw-wrap {
-  position: absolute;
-  inset: 0;
-  display: grid;
-  place-items: center;
-  background: rgba(0, 0, 0, 0.25);
-}
-
 .flashbang__eminem {
-  width: min(460px, 86vw);
-  max-height: 80vh;
+  width: min(440px, 85vw);
+  max-height: 82vh;
   object-fit: contain;
-  border: 4px solid var(--yellow, #ffee00);
-  box-shadow: 0 0 40px rgba(255, 255, 255, 0.9), 6px 6px 0 var(--ink, #111);
-  animation: flashbang-eminem-throw 650ms cubic-bezier(0.2, 0.85, 0.25, 1) forwards;
-}
-
-.flashbang__blind-wrap {
-  position: absolute;
-  inset: 0;
-}
-
-.flashbang__cat {
-  position: absolute;
-  inset: 0;
-  z-index: 1;
-  width: 100%;
-  height: 100%;
-  object-fit: cover;
-  animation: flashbang-cat-fade 5850ms ease-out forwards;
+  border: none;
+  box-shadow: none;
+  background: transparent;
+  animation: flashbang-eminem-pop 200ms ease-out forwards;
 }
 
 .flashbang__whiteout {
-  position: absolute;
+  position: fixed;
   inset: 0;
   z-index: 2;
   background: #ffffff;
-  animation: flashbang-white-fade 5850ms ease-out forwards;
+  box-shadow:
+    inset 0 0 180px 90px #ffffff,
+    0 0 240px 120px #ffffff;
+  backdrop-filter: brightness(6) contrast(1.8) blur(10px);
+  -webkit-backdrop-filter: brightness(6) contrast(1.8) blur(10px);
+  filter: brightness(3) drop-shadow(0 0 80px #ffffff);
+}
+
+.flashbang__whiteout--peak {
+  opacity: 1;
+}
+
+.flashbang__whiteout--dissolve {
+  animation: flashbang-white-dissolve 5000ms ease-out forwards;
+}
+
+.flashbang__cat {
+  position: fixed;
+  inset: 0;
+  z-index: 1;
+  width: 100vw;
+  height: 100vh;
+  object-fit: cover;
+  animation: flashbang-cat-fade 5000ms ease-out forwards;
 }
 
 .flashbang__skip {
   position: fixed;
   top: 0.75rem;
   right: 0.75rem;
-  z-index: 9801;
+  z-index: 3;
   pointer-events: auto;
   box-shadow: 3px 3px 0 var(--ink, #111);
 }
