@@ -85,7 +85,7 @@ function randomBetween(min, max) {
 }
 
 export default function KachowTransition({ muted = false }) {
-  const { demoMode } = useBooking();
+  const { stage, demoMode } = useBooking() ?? {};
   const [run, setRun] = useState(null);
   const runIdRef = useRef(0);
   const activeSourceRef = useRef(null);
@@ -115,6 +115,9 @@ export default function KachowTransition({ muted = false }) {
   }, [muted]);
 
   useEffect(() => {
+    // Skip Stage 1 so Lightning McQueen doesn't interrupt the Shea video ad.
+    if (stage === 1) return undefined;
+
     bindKachowAudioUnlock();
 
     let waitTimer = null;
@@ -180,11 +183,11 @@ export default function KachowTransition({ muted = false }) {
     function scheduleNextRun(isFirst) {
       const delayMs = isFirst
         ? demoMode
-          ? randomBetween(1000, 2200)
-          : randomBetween(1500, 3500)
+          ? randomBetween(2500, 5000)
+          : randomBetween(5000, 10000)
         : demoMode
-          ? randomBetween(3000, 7000)
-          : randomBetween(5000, 14000);
+          ? randomBetween(7000, 14000)
+          : randomBetween(14000, 28000);
 
       waitTimer = window.setTimeout(() => {
         if (cancelled) return;
@@ -218,7 +221,7 @@ export default function KachowTransition({ muted = false }) {
       if (clearTimer) window.clearTimeout(clearTimer);
       stopActiveAudio();
     };
-  }, [demoMode]);
+  }, [stage, demoMode]);
 
   if (!run) return null;
 

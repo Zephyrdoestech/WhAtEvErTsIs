@@ -1,7 +1,7 @@
 // OWNER: RICKS — see RICKS.MD (Stage 06: Choose Seat)
+// Note: Global periodic brownouts + faulty flashlight now run across all pages via ChaosLayer's BlackoutOverlay.
 import { useEffect, useMemo, useRef, useState } from "react";
 import useBooking from "../../context/useBooking.js";
-import Flashlight from "../../components/flashlight/Flashlight.jsx";
 import "./Seat.css";
 
 const ROWS = Array.from({ length: 30 }, (_, i) => i + 1);
@@ -13,9 +13,6 @@ const WINDOW_FEE_LABEL = "Window Appreciation Fee";
 const WINDOW_FEE_AMOUNT = 299;
 const MIN_AVAILABLE_SEATS = 15;
 const HOVER_COOLDOWN_MS = 180;
-const FLASHLIGHT_RADIUS = 130;
-// Temporary local fallback while SYOS's Flashlight.jsx is still a stub.
-const USE_LOCAL_DARK_FALLBACK = true;
 
 function isWindowCol(col) {
   return col === "A" || col === "F";
@@ -52,15 +49,12 @@ export default function Seat() {
   const [seats, setSeats] = useState(createInitialSeats);
   const [selectedCode, setSelectedCode] = useState(booking.seat?.code ?? null);
   const [jumpedCode, setJumpedCode] = useState(null);
-  const [dark, setDark] = useState(false);
-  const [beamPos, setBeamPos] = useState({ x: 200, y: 200 });
   const [statusMessage, setStatusMessage] = useState(
     "Pick any available seat on board. Good luck catching one."
   );
 
   const lastMischiefAtRef = useRef(0);
   const jumpHighlightTimerRef = useRef(null);
-  const seatMapShellRef = useRef(null);
 
   useEffect(
     () => () => {
@@ -71,58 +65,12 @@ export default function Seat() {
     []
   );
 
-  // Random cabin blackout every 10-20s (4-7s in demoMode) lasting a few seconds.
-  useEffect(() => {
-    let timerId = null;
-    let cancelled = false;
-
-    function scheduleNextBlackout() {
-      const waitMs = demoMode
-        ? 4000 + Math.random() * 3000
-        : 10000 + Math.random() * 10000;
-
-      timerId = window.setTimeout(() => {
-        if (cancelled) return;
-        setDark(true);
-        setStatusMessage("⚡ Cabin power outage! Use your cursor as a flashlight.");
-        bumpFrustration(2);
-
-        const darkDurationMs = demoMode
-          ? 3000 + Math.random() * 1500
-          : 4000 + Math.random() * 2500;
-
-        timerId = window.setTimeout(() => {
-          if (cancelled) return;
-          setDark(false);
-          setStatusMessage("💡 Backup generator kicked in. Cabin lights restored (for now).");
-          scheduleNextBlackout();
-        }, darkDurationMs);
-      }, waitMs);
-    }
-
-    scheduleNextBlackout();
-    return () => {
-      cancelled = true;
-      if (timerId) window.clearTimeout(timerId);
-    };
-  }, [bumpFrustration, demoMode]);
-
   const selectedSeat = selectedCode ? seats[selectedCode] : null;
 
   const availableCount = useMemo(
     () => Object.values(seats).filter((s) => s.status === "available").length,
     [seats]
   );
-
-  function handleMapPointerMove(event) {
-    const shell = seatMapShellRef.current;
-    if (!shell) return;
-    const rect = shell.getBoundingClientRect();
-    setBeamPos({
-      x: Math.round(event.clientX - rect.left),
-      y: Math.round(event.clientY - rect.top),
-    });
-  }
 
   function triggerJumpHighlight(code) {
     setJumpedCode(code);
@@ -270,81 +218,56 @@ export default function Seat() {
           </div>
 
           <div className="seat-stage__layout">
-            <Flashlight on={dark} radius={FLASHLIGHT_RADIUS}>
-              <div
-                ref={seatMapShellRef}
-                className={`seat-map-shell ${dark ? "seat-map-shell--dark" : ""}`}
-                onMouseMove={handleMapPointerMove}
-                onPointerMove={handleMapPointerMove}
-              >
-                <div className="seat-legend">
-                  <span className="seat-legend__item">
-                    <span className="seat-legend__swatch seat-legend__swatch--window" /> Window (₱
-                    {WINDOW_FEE_AMOUNT})
-                  </span>
-                  <span className="seat-legend__item">
-                    <span className="seat-legend__swatch seat-legend__swatch--business" /> Business
-                    (1–3)
-                  </span>
-                  <span className="seat-legend__item">
-                    <span className="seat-legend__swatch seat-legend__swatch--available" /> Open (OK)
-                  </span>
-                  <span className="seat-legend__item">
-                    <span className="seat-legend__swatch seat-legend__swatch--occupied" /> Taken (X)
-                  </span>
-                  <span className="seat-legend__item">
-                    <span className="seat-legend__swatch seat-legend__swatch--selected" /> Selected
-                  </span>
-                </div>
+            <div className="seat-map-shell">
+              <div className="seat-legend">
+                <span className="seat-legend__item">
+                  <span className="seat-legend__swatch seat-legend__swatch--window" /> Window (₱
+                  {WINDOW_FEE_AMOUNT})
+                </span>
+                <span className="seat-legend__item">
+                  <span className="seat-legend__swatch seat-legend__swatch--business" /> Business
+                  (1–3)
+                </span>
+                <span className="seat-legend__item">
+                  <span className="seat-legend__swatch seat-legend__swatch--available" /> Open (OK)
+                </span>
+                <span className="seat-legend__item">
+                  <span className="seat-legend__swatch seat-legend__swatch--occupied" /> Taken (X)
+                </span>
+                <span className="seat-legend__item">
+                  <span className="seat-legend__swatch seat-legend__swatch--selected" /> Selected
+                </span>
+              </div>
 
-                <div className="seat-map__cabin">
-                  <div className="seat-map__col-headers" aria-hidden="true">
-                    {LEFT_COLS.map((c) => (
-                      <span key={c}>{c}</span>
-                    ))}
-                    <span>#</span>
-                    {RIGHT_COLS.map((c) => (
-                      <span key={c}>{c}</span>
-                    ))}
-                  </div>
-
-                  <div className="seat-map__divider seat-map__divider--business">
-                    ★ BUSINESS CLASS (Rows 1–3) ★
-                  </div>
-
-                  {ROWS.map((row) => (
-                    <div key={row}>
-                      {row === BUSINESS_MAX_ROW + 1 && (
-                        <div className="seat-map__divider">ECONOMY CLASS (Rows 4–30)</div>
-                      )}
-                      <div className="seat-map__row">
-                        {LEFT_COLS.map((col) => renderSeatButton(row, col))}
-                        <span className="seat-map__row-num">{row}</span>
-                        {RIGHT_COLS.map((col) => renderSeatButton(row, col))}
-                      </div>
-                    </div>
+              <div className="seat-map__cabin">
+                <div className="seat-map__col-headers" aria-hidden="true">
+                  {LEFT_COLS.map((c) => (
+                    <span key={c}>{c}</span>
+                  ))}
+                  <span>#</span>
+                  {RIGHT_COLS.map((c) => (
+                    <span key={c}>{c}</span>
                   ))}
                 </div>
 
-                {USE_LOCAL_DARK_FALLBACK && dark && (
-                  <div
-                    className="seat-dark-fallback"
-                    aria-hidden="true"
-                    style={{
-                      "--beam-x": `${beamPos.x}px`,
-                      "--beam-y": `${beamPos.y}px`,
-                      "--beam-r": `${FLASHLIGHT_RADIUS}px`,
-                    }}
-                  />
-                )}
+                <div className="seat-map__divider seat-map__divider--business">
+                  ★ BUSINESS CLASS (Rows 1–3) ★
+                </div>
 
-                {dark && (
-                  <div className="seat-dark-pill" role="alert">
-                    DARK MODE: ON (cursor = flashlight)
+                {ROWS.map((row) => (
+                  <div key={row}>
+                    {row === BUSINESS_MAX_ROW + 1 && (
+                      <div className="seat-map__divider">ECONOMY CLASS (Rows 4–30)</div>
+                    )}
+                    <div className="seat-map__row">
+                      {LEFT_COLS.map((col) => renderSeatButton(row, col))}
+                      <span className="seat-map__row-num">{row}</span>
+                      {RIGHT_COLS.map((col) => renderSeatButton(row, col))}
+                    </div>
                   </div>
-                )}
+                ))}
               </div>
-            </Flashlight>
+            </div>
 
             <aside className="seat-sidebar">
               <div className="seat-info-box">

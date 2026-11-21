@@ -195,32 +195,6 @@
   transform: rotate(-8deg);
 }
 
-.seat-dark-fallback {
-  position: absolute;
-  inset: 0;
-  z-index: 5;
-  pointer-events: none;
-  background: radial-gradient(circle var(--beam-r, 130px) at var(--beam-x, 50%) var(--beam-y, 50%),
-      rgba(0, 0, 0, 0) 0%,
-      rgba(0, 0, 0, 0.14) 58%,
-      rgba(0, 0, 0, 0.97) 100%);
-}
-
-.seat-dark-pill {
-  position: absolute;
-  left: 0.5rem;
-  bottom: 0.5rem;
-  z-index: 6;
-  padding: 0.25rem 0.55rem;
-  background: #000000;
-  color: #ffffff;
-  border: 2px solid #ffffff;
-  font-family: var(--font-mono);
-  font-size: 0.75rem;
-  font-weight: 700;
-  pointer-events: none;
-}
-
 .seat-info-box {
   background: #fffef0;
   border: var(--border);

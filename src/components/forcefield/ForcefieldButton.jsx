@@ -125,12 +125,15 @@ function playDodgeSound() {
 }
 
 const DEFAULT_MAX_SPEED = 0.15;
-const DEMO_MIN_MAX_SPEED = 0.55;
+const DEMO_MIN_MAX_SPEED = 0.35;
 const TRIGGER_RADIUS = 130;
 const PROXIMITY_REVEAL_MARGIN = 140; // Fade forcefield in starting 140px outside the detection line
 const PROXIMITY_OUTER_RADIUS = TRIGGER_RADIUS + PROXIMITY_REVEAL_MARGIN;
-const SPEED_WINDOW_MS = 60;
-const DODGE_COOLDOWN_MS = 220;
+const SPEED_WINDOW_MS = 35;
+const INSTANT_STEP_MAX_DT_MS = 250;
+const FAST_SNAP_DIST_PX = 28;
+const DODGE_COOLDOWN_MS = 110;
+const RECENT_FAST_BLOCK_MS = 160;
 const SHRINK_FACTOR = 0.9; // 10% smaller per dodge
 const MIN_SCALE = 0.25;
 const DEMO_MIN_SCALE = 0.5;
@@ -199,6 +202,20 @@ function getDistanceToRect(x, y, rect) {
   return Math.hypot(x - closestX, y - closestY);
 }
 
+// Minimum distance between segment (x1,y1)->(x2,y2) and rect so fast cross-zone whips can't tunnel through.
+function getSegmentDistanceToRect(x1, y1, x2, y2, rect) {
+  let minDist = Math.min(getDistanceToRect(x1, y1, rect), getDistanceToRect(x2, y2, rect));
+  const segLen = Math.hypot(x2 - x1, y2 - y1);
+  if (segLen <= 20) return minDist;
+  const steps = Math.min(8, Math.ceil(segLen / 24));
+  for (let i = 1; i < steps; i += 1) {
+    const t = i / steps;
+    const d = getDistanceToRect(x1 + (x2 - x1) * t, y1 + (y2 - y1) * t, rect);
+    if (d < minDist) minDist = d;
+  }
+  return minDist;
+}
+
 function computeProximity(distToButton) {
   if (distToButton >= PROXIMITY_OUTER_RADIUS) return 0;
   if (distToButton <= TRIGGER_RADIUS) return 1;
@@ -240,6 +257,7 @@ export default function ForcefieldButton({
   const offsetRef = useRef({ x: 0, y: 0 });
   const scaleRef = useRef(1);
   const pointerSamplesRef = useRef([]);
+  const prevPointerRef = useRef(null);
   const lastDodgeAtRef = useRef(0);
   const threatRef = useRef(0);
   const shakeRef = useRef({ x: 0, y: 0 });
@@ -376,34 +394,55 @@ export default function ForcefieldButton({
       const now = performance.now();
       if (now - lastTouchAtRef.current < SYNTHETIC_MOUSE_IGNORE_MS) return;
 
+      const prev = prevPointerRef.current;
+      prevPointerRef.current = { x: event.clientX, y: event.clientY, t: now };
+
       const button = buttonRef.current;
-      let distToButton = Infinity;
+      let pathDistToButton = Infinity;
       if (button) {
         const rect = button.getBoundingClientRect();
-        distToButton = getDistanceToRect(event.clientX, event.clientY, rect);
+        const distToButton = getDistanceToRect(event.clientX, event.clientY, rect);
+        pathDistToButton = prev
+          ? getSegmentDistanceToRect(prev.x, prev.y, event.clientX, event.clientY, rect)
+          : distToButton;
         setProximityStyle(button, computeProximity(distToButton));
       }
 
+      // 1) Instantaneous step speed catches sudden lunges even right after pausing inside the zone.
+      let instantSpeed = 0;
+      if (prev) {
+        const stepDt = now - prev.t;
+        const stepDist = Math.hypot(event.clientX - prev.x, event.clientY - prev.y);
+        if (stepDist >= FAST_SNAP_DIST_PX && pathDistToButton <= TRIGGER_RADIUS) {
+          instantSpeed = Math.max(effectiveMaxSpeed * 4, 1.5);
+        } else if (stepDt > 0 && stepDt <= INSTANT_STEP_MAX_DT_MS && stepDist >= 5) {
+          instantSpeed = stepDist / stepDt;
+        }
+      }
+
+      // 2) Short 35ms rolling window catches fast sustained movement without diluting sudden spikes.
       const samples = pointerSamplesRef.current;
       samples.push({ x: event.clientX, y: event.clientY, t: now });
       while (samples.length > 1 && now - samples[0].t > SPEED_WINDOW_MS) {
         samples.shift();
       }
-      if (samples.length < 2) return;
 
-      const dt = now - samples[0].t;
-      if (dt <= 0) return;
-
-      let totalDist = 0;
-      for (let i = 1; i < samples.length; i += 1) {
-        totalDist += Math.hypot(
-          samples[i].x - samples[i - 1].x,
-          samples[i].y - samples[i - 1].y
-        );
+      let windowSpeed = 0;
+      if (samples.length >= 2) {
+        const dt = now - samples[0].t;
+        let totalDist = 0;
+        for (let i = 1; i < samples.length; i += 1) {
+          totalDist += Math.hypot(
+            samples[i].x - samples[i - 1].x,
+            samples[i].y - samples[i - 1].y
+          );
+        }
+        if (dt > 0 && (dt >= 8 || totalDist >= 8)) {
+          windowSpeed = totalDist / dt;
+        }
       }
-      if (dt < 8 && totalDist < 12) return;
 
-      const speed = totalDist / dt;
+      const speed = Math.max(instantSpeed, windowSpeed);
       if (speed <= effectiveMaxSpeed) return;
 
       // Scale visual threat (shake + red glow) from 0..1 based on how far above maxSpeed the cursor is.
@@ -412,8 +451,9 @@ export default function ForcefieldButton({
       startThreatPulse(nextThreat);
 
       if (now - lastDodgeAtRef.current < DODGE_COOLDOWN_MS) return;
-      if (distToButton > TRIGGER_RADIUS) return;
+      if (pathDistToButton > TRIGGER_RADIUS) return;
 
+      pointerSamplesRef.current = [];
       triggerDodge(event.clientX, event.clientY);
     }
 
@@ -478,6 +518,15 @@ export default function ForcefieldButton({
         startThreatPulse(0.75);
         triggerDodge(event.clientX, event.clientY);
       }
+      return;
+    }
+
+    // Block mouse speed-sniping clicks if the user was moving too fast right as they clicked.
+    const now = performance.now();
+    if (now - lastFastAtRef.current < RECENT_FAST_BLOCK_MS) {
+      suppressNextClickRef.current = true;
+      event.preventDefault();
+      triggerDodge(event.clientX, event.clientY);
     }
   }
 

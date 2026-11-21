@@ -2,7 +2,6 @@
 import { useEffect, useRef, useState } from "react";
 import useBooking from "../../context/useBooking.js";
 import { getQuote, getTerms } from "../../api/client.js";
-import KachowTransition from "../../components/transitions/KachowTransition.jsx";
 import "./Review.css";
 
 const FALLBACK_SUPPLEMENTAL_TERMS = [
@@ -348,8 +347,6 @@ export default function Review() {
           </div>
         </section>
       </div>
-
-      <KachowTransition />
     </section>
   );
 }

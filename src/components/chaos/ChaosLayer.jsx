@@ -4,8 +4,11 @@ import { useEffect, useState } from "react";
 import useBooking from "../../context/useBooking.js";
 import AdPopup from "./AdPopup.jsx";
 import Airlper from "./Airlper.jsx";
+import BlackoutOverlay from "./BlackoutOverlay.jsx";
 import "./ChaosLayer.css";
+import Flashbang from "./Flashbang.jsx";
 import HeeHee from "./HeeHee.jsx";
+import KachowTransition from "../transitions/KachowTransition.jsx";
 import SlowImage from "./SlowImage.jsx";
 
 export default function ChaosLayer() {
@@ -42,6 +45,9 @@ export default function ChaosLayer() {
 
       <Airlper />
       <HeeHee muted={muted} />
+      <Flashbang muted={muted} />
+      <BlackoutOverlay />
+      <KachowTransition muted={muted} />
       {stage !== 4 && (
         <SlowImage
           duration={demoMode ? 10000 : 30000}
