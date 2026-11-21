@@ -43,7 +43,7 @@ Create `server/routes/flights.js` and mount it: `GET /api/flights?from=&to=&date
 `POST /api/bookings` creates a booking with a reference like `WTF-404-ABC`, status `Confirmed-ish`; store in memory and also write to `server/data/db.json` (git-ignored). `GET /api/bookings/:ref`, `PATCH /api/bookings/:ref`, `DELETE /api/bookings/:ref` (status becomes `Cancelled-ish`). Validate inputs; never log personal details.
 **Done when:** you can create, read, update and cancel a booking with curl.
 
-### - [ ] Task 6: Connect the frontend client
+### - [x] Task 6: Connect the frontend client
 Change `src/api/client.js` to call the real endpoints with `fetch('/api/...')`, but fall back to the mocks in `mocks.js` if the server is down or errors, so the demo never dies. Keep every function signature the same. Tell the team it's live.
 **Done when:** with the server running, stages get real data; with it stopped, they still work on mocks.
 
