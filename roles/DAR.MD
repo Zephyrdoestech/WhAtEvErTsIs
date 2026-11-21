@@ -22,7 +22,7 @@
 - Stage 04 reads `booking.search` (from SYOS) and calls DIN's `searchFlights()`; it writes `booking.flight` for RICKS's Stage 05.
 
 ## Roadmap
-### - [ ] Task 1: Ye Olde Airlper v1
+### - [x] Task 1: Ye Olde Airlper v1
 Build `Airlper.jsx`: a floating helper bubble (bottom-right) with a wizard/knight avatar that can be minimised. It speaks in exaggerated Old English from a line bank in `chaos/airlperLines.js` ("Prithee, where dost thou travel?", "Hark! A button!"). Lines change per stage (`stage` from `useBooking()`).
 **Done when:** the Airlper appears on every page and says a stage-appropriate line.
 
