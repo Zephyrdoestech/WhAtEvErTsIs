@@ -29,7 +29,6 @@ function getNextPositionIndex(currentIndex) {
 export default function Airlper() {
   const { stage, booking } = useBooking();
   const stageLines = getAirlperLines(stage);
-  const [minimized, setMinimized] = useState(false);
   const [answerDraft, setAnswerDraft] = useState("");
   const [chat, setChat] = useState({ phase: "asking", hasForgotten: false, lastAnswer: "" });
   const forgetTimerRef = useRef(null);
@@ -94,60 +93,37 @@ export default function Airlper() {
         "--airlper-scale-y": scaleY,
       }}
     >
-      {minimized ? (
-        <button
-          className="airlper__face-button"
-          type="button"
-          aria-label={`Open Airlper message for stage ${stage} of 12`}
-          aria-expanded="false"
-          onClick={() => setMinimized(false)}
-        >
-          <img src={JoseMariChan} alt="" />
-        </button>
-      ) : (
-        <img className="airlper__face" src={JoseMariChan} alt="Jose Mari Chan" />
-      )}
+      <img className="airlper__face" src={JoseMariChan} alt="Jose Mari Chan" />
 
-      {!minimized && (
-        <div className="airlper__speech" id="airlper-message">
-          <div className="airlper__speech-heading">
-            <span>Ye Olde Airlper · Stage {stage} of 12</span>
-            <button
-              className="airlper__minimize"
-              type="button"
-              aria-label="Minimize Airlper"
-              aria-expanded="true"
-              onClick={() => setMinimized(true)}
-            >
-              <span aria-hidden="true">−</span>
-            </button>
-          </div>
-          <p className="airlper__message" role="status" aria-live="polite" aria-atomic="true">
-            {line}
-          </p>
-          <div className="airlper__chat">
-            <p className="airlper__chat-prompt" role="status" aria-live="polite" aria-atomic="true">
-              {chatPrompt}
-            </p>
-            {chat.phase === "asking" && (
-              <form className="airlper__chat-form" onSubmit={submitAnswer}>
-                <input
-                  type="text"
-                  value={answerDraft}
-                  maxLength={80}
-                  autoComplete="off"
-                  aria-label="Answer Airlper"
-                  placeholder="Type thy answer"
-                  onChange={(event) => setAnswerDraft(event.target.value)}
-                />
-                <button className="btn airlper__submit" type="submit" disabled={!answerDraft.trim()}>
-                  Tell him
-                </button>
-              </form>
-            )}
-          </div>
+      <div className="airlper__speech" id="airlper-message">
+        <div className="airlper__speech-heading">
+          <span>Ye Olde Airlper · Stage {stage} of 12</span>
         </div>
-      )}
+        <p className="airlper__message" role="status" aria-live="polite" aria-atomic="true">
+          {line}
+        </p>
+        <div className="airlper__chat">
+          <p className="airlper__chat-prompt" role="status" aria-live="polite" aria-atomic="true">
+            {chatPrompt}
+          </p>
+          {chat.phase === "asking" && (
+            <form className="airlper__chat-form" onSubmit={submitAnswer}>
+              <input
+                type="text"
+                value={answerDraft}
+                maxLength={80}
+                autoComplete="off"
+                aria-label="Answer Airlper"
+                placeholder="Type thy answer"
+                onChange={(event) => setAnswerDraft(event.target.value)}
+              />
+              <button className="btn airlper__submit" type="submit" disabled={!answerDraft.trim()}>
+                Tell him
+              </button>
+            </form>
+          )}
+        </div>
+      </div>
     </aside>
   );
 }
