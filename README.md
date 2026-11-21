@@ -1,4 +1,4 @@
-# WhAtEvErTsIs (Bahala Na Air)
+# WhAtEvErTsIs
 
 A perfectly normal airline website where you book a **₱1 flight**. Every one of the 12 booking steps fights back: an unskippable ad, CAPTCHAs that never end, a Select button that runs away from your cursor, seats that move, terms you must scroll *slowly*, and fees that keep appearing. Survive all 12 and you get a "Confirmed-ish" e-ticket and the title **Certified Survivor**. Then Manage Booking loops you back to the start.
 
@@ -138,4 +138,4 @@ Team rules and shared contracts: [TEAM.MD](TEAM.MD). Design guide: [docs/referen
 | Darryll B. Eral | Chaos on every page: Stages 04, 08; Ye Olde Airlper, HeeHee, pop-up ads |
 | Jon Vincent F. Din | Backend (Node + Express) and checkout: Stages 10, 11 |
 
-*Bahala Na Air is not a real airline. Please do not try to fly with it.*
+*This is not a real airline. Please do not try to fly with it.*
