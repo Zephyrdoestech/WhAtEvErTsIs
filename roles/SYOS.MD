@@ -50,7 +50,7 @@ If the destination is international, interrupt with a patriotic tourism modal: b
 Build `Flashlight.jsx`: when `on`, cover its children with a black overlay and cut a circle (CSS `radial-gradient` mask) around the cursor. Add a "🌙 Dark Mode" toggle to Stage 03 that turns the form pitch black except the flashlight.
 **Done when:** dark mode makes the page black and only the area around the cursor is visible. Tell RICKS it's ready.
 
-### - [ ] Task 8: Stage 07: passenger form
+### - [x] Task 8: Stage 07: passenger form
 Build `Passenger.jsx`: first/last name, birthday, nationality, email, phone, passport number (any fake value). Light validation with silly error messages ("Name too name-like").
 **Done when:** filling the form saves `booking.passenger`.
 
