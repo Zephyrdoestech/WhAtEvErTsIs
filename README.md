@@ -2,7 +2,7 @@
 
 A perfectly normal airline website where you book a **₱1 flight**. Every one of the 12 booking steps fights back: an unskippable ad, CAPTCHAs that never end, a Select button that runs away from your cursor, seats that move, terms you must scroll *slowly*, and fees that keep appearing. Survive all 12 and you get a "Confirmed-ish" e-ticket and the title **Certified Survivor**. Then Manage Booking loops you back to the start.
 
-Built for the Malfunction hackathon. Fictional airline, fake data, fake payments. Nothing is booked, charged, uploaded or saved.
+Built for the Malfunction hackathon. Fictional airline, fake data, fake payments: nothing is really booked or charged, and the camera never uploads or records. Use made-up names only (see [What gets stored](#what-gets-stored)).
 
 ## Run it
 
@@ -45,11 +45,11 @@ In development there's also a **DEV: jump to** dropdown in the top-left corner. 
 | 07 | Passenger Details | Birthday by slider; camera "airplane pose" check (nothing is recorded or uploaded) | Precious |
 | 08 | Add Extras | "Mandatory-optional" extras, already selected for you, with guilt trips | Darryll |
 | 09 | Terms & Punishments | Scroll too fast and progress resets to 0%; agree and KA-CHOW | Ricksmer |
-| 10 | Payment | Fees appear one by one (₱1 → ₱1,649.01); card number picked by shuffling digits; CAPTCHA #∞; hold Pay Now for 10s while a forcefield pushes you away | Jon Vincent |
+| 10 | Payment | Fees appear one by one (₱1 → ₱1,649.01); card number picked by shuffling digits; CAPTCHA #∞; hold Pay Now (mouse, touch or Space) for 10s, 3s in demo mode, while a forcefield pushes you away | Jon Vincent |
 | 11 | Confirmation | "Confirmed-ish" e-ticket to ???, gate 404, Certified Survivor | Jon Vincent |
 | 12 | Manage Booking | Modify sends you back to a random stage; Cancel asks "Are you sure?" 3-5 times; both loop you | Kyle |
 
-On every page: the frustration meter (😊 → 💀), Ye Olde Airlper (a chatbot that forgets your name), pop-up ads, "hee hee", surprise flashbangs, brownouts and Lightning McQueen driving past. The **Mute Chaos** button in the top-right corner silences it; every popup can be closed.
+On every page: the frustration meter (😊 → 💀), Ye Olde Airlper (a chatbot that forgets your name), pop-up ads, "hee hee", surprise flashbangs, brownouts and Lightning McQueen driving past. The **Mute Chaos** button in the top-right corner silences the sounds and stops the flashbangs; press **Esc** during a brownout to turn the lights back on; every popup can be closed. Devices set to *reduce motion* get no flashbangs or brownouts.
 
 ## 2-minute demo route
 
@@ -57,19 +57,25 @@ Open `http://localhost:5173/?demo` on the presenting laptop, with the API runnin
 
 | Time | Do this | Say this |
 |---|---|---|
-| 0:00 | Page loads → the Shea ad. Let the Skip button vanish (demo mode ends the ad after 5s). | "A normal airline. ₱1 flights. Let's book one." |
+| 0:00 | Page loads → the Shea ad. Don't skip: in demo mode it ends by itself after 5s (in normal mode Skip vanishes at 5s and the ad runs 20s). | "A normal airline. ₱1 flights. Let's book one." |
 | 0:08 | Point at the ₱1 promo and the tiny asterisk. Click **Book Now**. | "The asterisk is doing a lot of work." |
 | 0:12 | Stage 02: continue as guest → CAPTCHA. | "Verification. Lots of it." |
 | 0:25 | Stage 03: pick a destination, watch it become "Pilipinas". Flip dark mode for the flashlight. | "We know best." |
 | 0:35 | Stage 04: flights loading → dodge two pieces of luggage → pick BN 101. | |
 | 0:45 | Stage 05: chase the Select button. | "It has a forcefield." |
-| 0:55 | Stage 06-08: grab a seat, slide to a birthday, strike the airplane pose, accept the extras. | Point at the frustration meter. |
+| 0:55 | Stage 06: grab a seat. Stage 07: slide to a birthday, strike the airplane pose, pass the "are you human?" CAPTCHA. Stage 08: accept the extras. | Point at the frustration meter. |
 | 1:15 | Stage 09: scroll the terms too fast → progress resets. Agree → KA-CHOW. | "Scroll slowly. No, slower." |
-| 1:25 | Stage 10: watch the fees pile up; shuffle the card digits; hold Pay Now. | "Your ₱1 flight is now ₱1,649.01." |
+| 1:25 | Stage 10: watch the fees pile up; shuffle the card digits; hold Pay Now for 3s (demo mode). | "Your ₱1 flight is now ₱1,649.01." |
 | 1:45 | Stage 11: e-ticket, Certified Survivor badge in the header. | "You survived. Unfortunately." |
 | 1:50 | Stage 12: **Cancel** → "Are you sure?" × 3-5 → "Book again?" → back to Stage 01. Loop counter goes up. | "And that's the loop. Thank you!" |
 
 **If something breaks live:** use the DEV dropdown (top-left, dev server only) or type `?stage=N&demo` in the address bar to skip ahead and keep talking.
+
+## What gets stored
+
+- **Browser:** the booking lives in memory only; reloading the page wipes it.
+- **API server:** bookings made with the server running are saved to `server/data/db.json` on the machine running the server (git-ignored), so Manage Booking can look them up. Only the flight, seat, extras, fees, quote and the passenger's first and last name are sent; email, phone and passport fields never leave the browser. Clear it with `curl -X POST http://localhost:3001/api/reset`.
+- **Camera (Stage 07):** processed in the browser only; nothing is recorded, uploaded or saved.
 
 ## Project layout
 

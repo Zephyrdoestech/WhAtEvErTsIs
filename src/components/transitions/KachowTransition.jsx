@@ -5,6 +5,7 @@ import { useEffect, useRef, useState } from "react";
 import useBooking from "../../context/useBooking.js";
 import lightningImg from "../../assets/images/Lightning-McQueen.png";
 import kachowSound from "../../assets/audios/kachow.mp3";
+import { kachowQueue } from "./kachowQueue.js";
 import "./KachowTransition.css";
 
 // Shared uncached audio state so clipped MP3s play reliably without stale 206 range caches.
@@ -181,7 +182,9 @@ export default function KachowTransition({ muted = false }) {
     }
 
     function scheduleNextRun(isFirst) {
-      const delayMs = isFirst
+      const delayMs = isFirst && kachowQueue.pending
+        ? 150 // straight after agreeing on Stage 09
+        : isFirst
         ? demoMode
           ? randomBetween(2500, 5000)
           : randomBetween(5000, 10000)
@@ -191,6 +194,7 @@ export default function KachowTransition({ muted = false }) {
 
       waitTimer = window.setTimeout(() => {
         if (cancelled) return;
+        kachowQueue.pending = false;
 
         const direction = Math.random() < 0.5 ? "ltr" : "rtl";
         const durationMs = Math.round(randomBetween(500, 800));

@@ -1,6 +1,7 @@
 // OWNER: RICKS — see RICKS.MD (Stage 09: Review Booking)
 import { useEffect, useRef, useState } from "react";
 import useBooking from "../../context/useBooking.js";
+import { kachowQueue } from "../../components/transitions/kachowQueue.js";
 import { getQuote, getTerms } from "../../api/client.js";
 import "./Review.css";
 
@@ -243,7 +244,10 @@ export default function Review() {
                 type="button"
                 className={`btn ${agreed ? "go" : ""} review-agree-btn`}
                 disabled={!agreed}
-                onClick={next}
+                onClick={() => {
+                  kachowQueue.pending = true; // KA-CHOW on arrival at Payment
+                  next();
+                }}
               >
                 {agreed ? "I AGREE — CONTINUE TO PAYMENT →" : "I AGREE (locked)"}
               </button>

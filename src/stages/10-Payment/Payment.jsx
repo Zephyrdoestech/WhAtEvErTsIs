@@ -75,7 +75,7 @@ function formatPeso(amount) {
 }
 
 export default function Payment() {
-  const { booking, updateBooking, bumpFrustration, next } = useBooking();
+  const { booking, updateBooking, bumpFrustration, next, demoMode } = useBooking();
 
   const [items, setItems] = useState([
     { label: "Base fare", amount: 1 },
@@ -109,7 +109,8 @@ export default function Payment() {
   const [localFrustration, setLocalFrustration] = useState(0);
 
   // Hold-to-pay progress (0 -> 10s); gauntlet ONLY pops when hold completes
-  const targetHoldMs = 10000;
+  const targetHoldMs = demoMode ? 3000 : 10000;
+  const holdSeconds = targetHoldMs / 1000;
   const [holdMs, setHoldMs] = useState(0);
   const [isHolding, setIsHolding] = useState(false);
   const [holdStatusMsg, setHoldStatusMsg] = useState("");
@@ -212,20 +213,22 @@ export default function Payment() {
   useEffect(() => {
     if (!isHolding) return undefined;
     const stepMs = 100;
+    // Count in a local variable so side effects (frustration, gauntlet) run once, not inside a state updater.
+    let elapsed = holdMs;
     const timer = setInterval(() => {
-      setHoldMs((prev) => {
-        const nextVal = prev + stepMs;
-        if (nextVal % 1000 === 0) {
-          raiseFrustration(2);
-        }
-        if (nextVal >= targetHoldMs) {
-          setIsHolding(false);
-          setHoldStatusMsg("Hold complete! Initiating confirmation...");
-          triggerGauntlet();
-          return targetHoldMs;
-        }
-        return nextVal;
-      });
+      elapsed += stepMs;
+      if (elapsed % 1000 === 0) {
+        raiseFrustration(2);
+      }
+      if (elapsed >= targetHoldMs) {
+        clearInterval(timer);
+        setHoldMs(targetHoldMs);
+        setIsHolding(false);
+        setHoldStatusMsg("Hold complete! Initiating confirmation...");
+        triggerGauntlet();
+        return;
+      }
+      setHoldMs(elapsed);
     }, stepMs);
 
     return () => clearInterval(timer);
@@ -243,7 +246,7 @@ export default function Payment() {
     setIsHolding(false);
     if (holdMs < targetHoldMs) {
       setHoldMs(0);
-      setHoldStatusMsg("Released too early! Hold for the full 10 seconds.");
+      setHoldStatusMsg(`Released too early! Hold for the full ${holdSeconds} seconds.`);
       raiseFrustration(4);
     }
   };
@@ -251,40 +254,39 @@ export default function Payment() {
   const handleDialogButton = (dialog, btn) => {
     raiseFrustration(4);
 
-    setDialogs((prev) => {
-      const remaining = prev.filter((d) => d.id !== dialog.id);
+    // Plain function of the current dialogs (not a state updater) so each click spawns exactly once.
+    const remaining = dialogs.filter((d) => d.id !== dialog.id);
 
-      if (spawnCount < MAX_SPAWNED_DIALOGS) {
-        if (waveStage === 1 && remaining.length === 0) {
-          const d1 = makeDialogItem(1, 1);
-          const d2 = makeDialogItem(2, 2);
-          setSpawnCount((c) => c + 2);
-          setWaveStage(2);
-          return [d1, d2];
-        }
-        if (waveStage === 2 && remaining.length === 0) {
-          const batch = [
-            makeDialogItem(0, 1),
-            makeDialogItem(1, 2),
-            makeDialogItem(2, 3),
-            makeDialogItem(3, 4),
-          ].slice(0, Math.max(1, MAX_SPAWNED_DIALOGS - spawnCount));
-          setSpawnCount((c) => c + batch.length);
-          setWaveStage(3);
-          return batch;
-        }
-        if (btn.action === "multiply" && spawnCount < MAX_SPAWNED_DIALOGS) {
-          const extra = makeDialogItem(spawnCount + 1, remaining.length + 1);
-          setSpawnCount((c) => c + 1);
-          return [...remaining, extra];
-        }
+    if (spawnCount < MAX_SPAWNED_DIALOGS) {
+      if (waveStage === 1 && remaining.length === 0) {
+        setDialogs([makeDialogItem(1, 1), makeDialogItem(2, 2)]);
+        setSpawnCount((c) => c + 2);
+        setWaveStage(2);
+        return;
       }
+      if (waveStage === 2 && remaining.length === 0) {
+        const batch = [
+          makeDialogItem(0, 1),
+          makeDialogItem(1, 2),
+          makeDialogItem(2, 3),
+          makeDialogItem(3, 4),
+        ].slice(0, Math.max(1, MAX_SPAWNED_DIALOGS - spawnCount));
+        setDialogs(batch);
+        setSpawnCount((c) => c + batch.length);
+        setWaveStage(3);
+        return;
+      }
+      if (btn.action === "multiply") {
+        setDialogs([...remaining, makeDialogItem(spawnCount + 1, remaining.length + 1)]);
+        setSpawnCount((c) => c + 1);
+        return;
+      }
+    }
 
-      if (remaining.length === 0) {
-        setShowCaptchaModal(true);
-      }
-      return remaining;
-    });
+    setDialogs(remaining);
+    if (remaining.length === 0) {
+      setShowCaptchaModal(true);
+    }
   };
 
   const handleCaptchaPass = async () => {
@@ -694,14 +696,25 @@ export default function Payment() {
                   onMouseLeave={handleHoldEnd}
                   onTouchStart={handleHoldStart}
                   onTouchEnd={handleHoldEnd}
+                  onTouchCancel={handleHoldEnd}
+                  onKeyDown={(e) => {
+                    if ((e.key === " " || e.key === "Enter") && !e.repeat) {
+                      e.preventDefault();
+                      handleHoldStart();
+                    }
+                  }}
+                  onKeyUp={(e) => {
+                    if (e.key === " " || e.key === "Enter") handleHoldEnd();
+                  }}
+                  onBlur={handleHoldEnd}
                 >
-                  {isHolding ? `HOLDING... (${holdSecondsDisplay}s)` : "PAY NOW (hold 10s)"}
+                  {isHolding ? `HOLDING... (${holdSecondsDisplay}s)` : `PAY NOW (hold ${holdSeconds}s)`}
                 </ForcefieldButton>
               </div>
 
               <div className="payment-hold-wrap" data-node-id="28:666">
                 <p className="payment-hold-label" data-node-id="28:667">
-                  {holdStatusMsg || `hold progress: ${holdSecondsDisplay}s of 10s (forcefield pushes cursor away)`}
+                  {holdStatusMsg || `hold progress: ${holdSecondsDisplay}s of ${holdSeconds}s (forcefield pushes cursor away; Space works too)`}
                 </p>
                 <div className="payment-hold-bar-bg" data-node-id="28:668">
                   <div

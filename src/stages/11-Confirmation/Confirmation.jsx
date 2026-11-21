@@ -1,5 +1,5 @@
 // OWNER: DIN — see DIN.MD (Stage 11: Confirmed-ish e-ticket)
-// Built strictly from Figma "Screen References" page tab (Frame 28:3: WhAtEvErTsIs — Fictional e-ticket).
+// Built strictly from Figma "Screen References" page tab (Frame 28:3: whatevertsis — Fictional e-ticket).
 import { useEffect, useState } from "react";
 import useBooking from "../../context/useBooking.js";
 import "./Confirmation.css";
@@ -82,7 +82,7 @@ export default function Confirmation() {
     <div
       className="eticket-canvas"
       data-node-id="28:3"
-      data-name="WhAtEvErTsIs — Fictional e-ticket"
+      data-name="whatevertsis — Fictional e-ticket"
     >
       {/* Giant obstructive confetti + CONGRATULATIONS blast (fires again after user thinks it's done!) */}
       {congratsWave > 0 && (
@@ -196,7 +196,7 @@ export default function Confirmation() {
       <div className="eticket-boarding-pass" data-node-id="28:33" data-name="Boarding pass">
         <div className="eticket-masthead" data-node-id="28:34" data-name="Ticket masthead">
           <p className="eticket-wordmark" data-node-id="28:35">
-            WhAtEvErTsIs
+            whatevertsis
           </p>
           <div className="eticket-booking-id" data-node-id="28:36" data-name="Booking identifier">
             <p className="eticket-doc-title" data-node-id="28:37">
@@ -425,7 +425,7 @@ export default function Confirmation() {
           {`Privacy Policy (lost)  |  Terms & Punishments  |  Cookie Policy (crumbs only)  |  Contact (disabled)`}
         </p>
         <p className="eticket-legal-line" data-node-id="28:159">
-          © 1999–2026 Bahala Na Air / WhAtEvErTsIs. All wrongs reserved. Fictional airline. Not valid for travel.
+          © 1999–2026 Bahala Na Air / whatevertsis. All wrongs reserved. Fictional airline. Not valid for travel.
         </p>
       </div>
     </div>

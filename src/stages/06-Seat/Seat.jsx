@@ -139,20 +139,16 @@ export default function Seat() {
   function handleConfirm() {
     if (!selectedSeat) return;
 
-    if (selectedSeat.window) {
-      const alreadyCharged = booking.fees.some((fee) => fee.label === WINDOW_FEE_LABEL);
-      if (!alreadyCharged) {
-        addFee(WINDOW_FEE_LABEL, WINDOW_FEE_AMOUNT);
-      }
-    }
-
+    // Drop any window fee from an earlier visit, so switching to an aisle seat stops charging it.
     updateBooking({
+      fees: booking.fees.filter((fee) => fee.label !== WINDOW_FEE_LABEL),
       seat: {
         code: selectedSeat.code,
         cls: selectedSeat.cls,
         window: selectedSeat.window,
       },
     });
+    if (selectedSeat.window) addFee(WINDOW_FEE_LABEL, WINDOW_FEE_AMOUNT);
     next();
   }
 

@@ -30,6 +30,7 @@ export default function Welcome() {
   const closeAd = useCallback(() => setShowAd(false), []); // stable so the ad's timer doesn't restart
 
   if (showAd) return <SheaAd onDone={closeAd} />;
+  // Book Now autofocuses, so keyboard focus returns there when the ad closes.
 
   return (
     <div className="welcome">
@@ -38,7 +39,7 @@ export default function Welcome() {
         <p className="welcome-route">MANILA → ANYWHERE</p>
         <h2 className="welcome-price display">₱1 FLIGHT!!!</h2>
         <p className="welcome-offer">LIMITED TIME OFFER (the time is limited to this sentence)</p>
-        <button className="btn go welcome-book" onClick={next}>Book Now ✈</button>
+        <button className="btn go welcome-book" onClick={next} autoFocus>Book Now ✈</button>
         <p className="welcome-fine">*₱1 base fare + taxes, fees, fees on fees, breathing privileges, emotional support, and whatever we think of next. Fare valid for one (1) leg. Other leg sold separately.</p>
       </section>
 

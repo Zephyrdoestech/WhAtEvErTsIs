@@ -9,13 +9,17 @@ const PLANE_X_PERCENT = 14;
 const HIT_MIN_X = 8;
 const HIT_MAX_X = 21;
 
+const INITIAL_OBSTACLES = [
+  { id: 1, lane: 0, x: 74, icon: "🧳", hit: false, passed: false },
+  { id: 2, lane: 2, x: 96, icon: "🎒", hit: false, passed: false },
+];
+
 export default function LuggageDodgeGame({ durationMs = 9000 }) {
   const { bumpFrustration } = useBooking() ?? {};
   const [planeLane, setPlaneLane] = useState(1);
-  const [obstacles, setObstacles] = useState(() => [
-    { id: 1, lane: 0, x: 74, icon: "🧳", hit: false, passed: false },
-    { id: 2, lane: 2, x: 96, icon: "🎒", hit: false, passed: false },
-  ]);
+  const [obstacles, setObstacles] = useState(INITIAL_OBSTACLES);
+  // Source of truth for the game loop, so collisions are counted once, outside React's (pure) state updaters.
+  const obstaclesRef = useRef(INITIAL_OBSTACLES);
   const [dodgedCount, setDodgedCount] = useState(0);
   const [hitCount, setHitCount] = useState(0);
   const [bonkFlash, setBonkFlash] = useState(false);
@@ -88,72 +92,72 @@ export default function LuggageDodgeGame({ durationMs = 9000 }) {
         spawnAccumulator = 0;
       }
 
-      setObstacles((prev) => {
-        const speedPerMs = 0.052; // ~52% of track width per second
-        let newlyDodged = 0;
-        let newlyHit = 0;
+      const prev = obstaclesRef.current;
+      const speedPerMs = 0.052; // ~52% of track width per second
+      let newlyDodged = 0;
+      let newlyHit = 0;
 
-        const updated = [];
-        for (const item of prev) {
-          const nextX = item.x - dt * speedPerMs;
-          if (nextX < -10) {
-            continue;
+      const updated = [];
+      for (const item of prev) {
+        const nextX = item.x - dt * speedPerMs;
+        if (nextX < -10) {
+          continue;
+        }
+
+        let hit = item.hit;
+        let passed = item.passed;
+
+        if (!hit && !passed && nextX <= HIT_MAX_X && nextX >= HIT_MIN_X) {
+          if (item.lane === planeLaneRef.current) {
+            hit = true;
+            newlyHit += 1;
           }
-
-          let hit = item.hit;
-          let passed = item.passed;
-
-          if (!hit && !passed && nextX <= HIT_MAX_X && nextX >= HIT_MIN_X) {
-            if (item.lane === planeLaneRef.current) {
-              hit = true;
-              newlyHit += 1;
-            }
-          }
-
-          if (!hit && !passed && nextX < HIT_MIN_X) {
-            passed = true;
-            newlyDodged += 1;
-          }
-
-          updated.push({ ...item, x: nextX, hit, passed });
         }
 
-        if (shouldSpawn) {
-          // Pick a lane that leaves at least one open lane near the spawn edge
-          const recentLanes = new Set(
-            updated.filter((item) => item.x > 72).map((item) => item.lane)
-          );
-          const candidateLanes = [0, 1, 2].filter((lane) => !recentLanes.has(lane));
-          const pool = candidateLanes.length > 0 ? candidateLanes : [0, 1, 2];
-          const chosenLane = pool[Math.floor(Math.random() * pool.length)];
-          const icon = LUGGAGE_ICONS[Math.floor(Math.random() * LUGGAGE_ICONS.length)];
-
-          updated.push({
-            id: nextObstacleIdRef.current++,
-            lane: chosenLane,
-            x: 98,
-            icon,
-            hit: false,
-            passed: false,
-          });
+        if (!hit && !passed && nextX < HIT_MIN_X) {
+          passed = true;
+          newlyDodged += 1;
         }
 
-        if (newlyDodged > 0) {
-          setDodgedCount((count) => count + newlyDodged);
-        }
+        updated.push({ ...item, x: nextX, hit, passed });
+      }
 
-        if (newlyHit > 0) {
-          setHitCount((count) => count + newlyHit);
-          setBonkFlash(true);
-          window.clearTimeout(bonkTimeoutRef.current);
-          bonkTimeoutRef.current = window.setTimeout(() => {
-            setBonkFlash(false);
-          }, 320);
-          bumpRef.current?.(1);
-        }
+      if (shouldSpawn) {
+        // Pick a lane that leaves at least one open lane near the spawn edge
+        const recentLanes = new Set(
+          updated.filter((item) => item.x > 72).map((item) => item.lane)
+        );
+        const candidateLanes = [0, 1, 2].filter((lane) => !recentLanes.has(lane));
+        const pool = candidateLanes.length > 0 ? candidateLanes : [0, 1, 2];
+        const chosenLane = pool[Math.floor(Math.random() * pool.length)];
+        const icon = LUGGAGE_ICONS[Math.floor(Math.random() * LUGGAGE_ICONS.length)];
 
-        return updated;
-      });
+        updated.push({
+          id: nextObstacleIdRef.current++,
+          lane: chosenLane,
+          x: 98,
+          icon,
+          hit: false,
+          passed: false,
+        });
+      }
+
+      obstaclesRef.current = updated;
+      setObstacles(updated);
+
+      if (newlyDodged > 0) {
+        setDodgedCount((count) => count + newlyDodged);
+      }
+
+      if (newlyHit > 0) {
+        setHitCount((count) => count + newlyHit);
+        setBonkFlash(true);
+        window.clearTimeout(bonkTimeoutRef.current);
+        bonkTimeoutRef.current = window.setTimeout(() => {
+          setBonkFlash(false);
+        }, 320);
+        bumpRef.current?.(1);
+      }
 
       rafId = window.requestAnimationFrame(tick);
     }

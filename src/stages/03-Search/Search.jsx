@@ -1,7 +1,8 @@
 // OWNER: SYOS — see SYOS.MD (Stage 03: Search Flights)
-import { useEffect, useId, useRef, useState } from "react";
+import { useContext, useEffect, useId, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import useBooking from "../../context/useBooking.js";
+import { StageNavSlot } from "../../app/stageNavSlot.js";
 import Flashlight from "../../components/flashlight/Flashlight.jsx";
 import DateSlider from "../../components/date/DateSlider.jsx";
 import tourismVideo from "../../assets/videos/Piliin_mo_and_pilipinas.mp4";
@@ -19,11 +20,7 @@ export default function Search() {
   const [abroadWait, setAbroadWait] = useState(0);
   const [allowedAbroad, setAllowedAbroad] = useState("");
   const [dark, setDark] = useState(false);
-  const [navbar, setNavbar] = useState(null);
-  useEffect(() => {
-    // The shell is KYLE-owned; mount the Stage 3 control into its existing nav.
-    setNavbar(document.querySelector(".link-bar"));
-  }, []);
+  const navbar = useContext(StageNavSlot); // the shell's link-bar slot; null until it mounts
   useEffect(() => {
     if (!dark) return;
     function exitDarkMode(event) {
@@ -138,7 +135,8 @@ export default function Search() {
       return;
     }
     if (!search.departDate || search.departDate < today
-      || (search.returnDate && search.returnDate < search.departDate)) {
+      || search.departDate > maxTravelDate
+      || (search.returnDate && (search.returnDate < search.departDate || search.returnDate > maxTravelDate))) {
       setError("Check your dates. Our aircraft cannot travel back in time yet.");
       return;
     }
