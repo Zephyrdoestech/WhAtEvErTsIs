@@ -35,7 +35,7 @@ Polish `AppShell.css` and the header so the site looks like a real, trustworthy 
 Make `FrustrationMeter.jsx` a real bar from 0 to 100 with a face that gets angrier (😊 → 😐 → 😠 → 🤬 → 💀). Animate it when it rises. Add a small "Loops survived: N" counter from `loopCount`.
 **Done when:** calling `bumpFrustration(20)` anywhere visibly moves the meter and changes the face.
 
-### - [ ] Task 4: Stage 01: ₱1 promo welcome page
+### - [x] Task 4: Stage 01: ₱1 promo welcome page
 Build `Welcome.jsx`: hero banner "MANILA → ANYWHERE for ₱1!*" with a tiny asterisk footnote, fake promo cards, and a big Book Now button that calls `next()`.
 **Done when:** Stage 01 looks like a real airline promo and Book Now goes to Stage 02.
 
