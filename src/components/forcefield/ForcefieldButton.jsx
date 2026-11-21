@@ -12,6 +12,8 @@ const SPEED_WINDOW_MS = 60;
 const DODGE_COOLDOWN_MS = 220;
 const SHRINK_FACTOR = 0.9; // 10% smaller per dodge
 const MIN_SCALE = 0.25;
+const MAX_SHAKE_PX = 11;
+const MAX_SHAKE_DEG = 4.5;
 const VIEWPORT_PADDING = 16;
 const HEADER_CLEARANCE = 72;
 
@@ -55,7 +57,6 @@ function pickFarDodgeCenter({
     const distFromCurrent = Math.hypot(candX - currentCenterX, candY - currentCenterY);
     const distFromCursor = Math.hypot(candX - cursorX, candY - cursorY);
 
-    // Weighted score emphasizing escaping far from original position and current/cursor location
     const score = distFromOrigin * 1.15 + distFromCurrent * 0.9 + distFromCursor * 1.1;
     if (score > best.score) {
       best = { x: candX, y: candY, score };
@@ -63,6 +64,14 @@ function pickFarDodgeCenter({
   }
 
   return { x: best.x, y: best.y };
+}
+
+function resetThreatStyles(button) {
+  if (!button) return;
+  button.style.setProperty("--ff-threat", "0");
+  button.style.setProperty("--ff-shake-x", "0px");
+  button.style.setProperty("--ff-shake-y", "0px");
+  button.style.setProperty("--ff-shake-rot", "0deg");
 }
 
 export default function ForcefieldButton({
@@ -80,6 +89,10 @@ export default function ForcefieldButton({
   const scaleRef = useRef(1);
   const pointerSamplesRef = useRef([]);
   const lastDodgeAtRef = useRef(0);
+  const threatRef = useRef(0);
+  const shakeRef = useRef({ x: 0, y: 0 });
+  const lastFastAtRef = useRef(0);
+  const rafIdRef = useRef(null);
   const onDodgeRef = useRef(onDodge);
   const audioRef = useRef(null);
 
@@ -91,7 +104,12 @@ export default function ForcefieldButton({
   }, [onDodge]);
 
   useEffect(() => {
-    if (disabled) return undefined;
+    const btnOnMount = buttonRef.current;
+    if (disabled) {
+      threatRef.current = 0;
+      resetThreatStyles(btnOnMount);
+      return undefined;
+    }
 
     function playNya() {
       if (!audioRef.current) {
@@ -99,6 +117,43 @@ export default function ForcefieldButton({
       }
       audioRef.current.currentTime = 0;
       audioRef.current.play().catch(() => {});
+    }
+
+    function tickThreat() {
+      const button = buttonRef.current;
+      const now = performance.now();
+
+      if (now - lastFastAtRef.current > 70) {
+        threatRef.current *= 0.84;
+      }
+
+      const threat = threatRef.current;
+      if (!button || threat < 0.01) {
+        threatRef.current = 0;
+        shakeRef.current = { x: 0, y: 0 };
+        resetThreatStyles(button);
+        rafIdRef.current = null;
+        return;
+      }
+
+      const amp = threat * MAX_SHAKE_PX;
+      const shakeX = (Math.random() * 2 - 1) * amp;
+      const shakeY = (Math.random() * 2 - 1) * amp;
+      const shakeRot = (Math.random() * 2 - 1) * threat * MAX_SHAKE_DEG;
+      shakeRef.current = { x: shakeX, y: shakeY };
+
+      button.style.setProperty("--ff-threat", threat.toFixed(3));
+      button.style.setProperty("--ff-shake-x", `${shakeX.toFixed(2)}px`);
+      button.style.setProperty("--ff-shake-y", `${shakeY.toFixed(2)}px`);
+      button.style.setProperty("--ff-shake-rot", `${shakeRot.toFixed(2)}deg`);
+
+      rafIdRef.current = window.requestAnimationFrame(tickThreat);
+    }
+
+    function startThreatLoop() {
+      if (rafIdRef.current === null) {
+        rafIdRef.current = window.requestAnimationFrame(tickThreat);
+      }
     }
 
     function handleMouseMove(event) {
@@ -124,6 +179,14 @@ export default function ForcefieldButton({
 
       const speed = totalDist / dt;
       if (speed <= maxSpeed) return;
+
+      // Scale visual threat (shake + red glow) from 0..1 based on how far above maxSpeed the cursor is.
+      const excessRatio = (speed - maxSpeed) / Math.max(maxSpeed * 6, 0.5);
+      const nextThreat = clamp(0.15 + excessRatio * 0.85, 0.15, 1);
+      threatRef.current = Math.max(threatRef.current * 0.85, nextThreat);
+      lastFastAtRef.current = now;
+      startThreatLoop();
+
       if (now - lastDodgeAtRef.current < DODGE_COOLDOWN_MS) return;
 
       const button = buttonRef.current;
@@ -139,13 +202,13 @@ export default function ForcefieldButton({
       const currentScale = scaleRef.current;
       const nextScale = Math.max(MIN_SCALE, currentScale * SHRINK_FACTOR);
 
-      const currentCenterX = rect.left + rect.width / 2;
-      const currentCenterY = rect.top + rect.height / 2;
+      const currentCenterX = rect.left + rect.width / 2 - shakeRef.current.x * currentScale;
+      const currentCenterY = rect.top + rect.height / 2 - shakeRef.current.y * currentScale;
       const baseCenterX = currentCenterX - currentOffset.x;
       const baseCenterY = currentCenterY - currentOffset.y;
 
-      const baseWidth = rect.width / currentScale;
-      const baseHeight = rect.height / currentScale;
+      const baseWidth = button.offsetWidth || rect.width / currentScale;
+      const baseHeight = button.offsetHeight || rect.height / currentScale;
       const nextWidth = baseWidth * nextScale;
       const nextHeight = baseHeight * nextScale;
 
@@ -205,18 +268,19 @@ export default function ForcefieldButton({
     return () => {
       window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("resize", handleResize);
+      if (rafIdRef.current !== null) {
+        window.cancelAnimationFrame(rafIdRef.current);
+        rafIdRef.current = null;
+      }
+      resetThreatStyles(btnOnMount);
     };
   }, [disabled, maxSpeed]);
 
   const isDodged = offset.x !== 0 || offset.y !== 0 || scale !== 1;
-  const dodgeTransform = isDodged
-    ? `translate3d(${offset.x}px, ${offset.y}px, 0) scale(${scale})`
-    : "";
-  const combinedTransform = [style?.transform, dodgeTransform].filter(Boolean).join(" ");
-
   const mergedStyle = {
     ...style,
-    ...(combinedTransform ? { transform: combinedTransform } : {}),
+    ...(offset.x !== 0 || offset.y !== 0 ? { translate: `${offset.x}px ${offset.y}px` } : {}),
+    ...(scale !== 1 ? { scale: String(scale) } : {}),
   };
 
   const mergedClassName = [
