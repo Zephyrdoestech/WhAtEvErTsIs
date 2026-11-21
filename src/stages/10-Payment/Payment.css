@@ -399,34 +399,15 @@ body:has(.payment-stage-canvas) {
   justify-content: center;
 }
 
-/* Dashed cyan forcefield ellipse + NYA! sticker from Figma (28:712 & 28:713) */
-.payment-forcefield-ring {
-  position: absolute;
-  inset: -18px -22px;
-  border: 3px dashed #00bcd4;
-  border-radius: 50%;
-  pointer-events: none;
-}
-
-.payment-nya-badge {
-  position: absolute;
-  top: -34px;
-  right: -42px;
-  background: #ff66cc;
-  border: 3px solid #ffffff;
-  padding: 2px 10px;
-  transform: rotate(-8deg);
-  pointer-events: none;
-  box-shadow: 2px 2px 0px rgba(0, 0, 0, 0.25);
-  z-index: 3;
-}
-
-.payment-nya-text {
-  font-family: 'Bangers', Impact, cursive, sans-serif;
-  font-size: 24px;
-  line-height: 1;
-  color: #ffffff;
-  margin: 0;
+@keyframes payment-btn-shake {
+  0% { transform: translate(0, 0) rotate(0deg); }
+  15% { transform: translate(-3px, -2px) rotate(-1.5deg); }
+  30% { transform: translate(3px, 2px) rotate(1.5deg); }
+  45% { transform: translate(-4px, 1px) rotate(-1deg); }
+  60% { transform: translate(4px, -1px) rotate(1deg); }
+  75% { transform: translate(-2px, 3px) rotate(-1.5deg); }
+  90% { transform: translate(2px, -2px) rotate(1.5deg); }
+  100% { transform: translate(0, 0) rotate(0deg); }
 }
 
 .payment-pay-now-btn {
@@ -439,10 +420,22 @@ body:has(.payment-stage-canvas) {
   color: #000000;
   cursor: pointer;
   white-space: nowrap;
+  transition: background-color 0.15s ease;
 }
 
 .payment-pay-now-btn:hover {
   background: #2eb82e;
+}
+
+.payment-pay-now-btn--holding {
+  background: #28a428;
+  animation: payment-btn-shake 0.14s linear infinite;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .payment-pay-now-btn--holding {
+    animation: none;
+  }
 }
 
 .payment-hold-wrap {
