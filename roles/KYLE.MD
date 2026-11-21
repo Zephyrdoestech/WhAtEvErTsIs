@@ -27,7 +27,7 @@
 Replace the contents of `src/App.jsx` so it just renders `<AppShell />` from `./app/AppShell.jsx`. Run `npm install` and `npm run dev`. Click through all 12 placeholder stages with the Next button and try `?stage=7`.
 **Done when:** the app shows the airline header, "Step 1 of 12", and you can click Next through all 12 placeholders without errors. Tell the team to pull.
 
-### - [ ] Task 2: Believable airline look
+### - [x] Task 2: Believable airline look
 Polish `AppShell.css` and the header so the site looks like a real, trustworthy airline (navy/white, logo, footer with fake links). Add a `StepProgress.jsx` in `components/layout/` showing 12 dots for the stages. Small joke: the progress bar occasionally jitters backwards for a moment.
 **Done when:** the site looks legit at first glance and the progress bar follows the current stage.
 
