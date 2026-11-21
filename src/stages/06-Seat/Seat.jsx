@@ -13,7 +13,7 @@ const WINDOW_FEE_LABEL = "Window Appreciation Fee";
 const WINDOW_FEE_AMOUNT = 299;
 const MIN_AVAILABLE_SEATS = 15;
 const HOVER_COOLDOWN_MS = 180;
-const FLASHLIGHT_RADIUS = 130;
+const FLASHLIGHT_RADIUS = 150;
 // Temporary local fallback while SYOS's Flashlight.jsx is still a stub.
 const USE_LOCAL_DARK_FALLBACK = true;
 
@@ -53,14 +53,17 @@ export default function Seat() {
   const [selectedCode, setSelectedCode] = useState(booking.seat?.code ?? null);
   const [jumpedCode, setJumpedCode] = useState(null);
   const [dark, setDark] = useState(false);
-  const [beamPos, setBeamPos] = useState({ x: 200, y: 200 });
   const [statusMessage, setStatusMessage] = useState(
     "Pick any available seat on board. Good luck catching one."
   );
 
   const lastMischiefAtRef = useRef(0);
   const jumpHighlightTimerRef = useRef(null);
-  const seatMapShellRef = useRef(null);
+  const darkOverlayRef = useRef(null);
+  const cursorPosRef = useRef({
+    x: typeof window !== "undefined" ? Math.round(window.innerWidth / 2) : 400,
+    y: typeof window !== "undefined" ? Math.round(window.innerHeight / 2) : 300,
+  });
 
   useEffect(
     () => () => {
@@ -70,6 +73,48 @@ export default function Seat() {
     },
     []
   );
+
+  // Track cursor across the entire viewport so the full-screen flashlight opens right at the cursor.
+  useEffect(() => {
+    function updateBeam(x, y) {
+      cursorPosRef.current = { x, y };
+      const overlay = darkOverlayRef.current;
+      if (overlay) {
+        overlay.style.setProperty("--beam-x", `${x}px`);
+        overlay.style.setProperty("--beam-y", `${y}px`);
+      }
+    }
+
+    function handlePointerMove(event) {
+      updateBeam(event.clientX, event.clientY);
+    }
+
+    function handleTouchMove(event) {
+      const touch = event.touches?.[0];
+      if (touch) {
+        updateBeam(touch.clientX, touch.clientY);
+      }
+    }
+
+    window.addEventListener("mousemove", handlePointerMove, { passive: true });
+    window.addEventListener("pointermove", handlePointerMove, { passive: true });
+    window.addEventListener("touchmove", handleTouchMove, { passive: true });
+    return () => {
+      window.removeEventListener("mousemove", handlePointerMove);
+      window.removeEventListener("pointermove", handlePointerMove);
+      window.removeEventListener("touchmove", handleTouchMove);
+    };
+  }, []);
+
+  // Sync the beam position the instant darkness turns on.
+  useEffect(() => {
+    if (!dark) return;
+    const overlay = darkOverlayRef.current;
+    if (overlay) {
+      overlay.style.setProperty("--beam-x", `${cursorPosRef.current.x}px`);
+      overlay.style.setProperty("--beam-y", `${cursorPosRef.current.y}px`);
+    }
+  }, [dark]);
 
   // Random cabin blackout every 10-20s (4-7s in demoMode) lasting a few seconds.
   useEffect(() => {
@@ -113,16 +158,6 @@ export default function Seat() {
     () => Object.values(seats).filter((s) => s.status === "available").length,
     [seats]
   );
-
-  function handleMapPointerMove(event) {
-    const shell = seatMapShellRef.current;
-    if (!shell) return;
-    const rect = shell.getBoundingClientRect();
-    setBeamPos({
-      x: Math.round(event.clientX - rect.left),
-      y: Math.round(event.clientY - rect.top),
-    });
-  }
 
   function triggerJumpHighlight(code) {
     setJumpedCode(code);
@@ -271,12 +306,7 @@ export default function Seat() {
 
           <div className="seat-stage__layout">
             <Flashlight on={dark} radius={FLASHLIGHT_RADIUS}>
-              <div
-                ref={seatMapShellRef}
-                className={`seat-map-shell ${dark ? "seat-map-shell--dark" : ""}`}
-                onMouseMove={handleMapPointerMove}
-                onPointerMove={handleMapPointerMove}
-              >
+              <div className={`seat-map-shell ${dark ? "seat-map-shell--dark" : ""}`}>
                 <div className="seat-legend">
                   <span className="seat-legend__item">
                     <span className="seat-legend__swatch seat-legend__swatch--window" /> Window (₱
@@ -325,24 +355,6 @@ export default function Seat() {
                     </div>
                   ))}
                 </div>
-
-                {USE_LOCAL_DARK_FALLBACK && dark && (
-                  <div
-                    className="seat-dark-fallback"
-                    aria-hidden="true"
-                    style={{
-                      "--beam-x": `${beamPos.x}px`,
-                      "--beam-y": `${beamPos.y}px`,
-                      "--beam-r": `${FLASHLIGHT_RADIUS}px`,
-                    }}
-                  />
-                )}
-
-                {dark && (
-                  <div className="seat-dark-pill" role="alert">
-                    DARK MODE: ON (cursor = flashlight)
-                  </div>
-                )}
               </div>
             </Flashlight>
 
@@ -402,6 +414,20 @@ export default function Seat() {
           </div>
         </div>
       </div>
+
+      {USE_LOCAL_DARK_FALLBACK && dark && (
+        <>
+          <div
+            ref={darkOverlayRef}
+            className="seat-dark-fallback"
+            aria-hidden="true"
+            style={{ "--beam-r": `${FLASHLIGHT_RADIUS}px` }}
+          />
+          <div className="seat-dark-pill" role="alert">
+            DARK MODE: ON (cursor = flashlight)
+          </div>
+        </>
+      )}
     </section>
   );
 }
