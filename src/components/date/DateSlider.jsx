@@ -43,7 +43,8 @@ export default function DateSlider({
 }) {
   const minMs = parseIsoDate(min);
   const maxMs = Math.max(minMs, parseIsoDate(max));
-  const totalDays = Math.max(1, Math.round((maxMs - minMs) / MS_PER_DAY));
+  // 0 is valid: a one-date range (min === max) must not offer a day past max.
+  const totalDays = Math.max(0, Math.round((maxMs - minMs) / MS_PER_DAY));
 
   const currentDay = value
     ? Math.min(totalDays, Math.max(0, Math.round((parseIsoDate(value) - minMs) / MS_PER_DAY)))

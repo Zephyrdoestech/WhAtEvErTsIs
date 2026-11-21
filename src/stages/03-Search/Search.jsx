@@ -135,7 +135,8 @@ export default function Search() {
       return;
     }
     if (!search.departDate || search.departDate < today
-      || (search.returnDate && search.returnDate < search.departDate)) {
+      || search.departDate > maxTravelDate
+      || (search.returnDate && (search.returnDate < search.departDate || search.returnDate > maxTravelDate))) {
       setError("Check your dates. Our aircraft cannot travel back in time yet.");
       return;
     }
