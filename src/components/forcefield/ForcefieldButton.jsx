@@ -4,6 +4,7 @@
 //   onDodge fires every time the button runs away. maxSpeed is in px per ms.
 import { useCallback, useEffect, useRef, useState } from "react";
 import useBooking from "../../context/useBooking.js";
+import { useControllerConfig } from "../chaos/controllerConfig.js";
 import dodgeSound from "../../assets/audios/sfx/Pou Nah Sound Effect.mp3";
 import "./ForcefieldButton.css";
 
@@ -243,13 +244,15 @@ export default function ForcefieldButton({
   onPointerDown,
   maxSpeed = DEFAULT_MAX_SPEED,
   disabled = false,
-  muted = false,
+  muted: mutedProp = false,
   className = "",
   style,
   children,
   ...rest
 }) {
   const { demoMode } = useBooking();
+  const { config } = useControllerConfig();
+  const muted = mutedProp || Boolean(config.muteAllSounds); // the global Mute Chaos switch covers this sound too
   const effectiveMaxSpeed = demoMode ? Math.max(maxSpeed * 3, DEMO_MIN_MAX_SPEED) : maxSpeed;
   const minScale = demoMode ? DEMO_MIN_SCALE : MIN_SCALE;
 
