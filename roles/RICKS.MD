@@ -47,7 +47,7 @@ Build `SelectFlight.jsx`: show the chosen `booking.flight` as a detailed card (t
 Build `Seat.jsx`: a grid seat map (rows 1-30, A-F, business rows 1-3). Hovering an available seat sometimes makes it jump to another spot or turn occupied. Window seats (A/F) add a "Window Appreciation Fee" via `addFee()`. On confirm, `updateBooking({ seat: { code, cls, window } })` and `next()`.
 **Done when:** you can eventually pick a seat and it shows up in `booking.seat`, with the fee added for windows.
 
-### - [ ] Task 7: Stage 06: random darkness
+### - [x] Task 7: Stage 06: random darkness
 Every 10-20 seconds the cabin "lights go out" for a few seconds: wrap the seat map in SYOS's `<Flashlight on={dark}>`. If SYOS's component isn't ready yet, use a simple black overlay and switch later.
 **Done when:** the seat map goes dark at random and the flashlight still lets you pick seats.
 
