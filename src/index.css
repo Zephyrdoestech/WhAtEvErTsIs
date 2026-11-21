@@ -1,0 +1,39 @@
+/* OWNER: KYLE — global look from docs/references. Everyone can use the tokens and classes below. */
+@import url("https://fonts.googleapis.com/css2?family=Bangers&family=Comic+Neue:wght@400;700&display=swap");
+
+:root {
+  --page: #ffff99;      /* pale yellow page */
+  --ink: #111;
+  --blue: #003399;      /* header, blue panels */
+  --red: #cc0000;       /* marquee, alerts, prices */
+  --yellow: #ffee00;    /* logo, highlight text */
+  --purple: #660099;
+  --green: #22bb33;     /* go buttons */
+  --lavender: #ccccff;  /* link bar */
+  --grey: #d9d9d9;      /* footer, disabled */
+  --link: #0000cc;
+  --border: 2px solid var(--ink);
+  --font-body: "Comic Neue", "Comic Sans MS", system-ui, sans-serif;
+  --font-display: "Bangers", Impact, sans-serif;
+  --font-mono: "Courier New", ui-monospace, monospace;
+}
+
+*, *::before, *::after { box-sizing: border-box; }
+body { margin: 0; background: var(--page); color: var(--ink); font-family: var(--font-body); }
+img, video { max-width: 100%; height: auto; }
+a { color: var(--link); }
+
+/* Panel: white box with a coloured title strip. <section class="panel"><h2 class="panel-title">…</h2><div class="panel-body">…</div></section> */
+.panel { background: #fff; border: var(--border); margin-bottom: 0.75rem; }
+.panel-title { margin: 0; padding: 0.4rem 0.6rem; background: var(--blue); color: #fff; font: 700 0.85rem var(--font-body); text-transform: uppercase; }
+.panel-title.purple { background: var(--purple); }
+.panel-title.red { background: var(--red); }
+.panel-body { padding: 0.75rem; }
+
+/* Buttons: .btn (grey) · .btn.go (green) · .btn.warn (yellow) */
+.btn { min-height: 2.25rem; padding: 0.35rem 0.9rem; border: var(--border); background: var(--grey); color: var(--ink); font: 700 0.95rem var(--font-body); cursor: pointer; }
+.btn.go { background: var(--green); }
+.btn.warn { background: var(--yellow); }
+.btn:disabled { opacity: 0.6; cursor: not-allowed; }
+
+.display { font-family: var(--font-display); letter-spacing: 0.03em; font-weight: 400; }

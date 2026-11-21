@@ -1,1 +1,276 @@
-/* OWNER: DAR — styles for Stage 08 only */
+/* OWNER: DAR — styles for Stage 08 (Extras & Guilt Trips) */
+
+.extras-stage {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.extras-header__body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.5rem;
+}
+
+.extras-header__intro {
+  margin: 0;
+  font-size: 0.92rem;
+  line-height: 1.35;
+}
+
+.extras-header__summary {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.45rem 0.65rem;
+  border: 2px solid var(--ink, #111);
+  background: var(--yellow, #ffee00);
+  font-size: 0.92rem;
+}
+
+.extras-header__total strong {
+  color: var(--red, #cc0000);
+  font-size: 1.1rem;
+}
+
+.extras-guilt-banner {
+  padding: 0.4rem 0.6rem;
+  border: 2px dashed var(--red, #cc0000);
+  background: #ffe8e8;
+  color: var(--red, #cc0000);
+  font-size: 0.85rem;
+}
+
+.extras-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.7rem;
+}
+
+@media (min-width: 720px) {
+  .extras-grid {
+    grid-template-columns: repeat(2, minmax(0, 1fr));
+  }
+}
+
+.extra-card {
+  display: flex;
+  flex-direction: column;
+  margin-bottom: 0;
+  box-shadow: 4px 4px 0 var(--ink, #111);
+  cursor: pointer;
+  transition: transform 0.12s ease, box-shadow 0.12s ease;
+}
+
+.extra-card:hover {
+  transform: translate(-2px, -2px);
+  box-shadow: 6px 6px 0 var(--purple, #660099);
+}
+
+.extra-card--checked {
+  border-color: var(--ink, #111);
+  background: #fffef5;
+}
+
+.extra-card--unchecked {
+  background: #f2f2f2;
+  opacity: 0.92;
+}
+
+.extra-card__top {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  padding: 0.35rem 0.6rem;
+  border-bottom: 2px solid var(--ink, #111);
+  background: var(--blue, #003399);
+  color: #fff;
+}
+
+.extra-card--unchecked .extra-card__top {
+  background: #555;
+}
+
+.extra-card__tag {
+  padding: 0.08rem 0.38rem;
+  border: 1px solid var(--ink, #111);
+  background: var(--yellow, #ffee00);
+  color: var(--ink, #111);
+  font: 700 0.68rem var(--font-mono, monospace);
+}
+
+.extra-card__price {
+  color: var(--yellow, #ffee00);
+  font-size: 1.45rem;
+  line-height: 1;
+}
+
+.extra-card__body {
+  display: flex;
+  flex: 1;
+  flex-direction: column;
+  justify-content: space-between;
+  gap: 0.55rem;
+}
+
+.extra-card__main {
+  display: flex;
+  align-items: flex-start;
+  gap: 0.55rem;
+}
+
+.extra-card__checkbox {
+  width: 1.35rem;
+  height: 1.35rem;
+  margin-top: 0.15rem;
+  accent-color: var(--red, #cc0000);
+  cursor: pointer;
+  flex-shrink: 0;
+}
+
+.extra-card__info {
+  flex: 1;
+}
+
+.extra-card__title {
+  margin: 0 0 0.25rem;
+  font-size: 1.02rem;
+}
+
+.extra-card__desc {
+  margin: 0;
+  color: #333;
+  font-size: 0.83rem;
+  line-height: 1.3;
+}
+
+.extra-card__status {
+  display: flex;
+}
+
+.extra-card__pill {
+  display: inline-block;
+  width: 100%;
+  padding: 0.22rem 0.45rem;
+  border: 1px solid var(--ink, #111);
+  font: 700 0.72rem var(--font-mono, monospace);
+}
+
+.extra-card__pill--on {
+  background: #d9ffe0;
+  color: #0b5e18;
+}
+
+.extra-card__pill--off {
+  background: #ffe1e1;
+  color: var(--red, #cc0000);
+}
+
+.extras-footer-panel {
+  margin-bottom: 0;
+}
+
+.extras-footer {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.6rem;
+}
+
+.extras-footer__right {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  gap: 0.55rem;
+}
+
+.extras-no-thanks-btn,
+.extras-continue-btn {
+  min-height: 38px;
+}
+
+/* Custom Guilt-Trip Modal */
+.extras-modal-backdrop {
+  position: fixed;
+  inset: 0;
+  z-index: 48;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  padding: 0.75rem;
+  background: rgb(0 0 0 / 62%);
+}
+
+.extras-modal {
+  width: min(90vw, 460px);
+  margin: 0;
+  box-shadow: 8px 8px 0 var(--ink, #111);
+  animation: extras-modal-pop 0.2s ease-out;
+}
+
+@keyframes extras-modal-pop {
+  0% {
+    transform: scale(0.82);
+    opacity: 0;
+  }
+  100% {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+.extras-modal__body {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 0.95rem 0.9rem;
+  text-align: center;
+}
+
+.extras-modal__icon {
+  font-size: 2.5rem;
+  line-height: 1;
+}
+
+.extras-modal__question {
+  margin: 0;
+  color: var(--red, #cc0000);
+  font: 400 1.45rem/1.15 var(--font-display, Impact, sans-serif);
+  letter-spacing: 0.03em;
+}
+
+.extras-modal__aftermath {
+  margin: 0;
+  padding: 0.45rem 0.7rem;
+  border: 2px dashed var(--red, #cc0000);
+  background: var(--yellow, #ffee00);
+  color: var(--ink, #111);
+  font: 700 1.12rem/1.3 var(--font-body, sans-serif);
+}
+
+.extras-modal__detail {
+  margin: 0;
+  color: #222;
+  font-size: 0.88rem;
+  line-height: 1.35;
+}
+
+.extras-modal__actions {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  gap: 0.45rem;
+  margin-top: 0.25rem;
+}
+
+.extras-modal__keep,
+.extras-modal__decline,
+.extras-modal__close-aftermath {
+  width: 100%;
+  min-height: 40px;
+}
