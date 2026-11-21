@@ -39,10 +39,6 @@ export default function Airlper() {
     positionIndex: Math.floor(Math.random() * PEEK_POSITIONS.length),
   }));
 
-  useEffect(() => {
-    setTicker((current) => ({ ...current, stage, lineIndex: 0 }));
-  }, [stage]);
-
   useEffect(() => () => window.clearTimeout(forgetTimerRef.current), []);
 
   useEffect(() => {

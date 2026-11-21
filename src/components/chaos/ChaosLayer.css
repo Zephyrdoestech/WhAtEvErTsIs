@@ -1,0 +1,268 @@
+/* OWNER: DAR — styles for ChaosLayer, HeeHee, SlowImage, and AdPopup */
+
+/* Page shake triggered by HeeHee */
+@keyframes chaos-heehee-shake {
+  0%, 100% { transform: translate(0, 0) rotate(0deg); }
+  15% { transform: translate(-8px, -5px) rotate(-1deg); }
+  30% { transform: translate(8px, 4px) rotate(1deg); }
+  45% { transform: translate(-7px, 6px) rotate(-0.8deg); }
+  60% { transform: translate(7px, -4px) rotate(0.8deg); }
+  75% { transform: translate(-5px, 3px) rotate(-0.5deg); }
+  90% { transform: translate(5px, -2px) rotate(0.5deg); }
+}
+
+body.chaos-page-shake .app-shell {
+  animation: chaos-heehee-shake 0.65s ease-in-out;
+}
+
+/* Chaos mute button in top-right corner */
+.chaos-mute-toggle {
+  position: fixed;
+  top: 0.5rem;
+  right: 0.5rem;
+  z-index: 60;
+  display: inline-flex;
+  align-items: center;
+  gap: 0.3rem;
+  padding: 0.28rem 0.55rem;
+  border: 2px solid var(--ink, #111);
+  background: var(--yellow, #ffee00);
+  color: var(--ink, #111);
+  box-shadow: 2px 2px 0 var(--ink, #111);
+  font: 700 0.78rem var(--font-body, sans-serif);
+  cursor: pointer;
+}
+
+.chaos-mute-toggle[aria-pressed="true"] {
+  background: var(--grey, #d9d9d9);
+  color: var(--red, #cc0000);
+}
+
+.chaos-mute-toggle:focus-visible {
+  outline: 3px solid var(--blue, #003399);
+  outline-offset: 2px;
+}
+
+/* HeeHee toast badge when sound/shake fires */
+.heehee-toast {
+  position: fixed;
+  top: 2.6rem;
+  right: 0.5rem;
+  z-index: 59;
+  padding: 0.3rem 0.6rem;
+  border: 2px solid var(--ink, #111);
+  background: var(--red, #cc0000);
+  color: var(--yellow, #ffee00);
+  box-shadow: 3px 3px 0 var(--ink, #111);
+  font: 400 1rem var(--font-display, Impact, sans-serif);
+  letter-spacing: 0.05em;
+  pointer-events: none;
+  animation: heehee-pop 0.85s ease-out forwards;
+}
+
+@keyframes heehee-pop {
+  0% { opacity: 0; transform: scale(0.6) rotate(-8deg); }
+  25% { opacity: 1; transform: scale(1.1) rotate(5deg); }
+  80% { opacity: 1; transform: scale(1) rotate(-3deg); }
+  100% { opacity: 0; transform: translateY(-10px) scale(0.9); }
+}
+
+/* SlowImage overlay */
+.slow-image {
+  position: fixed;
+  z-index: 35;
+  padding: 0;
+  border: 0;
+  background: transparent;
+  cursor: pointer;
+  user-select: none;
+}
+
+.slow-image--bottom-right {
+  right: 4%;
+  bottom: 6%;
+}
+
+.slow-image--center {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.slow-image--top-left {
+  top: 12%;
+  left: 8%;
+}
+
+.slow-image--bottom-left {
+  bottom: 8%;
+  left: 6%;
+}
+
+.slow-image__img {
+  display: block;
+  width: clamp(13rem, 34vw, 23rem);
+  max-height: 55vh;
+  object-fit: contain;
+  filter: drop-shadow(0 0 12px rgb(0 0 0 / 45%));
+  pointer-events: none;
+}
+
+.slow-image__hint {
+  position: absolute;
+  right: 0.35rem;
+  bottom: 0.35rem;
+  padding: 0.15rem 0.4rem;
+  border: 1px solid var(--ink, #111);
+  background: rgb(255 238 0 / 90%);
+  color: var(--ink, #111);
+  font: 700 0.7rem var(--font-body, sans-serif);
+  pointer-events: none;
+}
+
+/* AdPopup */
+.ad-popup {
+  position: fixed;
+  z-index: 50;
+  width: min(21rem, calc(100vw - 1.5rem));
+  border: 3px solid var(--ink, #111);
+  background: #fff;
+  box-shadow: 6px 6px 0 var(--red, #cc0000);
+  color: var(--ink, #111);
+  font-family: var(--font-body, sans-serif);
+  animation: ad-popup-bounce 0.25s ease-out;
+}
+
+.ad-popup--primary {
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+}
+
+.ad-popup--secondary {
+  top: calc(50% + 1.5rem);
+  left: calc(50% + 1.25rem);
+  transform: translate(-50%, -50%);
+  border-color: var(--purple, #660099);
+  box-shadow: 6px 6px 0 var(--blue, #003399);
+}
+
+@keyframes ad-popup-bounce {
+  0% { transform: translate(-50%, -50%) scale(0.75); }
+  70% { transform: translate(-50%, -50%) scale(1.04); }
+  100% { transform: translate(-50%, -50%) scale(1); }
+}
+
+.ad-popup__bar {
+  position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  min-height: 1.9rem;
+  padding: 0.25rem 0.45rem;
+  background: linear-gradient(90deg, var(--red, #cc0000), #ff6600, var(--purple, #660099));
+  color: #fff;
+  border-bottom: 2px solid var(--ink, #111);
+}
+
+.ad-popup__tag {
+  font: 700 0.72rem var(--font-mono, monospace);
+  letter-spacing: 0.04em;
+  text-transform: uppercase;
+}
+
+/* Tiny close button that moves once when hovered */
+.ad-popup__close {
+  position: absolute;
+  top: 0.25rem;
+  right: 0.3rem;
+  width: 1.15rem;
+  height: 1.15rem;
+  padding: 0;
+  border: 1px solid var(--ink, #111);
+  background: var(--grey, #d9d9d9);
+  color: var(--ink, #111);
+  font: 700 0.62rem/1 var(--font-mono, monospace);
+  cursor: pointer;
+  transition: top 0.14s ease, right 0.14s ease, left 0.14s ease;
+}
+
+.ad-popup__close--dodged {
+  top: auto;
+  bottom: -1.45rem;
+  right: auto;
+  left: 0.35rem;
+  background: var(--yellow, #ffee00);
+}
+
+.ad-popup__close:focus-visible {
+  outline: 2px solid var(--yellow, #ffee00);
+  outline-offset: 1px;
+}
+
+.ad-popup__body {
+  padding: 0.75rem 0.8rem;
+  background: repeating-linear-gradient(
+    -45deg,
+    #fffdf0,
+    #fffdf0 12px,
+    #fff5cc 12px,
+    #fff5cc 24px
+  );
+  text-align: center;
+}
+
+.ad-popup__badge {
+  display: inline-block;
+  margin-bottom: 0.35rem;
+  padding: 0.12rem 0.45rem;
+  border: 2px solid var(--ink, #111);
+  background: var(--yellow, #ffee00);
+  color: var(--red, #cc0000);
+  font: 400 0.85rem var(--font-display, Impact, sans-serif);
+  letter-spacing: 0.04em;
+}
+
+.ad-popup__headline {
+  margin: 0.15rem 0 0.4rem;
+  color: var(--red, #cc0000);
+  font: 400 1.55rem/1.05 var(--font-display, Impact, sans-serif);
+  letter-spacing: 0.03em;
+  text-shadow: 1px 1px 0 var(--yellow, #ffee00);
+}
+
+.ad-popup__art {
+  margin: 0.35rem auto;
+  font-size: 2.3rem;
+  line-height: 1.1;
+}
+
+.ad-popup__copy {
+  margin: 0 0 0.6rem;
+  font-size: 0.88rem;
+  font-weight: 700;
+  line-height: 1.3;
+}
+
+.ad-popup__cta {
+  width: 100%;
+  padding: 0.45rem 0.7rem;
+  border: 2px solid var(--ink, #111);
+  background: var(--green, #22bb33);
+  color: #fff;
+  text-shadow: 1px 1px 0 var(--ink, #111);
+  font: 400 1.05rem var(--font-display, Impact, sans-serif);
+  letter-spacing: 0.04em;
+  cursor: pointer;
+}
+
+.ad-popup__cta:hover {
+  background: var(--red, #cc0000);
+}
+
+.ad-popup__fine {
+  margin: 0.45rem 0 0;
+  color: #444;
+  font-size: 0.68rem;
+  font-style: italic;
+}

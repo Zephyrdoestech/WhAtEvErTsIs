@@ -30,19 +30,19 @@ Build `Airlper.jsx`: a floating helper with the transparent Jose Mari Chan cutou
 Add a tiny chat to Airlper: it asks the user's name, accepts an answer, thanks them, then after a few seconds asks the same question again. It reads `booking` and gets details wrong on purpose (for example, guessing the destination is Narnia).
 **Done when:** the Airlper accepts chat answers, thanks the user, repeats its question, and misremembers available booking details.
 
-### - [ ] Task 3: HeeHee sound cue
+### - [x] Task 3: HeeHee sound cue
 Build `HeeHee.jsx`: at random intervals (about 45-90s, or 20s in `demoMode`) play a "hee-hee!" sound (add the file) and briefly shake the page. Add a small 🔇 mute toggle in the ChaosLayer that mutes all chaos sounds.
 **Done when:** the sound fires at random, the page shakes, and mute stops it.
 
-### - [ ] Task 4: SlowImage
+### - [x] Task 4: SlowImage
 Build `SlowImage.jsx`: a fixed overlay image that fades from 0 to `maxOpacity` over `duration` ms. Clicking it dismisses it, but it comes back later. Add it to `ChaosLayer` using a random image from `src/assets/images/` (start with `court-jester-dancing.png`).
 **Done when:** an image slowly creeps over the screen and keeps coming back.
 
-### - [ ] Task 5: AdPopup
+### - [x] Task 5: AdPopup
 Build `AdPopup.jsx`: a fake surprise ad ("HOT SINGLES IN YOUR SEAT ROW" style but clean: "Hot Pandesal in Your Area!"). The close ✕ is tiny, moves once when hovered, and sometimes opens a second ad. Props: `open`, `onClose`.
 **Done when:** `<AdPopup open onClose={...} />` shows an annoying but closable ad.
 
-### - [ ] Task 6: Stage 04: flight results
+### - [x] Task 6: Stage 04: flight results
 Build `Flights.jsx`: call `searchFlights(booking.search)` and render flight cards (airline, times, price). Prices look suspiciously cheap; each card has fine print with absurd conditions (from the API, plus your own extras). Clicking a card: `updateBooking({ flight })` and `next()`.
 **Done when:** Stage 04 lists flights for the search, and picking one moves to Stage 05 with `booking.flight` set.
 
