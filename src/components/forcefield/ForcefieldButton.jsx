@@ -1,17 +1,17 @@
 // OWNER: RICKS — see RICKS.MD. Used by Stage 05 (RICKS) and Stage 10 Pay Now (DIN).
 // Contract: works like a normal <button>, plus:
-//   <ForcefieldButton onClick={...} onDodge={() => {}} maxSpeed={0.4}>Select</ForcefieldButton>
+//   <ForcefieldButton onClick={...} onDodge={() => {}} maxSpeed={0.15}>Select</ForcefieldButton>
 //   onDodge fires every time the button runs away. maxSpeed is in px per ms.
 import { useEffect, useRef, useState } from "react";
 import nyaSound from "../../assets/audios/nya.mp3";
 import "./ForcefieldButton.css";
 
-const TRIGGER_RADIUS = 120;
+const DEFAULT_MAX_SPEED = 0.15;
+const TRIGGER_RADIUS = 130;
 const SPEED_WINDOW_MS = 60;
 const DODGE_COOLDOWN_MS = 220;
-const MIN_JUMP_DIST = 130;
-const MAX_JUMP_DIST = 260;
-const MIN_CURSOR_CLEARANCE = 140;
+const SHRINK_FACTOR = 0.9; // 10% smaller per dodge
+const MIN_SCALE = 0.25;
 const VIEWPORT_PADDING = 16;
 const HEADER_CLEARANCE = 72;
 
@@ -19,46 +19,56 @@ function clamp(value, min, max) {
   return Math.min(max, Math.max(min, value));
 }
 
-function getViewportBounds(rect) {
-  const minLeft = VIEWPORT_PADDING;
-  const maxLeft = Math.max(minLeft, window.innerWidth - rect.width - VIEWPORT_PADDING);
-  const maxTop = Math.max(VIEWPORT_PADDING, window.innerHeight - rect.height - VIEWPORT_PADDING);
-  const minTop = Math.min(HEADER_CLEARANCE, maxTop);
-  return { minLeft, maxLeft, minTop, maxTop };
+function getCenterBounds(width, height) {
+  const halfW = width / 2;
+  const halfH = height / 2;
+  const minCenterX = VIEWPORT_PADDING + halfW;
+  const maxCenterX = Math.max(minCenterX, window.innerWidth - VIEWPORT_PADDING - halfW);
+  const maxCenterY = Math.max(VIEWPORT_PADDING + halfH, window.innerHeight - VIEWPORT_PADDING - halfH);
+  const minCenterY = Math.min(HEADER_CLEARANCE + halfH, maxCenterY);
+  return { minCenterX, maxCenterX, minCenterY, maxCenterY };
 }
 
-function pickDodgeTarget(rect, cursorX, cursorY) {
-  const { minLeft, maxLeft, minTop, maxTop } = getViewportBounds(rect);
-  let best = { left: rect.left, top: rect.top, score: -Infinity };
+function pickFarDodgeCenter({
+  baseCenterX,
+  baseCenterY,
+  currentCenterX,
+  currentCenterY,
+  cursorX,
+  cursorY,
+  nextWidth,
+  nextHeight,
+}) {
+  const { minCenterX, maxCenterX, minCenterY, maxCenterY } = getCenterBounds(nextWidth, nextHeight);
+  const spanX = Math.max(0, maxCenterX - minCenterX);
+  const spanY = Math.max(0, maxCenterY - minCenterY);
 
-  for (let i = 0; i < 16; i += 1) {
-    const angle = Math.random() * Math.PI * 2;
-    const distance = MIN_JUMP_DIST + Math.random() * (MAX_JUMP_DIST - MIN_JUMP_DIST);
-    const candLeft = clamp(rect.left + Math.cos(angle) * distance, minLeft, maxLeft);
-    const candTop = clamp(rect.top + Math.sin(angle) * distance, minTop, maxTop);
+  let best = { x: currentCenterX, y: currentCenterY, score: -Infinity };
 
-    const moved = Math.hypot(candLeft - rect.left, candTop - rect.top);
-    const candCenterX = candLeft + rect.width / 2;
-    const candCenterY = candTop + rect.height / 2;
-    const cursorDist = Math.hypot(candCenterX - cursorX, candCenterY - cursorY);
+  // Sample across the entire viewport and prefer spots far from the original position,
+  // current position, and cursor.
+  for (let i = 0; i < 32; i += 1) {
+    const candX = minCenterX + Math.random() * spanX;
+    const candY = minCenterY + Math.random() * spanY;
 
-    if (moved >= 80 && cursorDist >= MIN_CURSOR_CLEARANCE) {
-      return { left: candLeft, top: candTop };
-    }
+    const distFromOrigin = Math.hypot(candX - baseCenterX, candY - baseCenterY);
+    const distFromCurrent = Math.hypot(candX - currentCenterX, candY - currentCenterY);
+    const distFromCursor = Math.hypot(candX - cursorX, candY - cursorY);
 
-    const score = cursorDist + moved * 0.5;
+    // Weighted score emphasizing escaping far from original position and current/cursor location
+    const score = distFromOrigin * 1.15 + distFromCurrent * 0.9 + distFromCursor * 1.1;
     if (score > best.score) {
-      best = { left: candLeft, top: candTop, score };
+      best = { x: candX, y: candY, score };
     }
   }
 
-  return { left: best.left, top: best.top };
+  return { x: best.x, y: best.y };
 }
 
 export default function ForcefieldButton({
   onClick,
   onDodge,
-  maxSpeed = 0.4,
+  maxSpeed = DEFAULT_MAX_SPEED,
   disabled = false,
   className = "",
   style,
@@ -67,12 +77,14 @@ export default function ForcefieldButton({
 }) {
   const buttonRef = useRef(null);
   const offsetRef = useRef({ x: 0, y: 0 });
+  const scaleRef = useRef(1);
   const pointerSamplesRef = useRef([]);
   const lastDodgeAtRef = useRef(0);
   const onDodgeRef = useRef(onDodge);
   const audioRef = useRef(null);
 
   const [offset, setOffset] = useState({ x: 0, y: 0 });
+  const [scale, setScale] = useState(1);
 
   useEffect(() => {
     onDodgeRef.current = onDodge;
@@ -124,18 +136,40 @@ export default function ForcefieldButton({
       if (distToButton > TRIGGER_RADIUS) return;
 
       const currentOffset = offsetRef.current;
-      const baseLeft = rect.left - currentOffset.x;
-      const baseTop = rect.top - currentOffset.y;
-      const target = pickDodgeTarget(rect, event.clientX, event.clientY);
+      const currentScale = scaleRef.current;
+      const nextScale = Math.max(MIN_SCALE, currentScale * SHRINK_FACTOR);
+
+      const currentCenterX = rect.left + rect.width / 2;
+      const currentCenterY = rect.top + rect.height / 2;
+      const baseCenterX = currentCenterX - currentOffset.x;
+      const baseCenterY = currentCenterY - currentOffset.y;
+
+      const baseWidth = rect.width / currentScale;
+      const baseHeight = rect.height / currentScale;
+      const nextWidth = baseWidth * nextScale;
+      const nextHeight = baseHeight * nextScale;
+
+      const targetCenter = pickFarDodgeCenter({
+        baseCenterX,
+        baseCenterY,
+        currentCenterX,
+        currentCenterY,
+        cursorX: event.clientX,
+        cursorY: event.clientY,
+        nextWidth,
+        nextHeight,
+      });
 
       const nextOffset = {
-        x: Math.round(target.left - baseLeft),
-        y: Math.round(target.top - baseTop),
+        x: Math.round(targetCenter.x - baseCenterX),
+        y: Math.round(targetCenter.y - baseCenterY),
       };
 
       offsetRef.current = nextOffset;
+      scaleRef.current = nextScale;
       lastDodgeAtRef.current = now;
       setOffset(nextOffset);
+      setScale(nextScale);
       playNya();
       onDodgeRef.current?.();
     }
@@ -146,16 +180,21 @@ export default function ForcefieldButton({
       if (!button || (currentOffset.x === 0 && currentOffset.y === 0)) return;
 
       const rect = button.getBoundingClientRect();
-      const { minLeft, maxLeft, minTop, maxTop } = getViewportBounds(rect);
-      const clampedLeft = clamp(rect.left, minLeft, maxLeft);
-      const clampedTop = clamp(rect.top, minTop, maxTop);
-      if (clampedLeft === rect.left && clampedTop === rect.top) return;
+      const currentCenterX = rect.left + rect.width / 2;
+      const currentCenterY = rect.top + rect.height / 2;
+      const { minCenterX, maxCenterX, minCenterY, maxCenterY } = getCenterBounds(
+        rect.width,
+        rect.height
+      );
+      const clampedX = clamp(currentCenterX, minCenterX, maxCenterX);
+      const clampedY = clamp(currentCenterY, minCenterY, maxCenterY);
+      if (clampedX === currentCenterX && clampedY === currentCenterY) return;
 
-      const baseLeft = rect.left - currentOffset.x;
-      const baseTop = rect.top - currentOffset.y;
+      const baseCenterX = currentCenterX - currentOffset.x;
+      const baseCenterY = currentCenterY - currentOffset.y;
       const nextOffset = {
-        x: Math.round(clampedLeft - baseLeft),
-        y: Math.round(clampedTop - baseTop),
+        x: Math.round(clampedX - baseCenterX),
+        y: Math.round(clampedY - baseCenterY),
       };
       offsetRef.current = nextOffset;
       setOffset(nextOffset);
@@ -169,13 +208,11 @@ export default function ForcefieldButton({
     };
   }, [disabled, maxSpeed]);
 
-  const isDodged = offset.x !== 0 || offset.y !== 0;
-  const combinedTransform = [
-    style?.transform,
-    isDodged ? `translate3d(${offset.x}px, ${offset.y}px, 0)` : "",
-  ]
-    .filter(Boolean)
-    .join(" ");
+  const isDodged = offset.x !== 0 || offset.y !== 0 || scale !== 1;
+  const dodgeTransform = isDodged
+    ? `translate3d(${offset.x}px, ${offset.y}px, 0) scale(${scale})`
+    : "";
+  const combinedTransform = [style?.transform, dodgeTransform].filter(Boolean).join(" ");
 
   const mergedStyle = {
     ...style,

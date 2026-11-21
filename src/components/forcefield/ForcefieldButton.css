@@ -1,7 +1,8 @@
 /* OWNER: RICKS — ForcefieldButton styles */
 .forcefield-button {
   position: relative;
-  transition: transform 0.18s cubic-bezier(0.22, 1, 0.36, 1);
+  transform-origin: center;
+  transition: transform 0.22s cubic-bezier(0.22, 1, 0.36, 1);
   will-change: transform;
 }
 

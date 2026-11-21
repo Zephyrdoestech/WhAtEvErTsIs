@@ -1,25 +1,11 @@
 /* OWNER: RICKS — styles for Stage 05 only */
-.forcefield-test-box {
-  margin: 1.5rem 0;
-  padding: 1.25rem;
-  border: 1px dashed #cbd5e1;
-  border-radius: 10px;
-  background: #f8fafc;
-}
-
-.forcefield-test-hint {
-  margin: 0 0 1rem;
-  font-size: 0.9rem;
-  color: #334155;
-}
-
-.forcefield-test-stage {
+.select-flight-action {
   display: flex;
   justify-content: center;
-  padding: 2.5rem 1rem;
+  padding: 2rem 0;
 }
 
-.forcefield-test-btn {
+.select-flight-btn {
   padding: 0.85rem 1.6rem;
   font-size: 1rem;
   font-weight: 700;
@@ -30,13 +16,6 @@
   cursor: pointer;
 }
 
-.forcefield-test-btn:hover {
+.select-flight-btn:hover {
   background: #163f80;
-}
-
-.forcefield-test-stats {
-  margin: 0.5rem 0 0;
-  font-size: 0.9rem;
-  color: #475569;
-  text-align: center;
 }
