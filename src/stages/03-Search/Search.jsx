@@ -1,6 +1,7 @@
 // OWNER: SYOS — see SYOS.MD (Stage 03: Search Flights)
 import { useEffect, useId, useRef, useState } from "react";
 import useBooking from "../../context/useBooking.js";
+import Flashlight from "../../components/flashlight/Flashlight.jsx";
 import { airports } from "./airports.js";
 import "./Search.css";
 
@@ -11,6 +12,7 @@ export default function Search() {
   const dialog = useRef(null);
   const [tourism, setTourism] = useState(null);
   const [allowedAbroad, setAllowedAbroad] = useState("");
+  const [dark, setDark] = useState(false);
   const [search, setSearch] = useState(() => ({
     from: booking.search?.from || "MNL",
     to: booking.search?.to || "CEB",
@@ -119,7 +121,12 @@ export default function Search() {
         <p className="search__eyebrow">BAHALA NA AIR · FLIGHT SEARCH</p>
         <h3 className="display search__title">Where are we going?</h3>
         <p className="search__intro">Pick your route. We'll provide the plot twists.</p>
-        <form onSubmit={submit} className="search__form">
+        <div className="search__lighting">
+          <button type="button" className="btn" aria-pressed={dark} aria-controls={`${prefix}-form`} onClick={() => setDark((value) => !value)}>🌙 Dark Mode {dark ? "On" : "Off"}</button>
+          <p id={`${prefix}-light-help`}>{dark ? "Move your pointer, tap the form, or use Tab to aim the flashlight. Turn Dark Mode off here anytime." : "Our lights work. For now."}</p>
+        </div>
+        <Flashlight on={dark} radius={110}>
+        <form id={`${prefix}-form`} onSubmit={submit} className="search__form" aria-describedby={`${prefix}-light-help`}>
           <div className="search__field">
             <label htmlFor={`${prefix}-from`}>Origin</label>
             <select id={`${prefix}-from`} name="from" value={search.from} onChange={(event) => change("from", event.target.value)} required>{airportOptions()}</select>
@@ -148,6 +155,7 @@ export default function Search() {
           </div>
           <p className="search__error" role="alert">{error}</p>
         </form>
+        </Flashlight>
         <dialog ref={dialog} className="search-tourism" aria-labelledby={`${prefix}-tourism-title`} aria-describedby={`${prefix}-tourism-description`} onCancel={() => setTourism(null)}>
           {tourism && <>
             <button type="button" className="btn search-tourism__close" onClick={() => setTourism(null)}>Back to search</button>

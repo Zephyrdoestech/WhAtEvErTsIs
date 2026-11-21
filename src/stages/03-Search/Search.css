@@ -3,6 +3,10 @@
 .search__eyebrow { margin: 0 0 0.5rem; color: var(--blue); font-size: 0.875rem; font-weight: 700; }
 .search__title { margin: 0; color: var(--blue); font-size: clamp(2rem, 6vw, 3rem); }
 .search__intro { margin: 0.5rem 0 1.25rem; }
+.search__lighting { display: flex; flex-wrap: wrap; align-items: center; gap: 0.75rem; margin-bottom: 1rem; }
+.search__lighting button { min-height: 2.75rem; }
+.search__lighting [aria-pressed="true"] { background: var(--blue); color: #fff; }
+.search__lighting p { flex: 1 1 15rem; margin: 0; font-size: 0.875rem; line-height: 1.4; }
 .search__form { display: grid; gap: 1.25rem; }
 .search__field { display: grid; min-width: 0; gap: 0.5rem; align-content: start; }
 .search__field label { font-weight: 700; }

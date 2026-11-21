@@ -46,7 +46,7 @@ Build `Search.jsx`: origin, destination, depart/return dates, passenger count, S
 If the destination is international, interrupt with a patriotic tourism modal: big button "Piliin ang Pilipinas!" swaps the destination to a random domestic one; the "Continue abroad" button is tiny and wanders. Allow them abroad after 3 tries, with `bumpFrustration`.
 **Done when:** choosing an international destination always triggers the modal at least once.
 
-### - [ ] Task 7: Flashlight component + Stage 03 dark mode
+### - [x] Task 7: Flashlight component + Stage 03 dark mode
 Build `Flashlight.jsx`: when `on`, cover its children with a black overlay and cut a circle (CSS `radial-gradient` mask) around the cursor. Add a "🌙 Dark Mode" toggle to Stage 03 that turns the form pitch black except the flashlight.
 **Done when:** dark mode makes the page black and only the area around the cursor is visible. Tell RICKS it's ready.
 
