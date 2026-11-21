@@ -1,0 +1,6 @@
+[
+  { "id": "WTF101", "airline": "WhAtEvErTsIs Air", "depart": "05:55", "arrive": "07:10", "price": 1,
+    "conditions": ["Pilot not included", "Wings sold separately"] },
+  { "id": "WTF202", "airline": "Budget-ish Wings", "depart": "23:59", "arrive": "00:01", "price": 3,
+    "conditions": ["Must flap arms during takeoff"] }
+]
