@@ -1,0 +1,58 @@
+// Emoji placeholders: captions keep every square understandable without images.
+// Answers use stable IDs so artwork can be replaced without changing validation.
+export const questions = [
+  {
+    id: "airplanes",
+    prompt: "Select all squares with airplanes",
+    hint: "Fine print: only clouds with airplane ambitions count. Actual aircraft are overqualified.",
+    tiles: [
+      { id: "plane", emoji: "✈️", label: "Actual airplane" },
+      { id: "cloud-plane", emoji: "☁️✈️", label: "Cloud shaped like a plane" },
+      { id: "bird", emoji: "🐦", label: "Unlicensed pilot" },
+      { id: "helicopter", emoji: "🚁", label: "Confused ceiling fan" },
+      { id: "luggage", emoji: "🧳", label: "Already lost" },
+      { id: "departure", emoji: "🛫", label: "Actual plane, leaving" },
+      { id: "cloud", emoji: "☁️", label: "Regular cloud" },
+      { id: "banana", emoji: "🍌", label: "Economy snack" },
+      { id: "island", emoji: "🏝️", label: "Your destination-ish" },
+    ],
+    answer: ["cloud-plane"],
+    explanation: "Only the cloud shaped like a plane counts. Real planes lack imagination.",
+  },
+  {
+    id: "baggage",
+    prompt: "Select all squares with carry-on baggage",
+    hint: "Fine print: emotional baggage only. Our airline has classified the crying banana as luggage.",
+    tiles: [
+      { id: "suitcase", emoji: "🧳", label: "Physical baggage" },
+      { id: "backpack", emoji: "🎒", label: "Suspiciously practical" },
+      { id: "happy-banana", emoji: "🍌😊", label: "Banana on holiday" },
+      { id: "teddy", emoji: "🧸", label: "Emotional support bear" },
+      { id: "crying-banana", emoji: "🍌😭", label: "Banana with baggage" },
+      { id: "box", emoji: "📦", label: "Definitely extra fees" },
+      { id: "purse", emoji: "👜", label: "Too bag-like" },
+      { id: "plane", emoji: "✈️", label: "Carries the carry-ons" },
+      { id: "socks", emoji: "🧦", label: "Unclaimed since 1999" },
+    ],
+    answer: ["crying-banana"],
+    explanation: "The crying banana has emotional baggage. Suitcases are just showing off.",
+  },
+  {
+    id: "pilots",
+    prompt: "Select all squares with qualified pilots",
+    hint: "Fine print: our only qualification is wearing sunglasses. Both the cat and the sun passed.",
+    tiles: [
+      { id: "pilot", emoji: "🧑‍✈️", label: "Has an actual licence" },
+      { id: "bird", emoji: "🐦", label: "Too much experience" },
+      { id: "cat", emoji: "🐱🕶️", label: "Cat in sunglasses" },
+      { id: "robot", emoji: "🤖", label: "Here for verification" },
+      { id: "sun", emoji: "🌞🕶️", label: "Sun in sunglasses" },
+      { id: "penguin", emoji: "🐧", label: "Ground crew" },
+      { id: "cap", emoji: "🧢", label: "Hat, no applicant" },
+      { id: "sleeping", emoji: "😴", label: "On a mandatory break" },
+      { id: "coffee", emoji: "☕", label: "The real captain" },
+    ],
+    answer: ["cat", "sun"],
+    explanation: "The cat and the sun wear sunglasses. That is the entire hiring process.",
+  },
+];
