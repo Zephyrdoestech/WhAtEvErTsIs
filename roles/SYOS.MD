@@ -58,6 +58,6 @@ Build `Passenger.jsx`: first/last name, birthday, nationality, email, phone, pas
 Add a "voluntary" camera step: `navigator.mediaDevices.getUserMedia({ video: true })` shows a live preview only (never upload or save frames). Prompt "Strike your best airplane pose ✈", 3-2-1 countdown, then fake analysis messages ("Wingspan: inadequate... Accepted anyway"). If the camera is denied or missing: "Your refusal has been noted. Pose anyway." and continue. Stop the camera stream when leaving.
 **Done when:** the pose check works with and without a camera, and the camera light turns off after.
 
-### - [x] Task 10: Stage 07: are you human?
+### - [ ] Task 10: Stage 07: are you human?
 After the pose check, show `<Captcha />` with the question "Despite the pose, are you human?". On pass, `next()`.
 **Done when:** Stage 07 runs form → pose → CAPTCHA → Stage 08.
