@@ -24,38 +24,10 @@ body.chaos-page-shake .link-bar {
   animation: chaos-heehee-shake 0.65s ease-in-out;
 }
 
-/* Chaos mute button in top-right corner */
-.chaos-mute-toggle {
-  position: fixed;
-  top: 0.5rem;
-  right: 0.5rem;
-  z-index: 60;
-  display: inline-flex;
-  align-items: center;
-  gap: 0.3rem;
-  padding: 0.28rem 0.55rem;
-  border: 2px solid var(--ink, #111);
-  background: var(--yellow, #ffee00);
-  color: var(--ink, #111);
-  box-shadow: 2px 2px 0 var(--ink, #111);
-  font: 700 0.78rem var(--font-body, sans-serif);
-  cursor: pointer;
-}
-
-.chaos-mute-toggle[aria-pressed="true"] {
-  background: var(--grey, #d9d9d9);
-  color: var(--red, #cc0000);
-}
-
-.chaos-mute-toggle:focus-visible {
-  outline: 3px solid var(--blue, #003399);
-  outline-offset: 2px;
-}
-
 /* HeeHee toast badge when sound/shake fires */
 .heehee-toast {
   position: fixed;
-  top: 2.6rem;
+  top: 0.5rem;
   right: 0.5rem;
   z-index: 59;
   padding: 0.3rem 0.6rem;
@@ -281,16 +253,8 @@ body.chaos-page-shake .link-bar {
 }
 
 @media (max-width: 640px) {
-  .chaos-mute-toggle {
-    top: 0.35rem;
-    right: 0.35rem;
-    min-height: 2.25rem;
-    padding: 0.25rem 0.5rem;
-    font-size: 0.74rem;
-  }
-
   .heehee-toast {
-    top: 2.75rem;
+    top: 0.35rem;
     right: 0.35rem;
     font-size: 0.9rem;
   }
@@ -357,18 +321,10 @@ body.chaos-page-shake .link-bar {
 }
 
 /* Desktop web & pointer optimizations */
-.chaos-mute-toggle,
 .slow-image,
 .ad-popup__close,
 .ad-popup__cta {
   touch-action: manipulation;
-}
-
-@media (hover: hover) {
-  .chaos-mute-toggle:hover {
-    transform: translate(-1px, -1px);
-    box-shadow: 3px 3px 0 var(--ink, #111);
-  }
 }
 
 @media (min-width: 1024px) {

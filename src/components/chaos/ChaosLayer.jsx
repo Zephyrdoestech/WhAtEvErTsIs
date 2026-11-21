@@ -18,7 +18,7 @@ import SlowImage from "./SlowImage.jsx";
 
 export default function ChaosLayer() {
   const { stage, demoMode } = useBooking() ?? {};
-  const { config, toggleFeature } = useControllerConfig();
+  const { config } = useControllerConfig();
   const [onControllerPage, setOnControllerPage] = useState(() =>
     isControllerRoute()
   );
@@ -131,17 +131,6 @@ export default function ChaosLayer() {
 
   return (
     <>
-      <button
-        type="button"
-        className="chaos-mute-toggle"
-        aria-pressed={muted}
-        aria-label={muted ? "Unmute chaos sounds" : "Mute chaos sounds"}
-        onClick={() => toggleFeature("muteAllSounds")}
-      >
-        <span aria-hidden="true">{muted ? "🔇" : "🔊"}</span>
-        <span>{muted ? "Chaos Muted" : "Mute Chaos"}</span>
-      </button>
-
       {config.airlper && <Airlper />}
       {config.heeHee && <HeeHee muted={muted} />}
       {config.flashbang && <Flashbang muted={muted} />}
