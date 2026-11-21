@@ -1,4 +1,4 @@
-// Random Eminem flashbang -> brief pure-white blind + Flashbang Sfx -> white fades out to reveal flashed cat.
+// Random Eminem flashbang (0.2s, no backdrop) -> intense glowing white full-screen flash + SFX -> opens flashed cat fading out.
 import { useCallback, useEffect, useRef, useState } from "react";
 import useBooking from "../../context/useBooking.js";
 import eminemImg from "../../assets/images/emenim flashbang.jpg";
@@ -6,8 +6,9 @@ import flashedCatImg from "../../assets/images/flashed cat.jpg";
 import flashbangSfx from "../../assets/audios/sfx/Flashbang Sfx.mp3";
 import "./Flashbang.css";
 
-const THROW_DURATION_MS = 650;
-const BLIND_DURATION_MS = 5850;
+const THROW_DURATION_MS = 200; // 0.2s Eminem flashbang appearance
+const FLASH_HOLD_MS = 850; // intense pure-white glowing flash peak
+const CAT_FADE_MS = 5000; // flashed cat opens after flash and slowly fades out
 
 function randomBetween(min, max) {
   return min + Math.random() * (max - min);
@@ -15,7 +16,7 @@ function randomBetween(min, max) {
 
 export default function Flashbang({ muted = false }) {
   const { stage, demoMode, bumpFrustration } = useBooking() ?? {};
-  // "idle" | "throw" | "blind"
+  // "idle" | "throw" | "flash" | "cat"
   const [phase, setPhase] = useState("idle");
   const audioRef = useRef(null);
   const timersRef = useRef([]);
@@ -55,9 +56,9 @@ export default function Flashbang({ muted = false }) {
       setPhase("throw");
       bumpFrustration?.(4);
 
-      const blindTimer = window.setTimeout(() => {
-        // Trigger full-screen pure white flash AND play Flashbang Sfx at the exact same moment.
-        setPhase("blind");
+      const flashTimer = window.setTimeout(() => {
+        // Flash the entire screen glowing white and play Flashbang SFX simultaneously
+        setPhase("flash");
 
         if (!mutedRef.current) {
           try {
@@ -71,14 +72,21 @@ export default function Flashbang({ muted = false }) {
           }
         }
 
-        const endTimer = window.setTimeout(() => {
-          stopAudio();
-          setPhase("idle");
-        }, BLIND_DURATION_MS);
-        timersRef.current.push(endTimer);
+        const catTimer = window.setTimeout(() => {
+          // After the flash peak, open flashed cat.jpg as the white glow dissolves
+          setPhase("cat");
+
+          const endTimer = window.setTimeout(() => {
+            stopAudio();
+            setPhase("idle");
+          }, CAT_FADE_MS);
+          timersRef.current.push(endTimer);
+        }, FLASH_HOLD_MS);
+
+        timersRef.current.push(catTimer);
       }, THROW_DURATION_MS);
 
-      timersRef.current.push(blindTimer);
+      timersRef.current.push(flashTimer);
     }, waitMs);
 
     timersRef.current.push(triggerTimer);
@@ -106,17 +114,16 @@ export default function Flashbang({ muted = false }) {
       aria-label="Flashbang!"
     >
       {phase === "throw" && (
-        <div className="flashbang__throw-wrap">
-          <img src={eminemImg} alt="Eminem throwing a flashbang" className="flashbang__eminem" />
-        </div>
+        <img src={eminemImg} alt="Eminem throwing a flashbang" className="flashbang__eminem" />
       )}
 
-      {phase === "blind" && (
-        <div className="flashbang__blind-wrap">
-          {/* Flashed cat sits underneath the solid white flash so it appears as the white fades out */}
+      {phase === "flash" && <div className="flashbang__whiteout flashbang__whiteout--peak" />}
+
+      {phase === "cat" && (
+        <>
           <img src={flashedCatImg} alt="Blinded cat" className="flashbang__cat" />
-          <div className="flashbang__whiteout" />
-        </div>
+          <div className="flashbang__whiteout flashbang__whiteout--dissolve" />
+        </>
       )}
 
       <button type="button" className="btn warn flashbang__skip" onClick={dismiss}>
