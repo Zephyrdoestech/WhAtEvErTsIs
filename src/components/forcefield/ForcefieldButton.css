@@ -2,31 +2,28 @@
 @keyframes forcefield-shimmer {
   0%,
   100% {
-    opacity: 0.72;
-    transform: scale(1);
     filter: hue-rotate(0deg) brightness(1);
   }
   50% {
-    opacity: 1;
-    transform: scale(1.045);
-    filter: hue-rotate(18deg) brightness(1.22);
+    filter: hue-rotate(18deg) brightness(1.25);
   }
 }
 
-@keyframes forcefield-halo-pulse {
+@keyframes forcefield-aura-breathe {
   0%,
   100% {
-    opacity: 0.35;
-    transform: scale(0.98);
+    transform: scale(1);
   }
   50% {
-    opacity: 0.72;
-    transform: scale(1.07);
+    transform: scale(1.015);
   }
 }
 
 .forcefield-button {
   --ff-threat: 0;
+  --ff-proximity: 0;
+  --ff-scale: 1;
+  --ff-range: 130px;
   --ff-shake-x: 0px;
   --ff-shake-y: 0px;
   --ff-shake-rot: 0deg;
@@ -40,40 +37,53 @@
     box-shadow 0.08s linear;
   box-shadow:
     inset 0 0 0 999px rgba(220, 38, 38, calc(0.82 * var(--ff-threat))),
-    0 0 14px rgba(56, 189, 248, calc(0.45 * (1 - var(--ff-threat)))),
+    0 0 14px rgba(56, 189, 248, calc(0.45 * var(--ff-proximity) * (1 - var(--ff-threat)))),
     0 0 calc(12px * var(--ff-threat)) calc(2px * var(--ff-threat)) rgba(255, 59, 59, calc(0.95 * var(--ff-threat))),
     0 0 calc(32px * var(--ff-threat)) calc(10px * var(--ff-threat)) rgba(239, 68, 68, calc(0.85 * var(--ff-threat)));
   will-change: translate, scale, transform, box-shadow;
 }
 
-/* Inner shimmering forcefield shield ring */
+/* Exact detection boundary line (matches TRIGGER_RADIUS = 130px in screen space even when scaled) */
 .forcefield-button::before {
   content: "";
   position: absolute;
-  inset: -6px;
-  border-radius: inherit;
-  border: 2px solid color-mix(in srgb, #38bdf8 calc((1 - var(--ff-threat)) * 100%), #ef4444);
+  inset: calc(-1 * var(--ff-range));
+  border-radius: calc(var(--ff-range) + 8px);
+  border: calc(2px / var(--ff-scale)) solid
+    color-mix(in srgb, rgba(56, 189, 248, 0.9) calc((1 - var(--ff-threat)) * 100%), rgba(239, 68, 68, 0.95));
+  background: radial-gradient(
+    ellipse at center,
+    transparent 55%,
+    color-mix(in srgb, rgba(56, 189, 248, 0.14) calc((1 - var(--ff-threat)) * 100%), rgba(239, 68, 68, 0.2)) 100%
+  );
   box-shadow:
-    0 0 12px color-mix(in srgb, rgba(56, 189, 248, 0.7) calc((1 - var(--ff-threat)) * 100%), rgba(239, 68, 68, 0.9)),
-    inset 0 0 10px color-mix(in srgb, rgba(125, 211, 252, 0.45) calc((1 - var(--ff-threat)) * 100%), rgba(254, 202, 202, 0.55));
+    0 0 calc(14px / var(--ff-scale))
+      color-mix(in srgb, rgba(56, 189, 248, 0.55) calc((1 - var(--ff-threat)) * 100%), rgba(239, 68, 68, 0.8)),
+    inset 0 0 calc(18px / var(--ff-scale))
+      color-mix(in srgb, rgba(125, 211, 252, 0.3) calc((1 - var(--ff-threat)) * 100%), rgba(248, 113, 113, 0.45));
+  opacity: var(--ff-proximity);
   pointer-events: none;
-  animation: forcefield-shimmer 1.9s ease-in-out infinite;
+  transition: opacity 0.16s ease-out;
+  animation: forcefield-shimmer 1.8s ease-in-out infinite;
 }
 
-/* Outer pulsing energy aura */
+/* Subtle shimmering outer energy trace just outside the detection line */
 .forcefield-button::after {
   content: "";
   position: absolute;
-  inset: -12px;
-  border-radius: inherit;
-  border: 1.5px dashed color-mix(in srgb, rgba(125, 211, 252, 0.75) calc((1 - var(--ff-threat)) * 100%), rgba(248, 113, 113, 0.95));
+  inset: calc(-1 * var(--ff-range) - (6px / var(--ff-scale)));
+  border-radius: calc(var(--ff-range) + (14px / var(--ff-scale)));
+  border: calc(1.5px / var(--ff-scale)) dashed
+    color-mix(in srgb, rgba(125, 211, 252, 0.65) calc((1 - var(--ff-threat)) * 100%), rgba(248, 113, 113, 0.85));
+  opacity: calc(var(--ff-proximity) * 0.75);
   pointer-events: none;
-  animation: forcefield-halo-pulse 2.4s ease-in-out infinite;
+  transition: opacity 0.16s ease-out;
+  animation: forcefield-aura-breathe 2.2s ease-in-out infinite;
 }
 
 .forcefield-button:disabled::before,
 .forcefield-button:disabled::after {
-  opacity: 0.2;
+  opacity: 0;
   animation: none;
 }
 

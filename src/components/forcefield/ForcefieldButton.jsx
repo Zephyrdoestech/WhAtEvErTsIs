@@ -4,12 +4,14 @@
 //   onDodge fires every time the button runs away. maxSpeed is in px per ms.
 import { useCallback, useEffect, useRef, useState } from "react";
 import useBooking from "../../context/useBooking.js";
-import { playDodgeAudio, primeDodgeAudio } from "./dodgeAudio.js";
+import dodgeSound from "../../assets/audios/sfx/Pou Nah Sound Effect.mp3";
 import "./ForcefieldButton.css";
 
 const DEFAULT_MAX_SPEED = 0.15;
 const DEMO_MIN_MAX_SPEED = 0.55;
 const TRIGGER_RADIUS = 130;
+const PROXIMITY_REVEAL_MARGIN = 140; // Fade forcefield in starting 140px outside the detection line
+const PROXIMITY_OUTER_RADIUS = TRIGGER_RADIUS + PROXIMITY_REVEAL_MARGIN;
 const SPEED_WINDOW_MS = 60;
 const DODGE_COOLDOWN_MS = 220;
 const SHRINK_FACTOR = 0.9; // 10% smaller per dodge
@@ -74,12 +76,31 @@ function pickFarDodgeCenter({
   return { x: best.x, y: best.y };
 }
 
+function getDistanceToRect(x, y, rect) {
+  const closestX = clamp(x, rect.left, rect.right);
+  const closestY = clamp(y, rect.top, rect.bottom);
+  return Math.hypot(x - closestX, y - closestY);
+}
+
+function computeProximity(distToButton) {
+  if (distToButton >= PROXIMITY_OUTER_RADIUS) return 0;
+  if (distToButton <= TRIGGER_RADIUS) return 1;
+  // Smooth ramp from 0 at outer radius to 0.85 right at the detection line
+  const t = (PROXIMITY_OUTER_RADIUS - distToButton) / PROXIMITY_REVEAL_MARGIN;
+  return clamp(t * 0.85, 0, 0.85);
+}
+
 function resetThreatStyles(button) {
   if (!button) return;
   button.style.setProperty("--ff-threat", "0");
   button.style.setProperty("--ff-shake-x", "0px");
   button.style.setProperty("--ff-shake-y", "0px");
   button.style.setProperty("--ff-shake-rot", "0deg");
+}
+
+function setProximityStyle(button, value) {
+  if (!button) return;
+  button.style.setProperty("--ff-proximity", value.toFixed(3));
 }
 
 export default function ForcefieldButton({
@@ -112,6 +133,7 @@ export default function ForcefieldButton({
   const suppressNextClickRef = useRef(false);
   const onDodgeRef = useRef(onDodge);
   const mutedRef = useRef(muted);
+  const audioRef = useRef(null);
 
   const [offset, setOffset] = useState({ x: 0, y: 0 });
   const [scale, setScale] = useState(1);
@@ -200,13 +222,26 @@ export default function ForcefieldButton({
         y: Math.round(targetCenter.y - baseCenterY),
       };
 
+      // Update proximity against the new post-dodge rect so the ring fades out once it escapes far away
+      const nextRect = {
+        left: targetCenter.x - nextWidth / 2,
+        right: targetCenter.x + nextWidth / 2,
+        top: targetCenter.y - nextHeight / 2,
+        bottom: targetCenter.y + nextHeight / 2,
+      };
+      setProximityStyle(button, computeProximity(getDistanceToRect(pointerX, pointerY, nextRect)));
+
       offsetRef.current = nextOffset;
       scaleRef.current = nextScale;
       lastDodgeAtRef.current = performance.now();
       setOffset(nextOffset);
       setScale(nextScale);
       if (!mutedRef.current) {
-        playDodgeAudio();
+        if (!audioRef.current) {
+          audioRef.current = new Audio(dodgeSound);
+        }
+        audioRef.current.currentTime = 0;
+        audioRef.current.play().catch(() => {});
       }
       onDodgeRef.current?.();
     },
@@ -219,14 +254,21 @@ export default function ForcefieldButton({
       threatRef.current = 0;
       shakeRef.current = { x: 0, y: 0 };
       resetThreatStyles(btnOnMount);
+      setProximityStyle(btnOnMount, 0);
       return undefined;
     }
-
-    primeDodgeAudio();
 
     function handleMouseMove(event) {
       const now = performance.now();
       if (now - lastTouchAtRef.current < SYNTHETIC_MOUSE_IGNORE_MS) return;
+
+      const button = buttonRef.current;
+      let distToButton = Infinity;
+      if (button) {
+        const rect = button.getBoundingClientRect();
+        distToButton = getDistanceToRect(event.clientX, event.clientY, rect);
+        setProximityStyle(button, computeProximity(distToButton));
+      }
 
       const samples = pointerSamplesRef.current;
       samples.push({ x: event.clientX, y: event.clientY, t: now });
@@ -256,17 +298,13 @@ export default function ForcefieldButton({
       startThreatPulse(nextThreat);
 
       if (now - lastDodgeAtRef.current < DODGE_COOLDOWN_MS) return;
-
-      const button = buttonRef.current;
-      if (!button) return;
-
-      const rect = button.getBoundingClientRect();
-      const closestX = clamp(event.clientX, rect.left, rect.right);
-      const closestY = clamp(event.clientY, rect.top, rect.bottom);
-      const distToButton = Math.hypot(event.clientX - closestX, event.clientY - closestY);
       if (distToButton > TRIGGER_RADIUS) return;
 
       triggerDodge(event.clientX, event.clientY);
+    }
+
+    function handlePointerLeaveWindow() {
+      setProximityStyle(buttonRef.current, 0);
     }
 
     function handleResize() {
@@ -297,14 +335,19 @@ export default function ForcefieldButton({
 
     window.addEventListener("mousemove", handleMouseMove);
     window.addEventListener("resize", handleResize);
+    window.addEventListener("blur", handlePointerLeaveWindow);
+    document.documentElement.addEventListener("mouseleave", handlePointerLeaveWindow);
     return () => {
       window.removeEventListener("mousemove", handleMouseMove);
       window.removeEventListener("resize", handleResize);
+      window.removeEventListener("blur", handlePointerLeaveWindow);
+      document.documentElement.removeEventListener("mouseleave", handlePointerLeaveWindow);
       if (rafIdRef.current !== null) {
         window.cancelAnimationFrame(rafIdRef.current);
         rafIdRef.current = null;
       }
       resetThreatStyles(btnOnMount);
+      setProximityStyle(btnOnMount, 0);
     };
   }, [disabled, effectiveMaxSpeed, startThreatPulse, triggerDodge]);
 
@@ -337,6 +380,8 @@ export default function ForcefieldButton({
   const isDodged = offset.x !== 0 || offset.y !== 0 || scale !== 1;
   const mergedStyle = {
     ...style,
+    "--ff-scale": String(scale),
+    "--ff-range": `${(TRIGGER_RADIUS / scale).toFixed(2)}px`,
     ...(offset.x !== 0 || offset.y !== 0 ? { translate: `${offset.x}px ${offset.y}px` } : {}),
     ...(scale !== 1 ? { scale: String(scale) } : {}),
   };
