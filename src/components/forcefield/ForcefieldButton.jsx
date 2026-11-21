@@ -3,7 +3,7 @@
 //   <ForcefieldButton onClick={...} onDodge={() => {}} maxSpeed={0.15}>Select</ForcefieldButton>
 //   onDodge fires every time the button runs away. maxSpeed is in px per ms.
 import { useEffect, useRef, useState } from "react";
-import dodgeSound from "../../assets/audios/sfx/Pou Nah Sound Effect.mp3";
+import { playDodgeAudio, primeDodgeAudio } from "./dodgeAudio.js";
 import "./ForcefieldButton.css";
 
 const DEFAULT_MAX_SPEED = 0.15;
@@ -79,6 +79,7 @@ export default function ForcefieldButton({
   onDodge,
   maxSpeed = DEFAULT_MAX_SPEED,
   disabled = false,
+  muted = false,
   className = "",
   style,
   children,
@@ -94,7 +95,7 @@ export default function ForcefieldButton({
   const lastFastAtRef = useRef(0);
   const rafIdRef = useRef(null);
   const onDodgeRef = useRef(onDodge);
-  const audioRef = useRef(null);
+  const mutedRef = useRef(muted);
 
   const [offset, setOffset] = useState({ x: 0, y: 0 });
   const [scale, setScale] = useState(1);
@@ -104,6 +105,10 @@ export default function ForcefieldButton({
   }, [onDodge]);
 
   useEffect(() => {
+    mutedRef.current = muted;
+  }, [muted]);
+
+  useEffect(() => {
     const btnOnMount = buttonRef.current;
     if (disabled) {
       threatRef.current = 0;
@@ -111,12 +116,11 @@ export default function ForcefieldButton({
       return undefined;
     }
 
+    primeDodgeAudio();
+
     function playDodgeSound() {
-      if (!audioRef.current) {
-        audioRef.current = new Audio(dodgeSound);
-      }
-      audioRef.current.currentTime = 0;
-      audioRef.current.play().catch(() => {});
+      if (mutedRef.current) return;
+      playDodgeAudio();
     }
 
     function tickThreat() {
