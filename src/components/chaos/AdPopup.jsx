@@ -52,6 +52,13 @@ export default function AdPopup({ open, onClose }) {
     }
   }
 
+  function handleCloseTouchStart(event) {
+    if (!closeDodged) {
+      event.preventDefault();
+      handleCloseHover();
+    }
+  }
+
   function spawnSecondAd() {
     setShowingSecondAd(true);
     setCloseDodged(false);
@@ -94,6 +101,7 @@ export default function AdPopup({ open, onClose }) {
           className={`ad-popup__close ${closeDodged ? "ad-popup__close--dodged" : ""}`}
           aria-label="Close advertisement"
           onMouseEnter={handleCloseHover}
+          onTouchStart={handleCloseTouchStart}
           onClick={handleCloseClick}
         >
           ✕

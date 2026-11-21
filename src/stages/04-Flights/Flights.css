@@ -238,12 +238,15 @@
   margin-bottom: 0;
   box-shadow: 4px 4px 0 var(--ink, #111);
   cursor: pointer;
+  touch-action: manipulation;
   transition: transform 0.12s ease, box-shadow 0.12s ease;
 }
 
-.flight-card:hover {
-  transform: translate(-2px, -2px);
-  box-shadow: 6px 6px 0 var(--red, #cc0000);
+@media (hover: hover) {
+  .flight-card:hover {
+    transform: translate(-2px, -2px);
+    box-shadow: 6px 6px 0 var(--red, #cc0000);
+  }
 }
 
 .flight-card__header {
@@ -386,9 +389,106 @@
 
 .flight-card__select {
   width: 100%;
+  min-height: 2.65rem;
 }
 
 .flights-footer {
   display: flex;
   justify-content: flex-start;
+}
+
+@media (max-width: 640px) {
+  .flights-banner__route {
+    font-size: 0.92rem;
+  }
+
+  .flights-minigame__status {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(7.75rem, 1fr));
+    gap: 0.35rem;
+    font-size: 0.8rem;
+  }
+
+  .flights-minigame__timer,
+  .flights-minigame__score,
+  .flights-minigame__hits {
+    text-align: center;
+    padding: 0.25rem 0.35rem;
+  }
+
+  .flights-minigame__lane {
+    min-height: 54px;
+  }
+
+  .flights-minigame__lane-label {
+    max-width: 55%;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    white-space: nowrap;
+    font-size: 0.62rem;
+  }
+
+  .flights-minigame__plane-icon {
+    font-size: 1.55rem;
+  }
+
+  .flights-minigame__obstacle {
+    font-size: 1.4rem;
+  }
+
+  .flights-minigame__controls {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 0.45rem;
+  }
+
+  .flights-minigame__lane-indicator {
+    grid-column: 1 / -1;
+    order: -1;
+    text-align: center;
+    font-size: 0.82rem;
+  }
+
+  .flights-minigame__ctrl-btn {
+    width: 100%;
+    min-height: 2.75rem;
+  }
+
+  .flight-card__header {
+    flex-wrap: wrap;
+    gap: 0.35rem;
+  }
+
+  .flight-card__main {
+    flex-direction: column;
+    align-items: stretch;
+    gap: 0.55rem;
+  }
+
+  .flight-card__pricing {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+    gap: 0.5rem;
+    text-align: left;
+  }
+
+  .flight-card__price {
+    font-size: 1.65rem;
+  }
+
+  .flights-footer .btn {
+    width: 100%;
+    min-height: 2.75rem;
+  }
+}
+
+@media (min-width: 1120px) {
+  .flights-minigame__track {
+    grid-template-rows: repeat(3, minmax(66px, 1fr));
+  }
+
+  .flights-minigame__lane {
+    min-height: 66px;
+  }
 }
