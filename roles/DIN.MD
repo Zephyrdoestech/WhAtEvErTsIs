@@ -23,42 +23,42 @@
 - You set `booking.reference`, `booking.quote` (if needed) and `booking.survivor`.
 
 ## Roadmap
-### - [ ] Task 1: Server boots + Vite proxy
+### - [x] Task 1: Server boots + Vite proxy
 `cd server && npm install && npm run dev`, check `http://localhost:3001/api/health`. In `vite.config.js` add `server: { proxy: { '/api': 'http://localhost:3001' } }` so the frontend can call `/api/...`.
 **Done when:** `/api/health` returns `{ ok: true }` both directly and through `http://localhost:5173/api/health`.
 
-### - [ ] Task 2: Flights API
+### - [x] Task 2: Flights API
 Create `server/routes/flights.js` and mount it: `GET /api/flights?from=&to=&date=&passengers=` returns 4-8 flights for that route built from `server/data/flights.json` (fill in `from`/`to`, randomise times). Prices like ₱1, ₱3, ₱0.50; each has an absurd `conditions` array ("Window is a sticker", "Departs when the pilot feels ready").
 **Done when:** the endpoint returns believable-but-cursed flights for any route.
 
-### - [ ] Task 3: Quote / hidden fees API
+### - [x] Task 3: Quote / hidden fees API
 `POST /api/quote` takes the booking JSON and returns `{ items: [{label, amount}], total }`. Start at ₱1 base fare, then add extras, seat fees and `booking.fees`, plus hidden charges (Breathing Privilege Tax, Gravity Surcharge, Fee Processing Fee, Convenience Fee for the Inconvenience). Total should balloon.
 **Done when:** a ₱1 flight quote comes back as thousands of pesos with funny line items.
 
-### - [ ] Task 4: Terms & Punishments API
+### - [x] Task 4: Terms & Punishments API
 `GET /api/terms` returns an array of 30+ absurd terms paragraphs ("Clause 14: The airline reserves the right to be a boat."). RICKS uses it on Stage 09.
 **Done when:** the endpoint returns a long, funny terms list.
 
-### - [ ] Task 5: Bookings API
+### - [x] Task 5: Bookings API
 `POST /api/bookings` creates a booking with a reference like `WTF-404-ABC`, status `Confirmed-ish`; store in memory and also write to `server/data/db.json` (git-ignored). `GET /api/bookings/:ref`, `PATCH /api/bookings/:ref`, `DELETE /api/bookings/:ref` (status becomes `Cancelled-ish`). Validate inputs; never log personal details.
 **Done when:** you can create, read, update and cancel a booking with curl.
 
-### - [ ] Task 6: Connect the frontend client
+### - [x] Task 6: Connect the frontend client
 Change `src/api/client.js` to call the real endpoints with `fetch('/api/...')`, but fall back to the mocks in `mocks.js` if the server is down or errors, so the demo never dies. Keep every function signature the same. Tell the team it's live.
 **Done when:** with the server running, stages get real data; with it stopped, they still work on mocks.
 
-### - [ ] Task 7: Stage 10: payment page
+### - [x] Task 7: Stage 10: payment page
 Build `Payment.jsx`: show the quote line items (`getQuote(booking)`), with new hidden charges appearing one by one while the user watches. Payment methods: "Card (demo)", "GCrash", "Pay with Exposure". Show a clear "DEMO: no real payment" note; don't validate or store real card numbers.
 **Done when:** Stage 10 looks like a checkout and the total keeps growing.
 
-### - [ ] Task 8: Stage 10: the gauntlet
+### - [x] Task 8: Stage 10: the gauntlet
 Pay Now flow: "Are you sure?" dialogs that multiply (1, then 2, then 4 stacked; closing one may spawn another, cap it). Pay Now is RICKS's `<ForcefieldButton>`. After clicking it, SYOS's `<Captcha chain={2} />`. Then `createBooking(booking)`, `updateBooking({ reference })` and `next()`.
 **Done when:** a user can fight through the confirmations, forcefield and CAPTCHA and reach Stage 11 with a booking reference.
 
-### - [ ] Task 9: Stage 11: Confirmed-ish e-ticket
+### - [x] Task 9: Stage 11: Confirmed-ish e-ticket
 Build `Confirmation.jsx`: confetti celebration, then a boarding pass card: passenger name, booking reference, seat, "Destination: UNKNOWN", "Gate: 404", "Status: Confirmed-ish", and the title **Certified Survivor**. Call `updateBooking({ survivor: true })`. A "Manage Booking" button calls `next()`.
 **Done when:** Stage 11 shows the fake boarding pass with the user's real details and the survivor title.
 
-### - [ ] Task 10: Backend hardening + docs
+### - [x] Task 10: Backend hardening + docs
 Add a `POST /api/reset` for demos, basic error handling middleware, and `server/README.md` (endpoints, example requests). Run the full flow with the server on and off.
 **Done when:** the backend is documented and the full flow works with and without the server.
