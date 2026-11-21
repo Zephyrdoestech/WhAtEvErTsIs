@@ -48,23 +48,26 @@
   margin: 0;
   width: min(90vw, 480px);
   max-height: 85dvh;
-  overflow-y: auto;
+  overflow: hidden;
   padding: 1rem;
   border: 3px solid var(--ink);
   background: var(--page);
   color: var(--ink);
   font: 1rem var(--font-body);
 }
+.search-tourism[open] { display: flex; flex-direction: column; gap: 0.65rem; }
 .search-tourism::backdrop { background: rgb(0 0 0 / 75%); }
-.search-tourism__banner { padding: 0.6rem; background: var(--blue); text-align: center; font-size: 2rem; }
-.search-tourism h3 { margin: 1rem 0; color: var(--red); font-size: 2rem; }
+.search-tourism h3 { margin: 0; color: var(--red); font-size: clamp(1.5rem, 6vw, 2rem); }
 .search-tourism p { line-height: 1.4; }
-.search-tourism__primary { width: 100%; min-height: 4rem; font-size: 1.4rem; }
-.search-tourism__hint { font-size: 0.875rem; }
-.search-tourism__status { min-height: 3rem; }
-.search-tourism__runway { display: flex; width: 100%; min-height: 3rem; margin: 0.5rem 0; }
+.search-tourism__content { min-height: 0; overflow-y: auto; }
+.search-tourism__content p { margin: 0.5rem 0 0; }
+.search-tourism__video { display: block; width: 100%; aspect-ratio: 16 / 9; max-height: 32dvh; object-fit: contain; background: #000; }
+.search-tourism__actions { flex-shrink: 0; }
+.search-tourism__primary { width: 100%; min-height: 3rem; font-size: 1.3rem; }
+.search-tourism__status { margin: 0.5rem 0; }
+.search-tourism__runway { display: flex; }
 .search-tourism__abroad { min-height: 2.25rem; align-self: start; padding: 0.3rem 0.45rem; font-size: 0.875rem; }
-.search-tourism__close { position: sticky; top: 0; z-index: 1; width: 100%; margin-bottom: 0.75rem; }
+.search-tourism__close { flex-shrink: 0; width: 100%; }
 
 @media (min-width: 720px) {
   .link-bar:has(.search__dark-toggle) .link-bar-links { flex: 1; }

@@ -3,6 +3,7 @@ import { useEffect, useId, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import useBooking from "../../context/useBooking.js";
 import Flashlight from "../../components/flashlight/Flashlight.jsx";
+import tourismVideo from "../../assets/videos/Piliin_mo_and_pilipinas.mp4";
 import { airports } from "./airports.js";
 import "./Search.css";
 
@@ -12,6 +13,7 @@ export default function Search() {
   const submitted = useRef(false);
   const dialog = useRef(null);
   const [tourism, setTourism] = useState(null);
+  const [abroadWait, setAbroadWait] = useState(0);
   const [allowedAbroad, setAllowedAbroad] = useState("");
   const [dark, setDark] = useState(false);
   const [navbar, setNavbar] = useState(null);
@@ -48,6 +50,20 @@ export default function Search() {
     if (!tourism && dialog.current.open) dialog.current.close();
   }, [tourism]);
 
+  const tourismOpen = tourism !== null;
+  useEffect(() => {
+    if (!tourismOpen) return;
+    const timers = [2, 1, 0].map((seconds, index) =>
+      window.setTimeout(() => setAbroadWait(seconds), (index + 1) * 1000)
+    );
+    return () => timers.forEach((timer) => window.clearTimeout(timer));
+  }, [tourismOpen]);
+
+  function openTourism(destination, searching) {
+    setAbroadWait(3);
+    setTourism({ destination, tries: 0, searching });
+  }
+
   function saveSearch(value) {
     if (submitted.current) return;
     submitted.current = true;
@@ -61,7 +77,7 @@ export default function Search() {
     if (field === "to") {
       setAllowedAbroad("");
       if (airports.find((airport) => airport.code === value)?.domestic === false) {
-        setTourism({ destination: value, tries: 0, searching: false });
+        openTourism(value, false);
       }
     }
   }
@@ -89,7 +105,7 @@ export default function Search() {
       return;
     }
     if (!airports.find((airport) => airport.code === search.to).domestic && allowedAbroad !== search.to) {
-      setTourism({ destination: search.to, tries: 0, searching: true });
+      openTourism(search.to, true);
       return;
     }
     saveSearch(search);
@@ -106,7 +122,7 @@ export default function Search() {
   }
 
   function continueAbroad() {
-    if (!tourism) return;
+    if (!tourism || abroadWait > 0) return;
     const tries = tourism.tries + 1;
     bumpFrustration(5);
     if (tries >= 3) {
@@ -175,14 +191,18 @@ export default function Search() {
         <dialog ref={dialog} className="search-tourism" aria-labelledby={`${prefix}-tourism-title`} aria-describedby={`${prefix}-tourism-description`} onCancel={() => setTourism(null)}>
           {tourism && <>
             <button type="button" className="btn search-tourism__close" onClick={() => setTourism(null)}>Back to search</button>
-            <div className="search-tourism__banner" aria-hidden="true">🇵🇭 ☀️ 🏝️</div>
             <h3 className="display" id={`${prefix}-tourism-title`}>Piliin Mo ang Pilipinas!</h3>
-            <p id={`${prefix}-tourism-description`}>Going to {airports.find((airport) => airport.code === tourism.destination)?.city}? But the Philippines has beaches, sunshine, and your emotional baggage already knows the way.</p>
-            <button type="button" className="btn warn search-tourism__primary" onClick={choosePhilippines} autoFocus>Piliin ang Pilipinas!</button>
-            <p className="search-tourism__hint">We'll pick another Philippine destination for you.</p>
-            <p className="search-tourism__status" role="status" aria-live="polite">{tourism.tries === 0 ? "Still going abroad? Convince us in 3 attempts." : `Attempt ${tourism.tries} of 3. ${tourism.tries === 1 ? "But have you considered our islands?" : "One more try and we'll let you go. Probably."}`}</p>
-            <div className="search-tourism__runway" style={{ justifyContent: ["flex-start", "center", "flex-end"][tourism.tries] }}>
-              <button type="button" className="btn search-tourism__abroad" onClick={continueAbroad}>Continue abroad</button>
+            <div className="search-tourism__content">
+              <video className="search-tourism__video" src={tourismVideo} autoPlay muted playsInline controls aria-label="Piliin Mo ang Pilipinas tourism video" />
+              <p id={`${prefix}-tourism-description`}>Going to {airports.find((airport) => airport.code === tourism.destination)?.city}? Try a surprise destination in the Philippines.</p>
+            </div>
+            <div className="search-tourism__actions">
+              <button type="button" className="btn warn search-tourism__primary" onClick={choosePhilippines} autoFocus>Piliin ang Pilipinas!</button>
+              <p className="search-tourism__status" role="status">{tourism.tries === 0 ? "Three attempts to continue abroad." : `Attempt ${tourism.tries} of 3. ${tourism.tries === 1 ? "But have you considered our islands?" : "One more try and we'll let you go. Probably."}`}</p>
+              <div className="search-tourism__runway" style={{ justifyContent: ["flex-start", "center", "flex-end"][tourism.tries] }}>
+                <button type="button" className="btn search-tourism__abroad" onClick={continueAbroad} disabled={abroadWait > 0}>Continue abroad{abroadWait > 0 ? ` (${abroadWait}s)` : ""}</button>
+              </div>
+              <span className="sr-only" role="status">{abroadWait === 0 ? "Continue abroad is available." : ""}</span>
             </div>
           </>}
         </dialog>
