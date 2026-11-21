@@ -3,9 +3,11 @@
   0% {
     transform: scale(0.75) rotate(-14deg);
   }
+
   45% {
     transform: scale(1.14) rotate(10deg);
   }
+
   100% {
     transform: scale(1) rotate(-6deg);
   }
@@ -198,12 +200,10 @@
   inset: 0;
   z-index: 5;
   pointer-events: none;
-  background: radial-gradient(
-    circle var(--beam-r, 130px) at var(--beam-x, 50%) var(--beam-y, 50%),
-    rgba(0, 0, 0, 0) 0%,
-    rgba(0, 0, 0, 0.14) 58%,
-    rgba(0, 0, 0, 0.97) 100%
-  );
+  background: radial-gradient(circle var(--beam-r, 130px) at var(--beam-x, 50%) var(--beam-y, 50%),
+      rgba(0, 0, 0, 0) 0%,
+      rgba(0, 0, 0, 0.14) 58%,
+      rgba(0, 0, 0, 0.97) 100%);
 }
 
 .seat-dark-pill {

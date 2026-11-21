@@ -269,9 +269,8 @@ export default function Review() {
                 <span>Flight:</span>
                 <strong>
                   {flight
-                    ? `${flight.id || "BN 101"} (${flight.airline || "Bahala Na Air"}) · ${
-                        flight.depart || "3:00 AM"
-                      } → ${flight.arrive || "3:00 AM (next week)"}`
+                    ? `${flight.id || "BN 101"} (${flight.airline || "Bahala Na Air"}) · ${flight.depart || "3:00 AM"
+                    } → ${flight.arrive || "3:00 AM (next week)"}`
                     : "Not selected yet"}
                 </strong>
               </div>
