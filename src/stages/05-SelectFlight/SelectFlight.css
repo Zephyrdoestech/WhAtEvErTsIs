@@ -1,21 +1,181 @@
-/* OWNER: RICKS — styles for Stage 05 only */
-.select-flight-action {
+/* OWNER: RICKS — styles for Stage 05 only (matched to docs/references Figma design) */
+.select-flight {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.select-flight__bar {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  margin-bottom: 0.75rem;
+}
+
+.select-flight__sample-tag {
+  padding: 0.2rem 0.55rem;
+  background: var(--yellow);
+  border: var(--border);
+  font-size: 0.75rem;
+  font-weight: 700;
+}
+
+.select-flight__route-banner {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+  padding: 0.75rem;
+  background: var(--lavender);
+  border: var(--border);
+  margin-bottom: 0.75rem;
+}
+
+.select-flight__code {
+  align-self: flex-start;
+  padding: 0.15rem 0.65rem;
+  background: var(--yellow);
+  color: var(--red);
+  border: var(--border);
+  font-size: 1.4rem;
+  line-height: 1.1;
+}
+
+.select-flight__route-text {
+  display: flex;
+  flex-direction: column;
+  gap: 0.15rem;
+}
+
+.select-flight__airports {
+  font-size: 1.25rem;
+  color: var(--blue);
+}
+
+.select-flight__carrier {
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+.select-flight__price-tag {
+  display: flex;
+  flex-direction: column;
+}
+
+.select-flight__price {
+  font-size: 2.3rem;
+  line-height: 1;
+  color: var(--red);
+}
+
+.select-flight__price-sub {
+  font-size: 0.72rem;
+  font-style: italic;
+}
+
+.select-flight__table-wrap {
+  overflow-x: auto;
+  margin-bottom: 0.75rem;
+}
+
+.select-flight__table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.9rem;
+  background: #fff;
+}
+
+.select-flight__table th,
+.select-flight__table td {
+  padding: 0.45rem 0.6rem;
+  border: var(--border);
+  text-align: left;
+}
+
+.select-flight__table th {
+  background: var(--grey);
+  font-weight: 700;
+}
+
+.select-flight__table-price {
+  color: var(--red);
+  font-weight: 700;
+}
+
+.select-flight__trip-meta {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 1rem;
+  margin: 0 0 0.75rem;
+  padding: 0.45rem 0.6rem;
+  background: #fffef0;
+  border: var(--border);
+  font-size: 0.88rem;
+}
+
+.select-flight__conditions {
+  padding: 0.7rem 0.8rem;
+  background: #ffffcc;
+  border: 2px solid var(--red);
+  margin-bottom: 1rem;
+}
+
+.select-flight__conditions-title {
+  margin: 0 0 0.45rem;
+  font-size: 0.85rem;
+  color: var(--red);
+}
+
+.select-flight__conditions-list {
+  margin: 0;
+  padding-left: 1.25rem;
+  font-size: 0.92rem;
+  line-height: 1.5;
+}
+
+.select-flight__cta-box {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.6rem;
+  padding: 1.75rem 0.75rem;
+  background: #f5f5f5;
+  border: var(--border);
+}
+
+.select-flight__cta-wrap {
   display: flex;
   justify-content: center;
-  padding: 2rem 0;
 }
 
 .select-flight-btn {
-  padding: 0.85rem 1.6rem;
-  font-size: 1rem;
-  font-weight: 700;
-  color: #ffffff;
-  background: #0b2a5b;
-  border: none;
-  border-radius: 8px;
-  cursor: pointer;
+  min-width: 130px;
+  min-height: 2.6rem;
+  padding: 0.45rem 1.4rem;
+  font-size: 1.05rem;
 }
 
-.select-flight-btn:hover {
-  background: #163f80;
+.select-flight__cta-note {
+  font-size: 0.82rem;
+  font-weight: 700;
+  color: #0088aa;
+  letter-spacing: 0.02em;
+}
+
+@media (min-width: 720px) {
+  .select-flight__route-banner {
+    flex-direction: row;
+    align-items: center;
+    justify-content: space-between;
+  }
+
+  .select-flight__route-text {
+    flex: 1;
+    padding: 0 0.75rem;
+  }
+
+  .select-flight__price-tag {
+    text-align: right;
+  }
 }

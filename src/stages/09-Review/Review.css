@@ -1,1 +1,271 @@
-/* OWNER: RICKS — styles for Stage 09 only */
+/* OWNER: RICKS — styles for Stage 09 only (matched to docs/references/03-terms-payment-kachow.png) */
+@keyframes terms-warn-shake {
+  0%,
+  100% {
+    transform: translateX(0);
+  }
+  20% {
+    transform: translateX(-6px);
+  }
+  40% {
+    transform: translateX(6px);
+  }
+  60% {
+    transform: translateX(-4px);
+  }
+  80% {
+    transform: translateX(4px);
+  }
+}
+
+.review-stage {
+  display: flex;
+  flex-direction: column;
+  gap: 0.75rem;
+}
+
+.review-stage__bar {
+  display: flex;
+  align-items: center;
+  justify-content: flex-start;
+}
+
+.review-grid {
+  display: grid;
+  grid-template-columns: 1fr;
+  gap: 0.75rem;
+  align-items: start;
+}
+
+.review-panel {
+  margin-bottom: 0;
+}
+
+/* Terms & Punishments */
+.terms-panel-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.6rem;
+}
+
+.terms-progress-label {
+  margin: 0;
+  font-size: 0.88rem;
+  color: var(--purple);
+  font-weight: 700;
+}
+
+.terms-progress-track {
+  width: 100%;
+  height: 18px;
+  background: var(--grey);
+  border: var(--border);
+}
+
+.terms-progress-fill {
+  height: 100%;
+  background: var(--green);
+  transition: width 0.12s linear;
+}
+
+.terms-box {
+  height: 260px;
+  overflow-y: auto;
+  padding: 0.75rem 0.85rem;
+  background: #fffef0;
+  border: var(--border);
+  font-size: 0.88rem;
+  line-height: 1.55;
+  color: var(--ink);
+}
+
+.terms-box--warned {
+  border-color: var(--red);
+}
+
+.terms-box--done {
+  border-color: var(--green);
+  background: #f0fff0;
+}
+
+.terms-box__paragraph {
+  margin: 0 0 0.75rem;
+}
+
+.terms-box__end {
+  margin: 0.85rem 0 0.2rem;
+  text-align: center;
+  font-size: 0.8rem;
+  font-weight: 700;
+  text-transform: uppercase;
+  color: var(--purple);
+}
+
+.terms-warning-bar {
+  padding: 0.45rem 0.6rem;
+  background: var(--red);
+  color: #ffffff;
+  border: var(--border);
+  font-size: 0.82rem;
+  font-weight: 700;
+  animation: terms-warn-shake 0.35s ease-in-out;
+}
+
+.terms-agree {
+  display: flex;
+  align-items: center;
+  gap: 0.5rem;
+  font-size: 0.9rem;
+  font-weight: 700;
+  cursor: pointer;
+}
+
+.terms-agree input {
+  width: 18px;
+  height: 18px;
+  flex-shrink: 0;
+}
+
+.terms-agree--locked {
+  opacity: 0.65;
+  cursor: not-allowed;
+}
+
+.review-agree-btn {
+  min-width: 170px;
+}
+
+/* Itinerary + Quote summary */
+.review-summary-body {
+  display: flex;
+  flex-direction: column;
+  gap: 0.85rem;
+}
+
+.review-block,
+.review-quote-block {
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+}
+
+.review-block {
+  padding-bottom: 0.75rem;
+  border-bottom: var(--border);
+}
+
+.review-block__heading {
+  margin: 0 0 0.25rem;
+  font-size: 0.85rem;
+  text-transform: uppercase;
+  color: var(--blue);
+}
+
+.review-kv {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  font-size: 0.9rem;
+  padding: 0.2rem 0;
+  border-bottom: 1px dotted #999;
+}
+
+.review-kv strong {
+  text-align: right;
+}
+
+.review-sublist {
+  margin-top: 0.35rem;
+  padding: 0.45rem 0.55rem;
+  background: #fffef0;
+  border: 1px solid var(--ink);
+  font-size: 0.85rem;
+}
+
+.review-sublist--fees {
+  background: #ffffcc;
+  border-color: var(--red);
+}
+
+.review-sublist__label {
+  display: block;
+  font-weight: 700;
+  margin-bottom: 0.25rem;
+}
+
+.review-sublist ul {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.2rem;
+}
+
+.review-sublist li {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+}
+
+.quote-items {
+  margin: 0;
+  padding: 0;
+  list-style: none;
+  display: flex;
+  flex-direction: column;
+  gap: 0.3rem;
+}
+
+.quote-items__row {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.75rem;
+  font-size: 0.9rem;
+  padding-bottom: 0.25rem;
+  border-bottom: 1px dotted #bbb;
+}
+
+.quote-total {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 0.75rem;
+  margin-top: 0.35rem;
+  padding-top: 0.45rem;
+  border-top: var(--border);
+}
+
+.quote-total__label {
+  font-size: 0.95rem;
+  font-weight: 700;
+  color: var(--red);
+}
+
+.quote-total__amount {
+  font-size: clamp(1.9rem, 5vw, 2.6rem);
+  line-height: 1;
+  color: var(--red);
+}
+
+.review-muted {
+  margin: 0;
+  font-size: 0.88rem;
+  font-style: italic;
+}
+
+.review-error {
+  margin: 0;
+  padding: 0.45rem 0.6rem;
+  background: var(--red);
+  color: #ffffff;
+  border: var(--border);
+  font-size: 0.85rem;
+  font-weight: 700;
+}
+
+@media (min-width: 720px) {
+  .review-grid {
+    grid-template-columns: 1.15fr 1fr;
+  }
+}

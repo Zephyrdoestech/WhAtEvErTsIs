@@ -31,34 +31,34 @@ Build `ForcefieldButton.jsx`: track the mouse with `mousemove` on `window`; meas
 Draw a visible shimmering forcefield ring around it. Make it easier when `demoMode` (higher `maxSpeed`). On touch devices (no mouse), make it dodge the first 2 taps then allow it. Tell DIN it's ready.
 **Done when:** the button looks shielded, works on touch, and is demo-friendly.
 
-### - [ ] Task 3: FireTransition
+### - [x] Task 3: FireTransition
 Build `FireTransition.jsx`: full-screen fire effect (CSS gradients/animated emoji 🔥 or a GIF you add to assets) with a whoosh sound, ~1.5s, then `onDone()`. Make sure it only calls `onDone` once.
 **Done when:** rendering `<FireTransition onDone={next} />` plays the effect and moves on.
 
-### - [ ] Task 4: KachowTransition
-Build `KachowTransition.jsx`: a race-car streak across the screen with big "KA-CHOW!" text and a sound (add the audio file), ~1.5s, then `onDone()`.
-**Done when:** rendering it plays the streak + sound and then moves on.
+### - [x] Task 4: KachowTransition (Lightning McQueen random drive-by)
+Build `KachowTransition.jsx`: non-blocking overlay where `Lightning-McQueen.png` zooms across the entire screen from either left or right at varying intervals and plays `kachow.mp3` each time.
+**Done when:** Lightning McQueen periodically runs across the whole screen from left or right with the Ka-chow sound.
 
-### - [ ] Task 5: Stage 05: select flight
+### - [x] Task 5: Stage 05: select flight
 Build `SelectFlight.jsx`: show the chosen `booking.flight` as a detailed card (times, price, the absurd conditions). The Select button is a `ForcefieldButton` with `onDodge={() => bumpFrustration(3)}`. On click, show `<FireTransition onDone={next} />`.
 **Done when:** selecting the flight requires sneaking up on the button, then fire, then Stage 06.
 
-### - [ ] Task 6: Stage 06: seat map
+### - [x] Task 6: Stage 06: seat map
 Build `Seat.jsx`: a grid seat map (rows 1-30, A-F, business rows 1-3). Hovering an available seat sometimes makes it jump to another spot or turn occupied. Window seats (A/F) add a "Window Appreciation Fee" via `addFee()`. On confirm, `updateBooking({ seat: { code, cls, window } })` and `next()`.
 **Done when:** you can eventually pick a seat and it shows up in `booking.seat`, with the fee added for windows.
 
-### - [ ] Task 7: Stage 06: random darkness
+### - [x] Task 7: Stage 06: random darkness
 Every 10-20 seconds the cabin "lights go out" for a few seconds: wrap the seat map in SYOS's `<Flashlight on={dark}>`. If SYOS's component isn't ready yet, use a simple black overlay and switch later.
 **Done when:** the seat map goes dark at random and the flashlight still lets you pick seats.
 
-### - [ ] Task 8: Stage 09: review summary
+### - [x] Task 8: Stage 09: review summary
 Build `Review.jsx`: itinerary summary from `booking` (route, flight, seat, passenger name, extras, fees). Fetch `getQuote(booking)` and show the line items and total. Save it with `updateBooking({ quote })`.
 **Done when:** Stage 09 shows a clear summary that matches what was entered earlier.
 
-### - [ ] Task 9: Stage 09: Terms & Punishments
+### - [x] Task 9: Stage 09: Terms & Punishments
 Load `getTerms()` into a fixed-height scroll box. Measure scroll speed: scrolling too fast resets it to the top ("Please read responsibly"). The "I agree" checkbox only enables after reaching the bottom slowly. `bumpFrustration` on each reset.
 **Done when:** you can only agree by scrolling slowly to the very end.
 
-### - [ ] Task 10: Stage 09: agree → Ka-chow
+### - [x] Task 10: Stage 09: agree → Ka-chow
 Checking "I agree" + Continue plays `<KachowTransition onDone={next} />` and goes to Stage 10.
 **Done when:** Stage 09 ends with the Ka-chow transition into Payment.
