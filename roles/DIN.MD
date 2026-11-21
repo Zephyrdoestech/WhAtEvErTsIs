@@ -39,7 +39,7 @@ Create `server/routes/flights.js` and mount it: `GET /api/flights?from=&to=&date
 `GET /api/terms` returns an array of 30+ absurd terms paragraphs ("Clause 14: The airline reserves the right to be a boat."). RICKS uses it on Stage 09.
 **Done when:** the endpoint returns a long, funny terms list.
 
-### - [ ] Task 5: Bookings API
+### - [x] Task 5: Bookings API
 `POST /api/bookings` creates a booking with a reference like `WTF-404-ABC`, status `Confirmed-ish`; store in memory and also write to `server/data/db.json` (git-ignored). `GET /api/bookings/:ref`, `PATCH /api/bookings/:ref`, `DELETE /api/bookings/:ref` (status becomes `Cancelled-ish`). Validate inputs; never log personal details.
 **Done when:** you can create, read, update and cancel a booking with curl.
 
