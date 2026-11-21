@@ -1,0 +1,16 @@
+.flashlight {
+  position: relative;
+  isolation: isolate;
+  min-width: 0;
+}
+
+.flashlight__darkness {
+  position: absolute;
+  inset: 0;
+  z-index: 5;
+  background: #000;
+  pointer-events: none;
+  /* Opaque mask outside the circle, transparent mask inside it. */
+  -webkit-mask-image: radial-gradient(circle var(--flashlight-radius) at var(--flashlight-x, 50%) var(--flashlight-y, 50%), transparent 99%, #000 100%);
+  mask-image: radial-gradient(circle var(--flashlight-radius) at var(--flashlight-x, 50%) var(--flashlight-y, 50%), transparent 99%, #000 100%);
+}
