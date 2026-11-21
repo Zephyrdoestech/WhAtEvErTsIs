@@ -39,7 +39,7 @@ Make `FrustrationMeter.jsx` a real bar from 0 to 100 with a face that gets angri
 Build `Welcome.jsx`: hero banner "MANILA → ANYWHERE for ₱1!*" with a tiny asterisk footnote, fake promo cards, and a big Book Now button that calls `next()`.
 **Done when:** Stage 01 looks like a real airline promo and Book Now goes to Stage 02.
 
-### - [ ] Task 5: Stage 01: the Shea ad
+### - [x] Task 5: Stage 01: the Shea ad
 On load, show a full-screen video ad using `src/assets/videos/shea closer.mp4`. A Skip button is visible only during the first 5 seconds, then disappears; after that the user must sit through it (cap it at ~20s, or 5s when `demoMode`). Handle browsers blocking autoplay with sound (start muted with a "Tap for sound" button). `bumpFrustration(10)` if they miss the Skip window.
 **Done when:** the ad appears on every visit to Stage 01, Skip works only in the first 5 seconds, and the promo page shows after the ad ends.
 

@@ -1,5 +1,7 @@
 // OWNER: KYLE — see KYLE.MD (Stage 01: Welcome). Layout follows docs/references/02-welcome-login-ad.png.
+import { useCallback, useState } from "react";
 import useBooking from "../../context/useBooking.js";
+import SheaAd from "./SheaAd.jsx";
 import "./Welcome.css";
 
 const PROMOS = [
@@ -24,6 +26,11 @@ const NEWS = [
 
 export default function Welcome() {
   const { next } = useBooking();
+  const [showAd, setShowAd] = useState(true); // fresh on every visit to Stage 01
+  const closeAd = useCallback(() => setShowAd(false), []); // stable so the ad's timer doesn't restart
+
+  if (showAd) return <SheaAd onDone={closeAd} />;
+
   return (
     <div className="welcome">
       <section className="welcome-hero">
