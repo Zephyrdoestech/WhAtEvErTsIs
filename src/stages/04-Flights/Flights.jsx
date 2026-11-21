@@ -140,12 +140,15 @@ export default function Flights() {
 
       {loading ? (
         <>
-          <LuggageDodgeGame durationMs={loadDurationMs} />
-          {/* From docs/references/01: something to watch while flights "load". Muted, so it can't fight other sounds. */}
-          <section className="panel flights-subway">
-            <h3 className="panel-title purple">Subway Surfers (loading flights... still)</h3>
-            <video className="flights-subway__video" src={subwaySurfers} autoPlay muted loop playsInline aria-hidden="true" />
-          </section>
+          {/* Side by side on wide screens so the clip is on screen: Chrome pauses muted autoplay video while it's off-screen. */}
+          <div className="flights-loading-row">
+            <LuggageDodgeGame durationMs={loadDurationMs} />
+            {/* From docs/references/01: something to watch while flights "load". Muted, so it can't fight other sounds. */}
+            <section className="panel flights-subway">
+              <h3 className="panel-title purple">Subway Surfers (loading flights... still)</h3>
+              <video className="flights-subway__video" src={subwaySurfers} autoPlay muted loop playsInline aria-hidden="true" />
+            </section>
+          </div>
           {config.slowImage && (
             <SlowImage duration={loadDurationMs} maxOpacity={0.55} />
           )}
