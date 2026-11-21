@@ -90,9 +90,12 @@ export default function Payment() {
   const [method, setMethod] = useState("card");
 
   // Payment method states
-  const [digitScreen, setDigitScreen] = useState(1);
-  const [cardDigits, setCardDigits] = useState(Array(16).fill(""));
-  const [cvvOfCvv, setCvvOfCvv] = useState("");
+  const [cardDigits, setCardDigits] = useState([]);
+  const [rolledDigit, setRolledDigit] = useState(() => Math.floor(Math.random() * 10));
+  const [rolledCvv, setRolledCvv] = useState(() =>
+    String(Math.floor(Math.random() * 1000)).padStart(3, "0")
+  );
+  const [cvvConfirmed, setCvvConfirmed] = useState(false);
   const [gcashNumber, setGcashNumber] = useState("");
   const [gcashPin, setGcashPin] = useState("");
   const [pigeonName, setPigeonName] = useState("");
@@ -289,23 +292,39 @@ export default function Payment() {
     raiseFrustration(3);
   };
 
-  const handleCardDigitChange = (val) => {
-    const clean = val.replace(/\D/g, "").slice(-1);
-    setCardDigits((prev) => {
-      const copy = [...prev];
-      copy[digitScreen - 1] = clean;
-      return copy;
-    });
+  const handleShuffleDigit = () => {
+    setRolledDigit(Math.floor(Math.random() * 10));
+    raiseFrustration(1);
   };
 
-  const handleNextCardDigit = () => {
+  const handleConfirmDigit = () => {
+    if (cardDigits.length >= 16) return;
+    setCardDigits((prev) => [...prev, String(rolledDigit)]);
+    setRolledDigit(Math.floor(Math.random() * 10));
     raiseFrustration(2);
-    setDigitScreen((prev) => (prev >= 16 ? 1 : prev + 1));
   };
 
-  const handlePrevCardDigit = () => {
-    setDigitScreen((prev) => (prev <= 1 ? 16 : prev - 1));
+  const handleUndoDigit = () => {
+    setCardDigits((prev) => prev.slice(0, -1));
   };
+
+  const handleShuffleCvv = () => {
+    setCvvConfirmed(false);
+    setRolledCvv(String(Math.floor(Math.random() * 1000)).padStart(3, "0"));
+    raiseFrustration(1);
+  };
+
+  const handleToggleCvvConfirm = () => {
+    setCvvConfirmed((prev) => !prev);
+    raiseFrustration(2);
+  };
+
+  const formattedCardPreview = Array.from({ length: 16 }, (_, idx) =>
+    idx < cardDigits.length ? cardDigits[idx] : "_"
+  )
+    .join("")
+    .replace(/(.{4})/g, "$1 ")
+    .trim();
 
   const holdSecondsDisplay = (holdMs / 1000).toFixed(1);
   const holdPercent = Math.min(100, Math.round((holdMs / targetHoldMs) * 100));
@@ -394,44 +413,72 @@ export default function Payment() {
               {method === "card" && (
                 <>
                   <p className="payment-card-prompt" data-node-id="28:651">
-                    {`Card number (enter BACKWARDS, one digit per screen):  digit ${digitScreen} of 16`}
+                    {`Card number (no typing allowed — shuffle until your digit appears): ${cardDigits.length} of 16 selected`}
                   </p>
+
+                  <div className="payment-card-preview" aria-label="Selected card digits preview">
+                    {formattedCardPreview}
+                  </div>
+
                   <div className="payment-card-digit-row" data-node-id="28:652">
-                    <input
-                      type="text"
-                      inputMode="numeric"
-                      maxLength={1}
-                      className="payment-digit-input"
-                      data-node-id="28:653"
-                      placeholder="0"
-                      value={cardDigits[digitScreen - 1]}
-                      onChange={(e) => handleCardDigitChange(e.target.value)}
-                      aria-label="Single backwards card digit"
-                    />
-                    <button type="button" className="payment-digit-btn" onClick={handlePrevCardDigit}>
-                      Prev
+                    <div className="payment-shuffle-display" data-node-id="28:653" aria-live="polite">
+                      {rolledDigit}
+                    </div>
+                    <button
+                      type="button"
+                      className="payment-digit-btn"
+                      onClick={handleShuffleDigit}
+                      disabled={cardDigits.length >= 16}
+                    >
+                      Shuffle Digit
                     </button>
-                    <button type="button" className="payment-digit-btn" onClick={handleNextCardDigit}>
-                      Next digit
+                    <button
+                      type="button"
+                      className="payment-digit-btn payment-digit-btn--confirm"
+                      onClick={handleConfirmDigit}
+                      disabled={cardDigits.length >= 16}
+                    >
+                      This is correct ✓
                     </button>
-                    <p className="payment-screens-remaining" data-node-id="28:655">
-                      {`<- ${16 - digitScreen} more screens to go`}
-                    </p>
+                    {cardDigits.length > 0 && (
+                      <button type="button" className="payment-digit-btn" onClick={handleUndoDigit}>
+                        Undo
+                      </button>
+                    )}
+                    {cardDigits.length >= 16 ? (
+                      <p className="payment-confirmed-tag">All 16 digits selected!</p>
+                    ) : (
+                      <p className="payment-screens-remaining" data-node-id="28:655">
+                        {`<- ${16 - cardDigits.length} more digits to go`}
+                      </p>
+                    )}
                   </div>
 
                   <p className="payment-cvv-label" data-node-id="28:656">
-                    CVV: please enter the CVV of your CVV
+                    CVV (shuffle 3 digits until it matches yours):
                   </p>
-                  <input
-                    type="password"
-                    maxLength={6}
-                    className="payment-cvv-input"
-                    data-node-id="28:657"
-                    placeholder="***"
-                    value={cvvOfCvv}
-                    onChange={(e) => setCvvOfCvv(e.target.value)}
-                    aria-label="CVV of your CVV"
-                  />
+                  <div className="payment-card-digit-row">
+                    <div className="payment-shuffle-display" data-node-id="28:657" aria-live="polite">
+                      {rolledCvv}
+                    </div>
+                    <button
+                      type="button"
+                      className="payment-digit-btn"
+                      onClick={handleShuffleCvv}
+                    >
+                      Shuffle CVV
+                    </button>
+                    <button
+                      type="button"
+                      className="payment-digit-btn payment-digit-btn--confirm"
+                      onClick={handleToggleCvvConfirm}
+                    >
+                      {cvvConfirmed ? "CVV Confirmed ✓" : "Yes, this is my CVV ✓"}
+                    </button>
+                    {cvvConfirmed && (
+                      <p className="payment-confirmed-tag">Locked in: {rolledCvv}</p>
+                    )}
+                  </div>
                 </>
               )}
 
