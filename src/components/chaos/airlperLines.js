@@ -65,3 +65,14 @@ const AIRLPER_LINES = {
 export function getAirlperLines(stage) {
   return AIRLPER_LINES[stage] ?? AIRLPER_LINES[1];
 }
+
+export function getForgetfulAirlperQuestion(booking, lastAnswer) {
+  const passengerName = [booking?.passenger?.firstName, booking?.passenger?.lastName]
+    .filter(Boolean)
+    .join(" ");
+  const knownName = booking?.user?.name || passengerName || lastAnswer || "a traveler";
+  const destination = booking?.search?.to || booking?.flight?.to || booking?.flight?.destination;
+  const wrongDestination = destination && /narnia/i.test(String(destination)) ? "Hogwarts" : "Narnia";
+
+  return `Forgive me, what was thy name again? I recall "${knownName} the Third" bound for ${wrongDestination}.`;
+}

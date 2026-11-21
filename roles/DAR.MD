@@ -26,9 +26,9 @@
 Build `Airlper.jsx`: a floating helper with the transparent Jose Mari Chan cutout cycling through screen-edge positions on both sides. Every five seconds it shows a different stage-appropriate Old English line from `chaos/airlperLines.js`; minimizing hides the speech bubble while the face keeps peeking.
 **Done when:** the Airlper appears on every page, cycles across both screen sides, changes its line on schedule, and remains reopenable when minimized.
 
-### - [ ] Task 2: Airlper forgets everything
-Add a tiny chat: the Airlper asks a question, the user types an answer, the Airlper thanks them and a few seconds later asks the same thing again ("Forgive me, what was thy name?"). It reads `booking` and gets details wrong on purpose ("Thy flight to... Narnia?").
-**Done when:** the Airlper keeps asking the same questions and misremembers booking details.
+### - [x] Task 2: Airlper forgets everything
+Add a tiny chat to Airlper: it asks the user's name, accepts an answer, thanks them, then after a few seconds asks the same question again. It reads `booking` and gets details wrong on purpose (for example, guessing the destination is Narnia).
+**Done when:** the Airlper accepts chat answers, thanks the user, repeats its question, and misremembers available booking details.
 
 ### - [ ] Task 3: HeeHee sound cue
 Build `HeeHee.jsx`: at random intervals (about 45-90s, or 20s in `demoMode`) play a "hee-hee!" sound (add the file) and briefly shake the page. Add a small 🔇 mute toggle in the ChaosLayer that mutes all chaos sounds.

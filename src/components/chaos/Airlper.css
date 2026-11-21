@@ -90,6 +90,54 @@
   line-height: 1.25;
 }
 
+.airlper__chat {
+  margin-top: 0.5rem;
+  padding-top: 0.45rem;
+  border-top: 1px dashed rgb(17 17 17 / 55%);
+}
+
+.airlper__chat-prompt {
+  margin: 0 0 0.4rem;
+  font-size: 0.88rem;
+  font-weight: 700;
+  line-height: 1.25;
+}
+
+.airlper__chat-form {
+  display: flex;
+  align-items: stretch;
+  gap: 0.35rem;
+}
+
+.airlper__chat-form input {
+  min-width: 0;
+  min-height: 2.25rem;
+  flex: 1 1 auto;
+  padding: 0.3rem 0.45rem;
+  border: 2px solid var(--ink, #111);
+  border-radius: 0;
+  background: #fff;
+  color: var(--ink, #111);
+  font: 700 0.85rem var(--font-body, sans-serif);
+}
+
+.airlper__chat-form input:focus-visible {
+  outline: 3px solid var(--blue, #003399);
+  outline-offset: 1px;
+}
+
+.airlper__submit {
+  min-height: 2.25rem;
+  flex: 0 0 auto;
+  padding: 0.3rem 0.5rem;
+  font-size: 0.8rem;
+  white-space: nowrap;
+}
+
+.airlper__submit:disabled {
+  cursor: not-allowed;
+}
+
 .airlper__minimize {
   display: grid;
   flex: 0 0 2rem;

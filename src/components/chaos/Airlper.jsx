@@ -1,8 +1,8 @@
 // OWNER: DAR — "Ye Olde Airlper", the stage-aware peeking helper.
-import { useEffect, useState } from "react";
+import { useEffect, useRef, useState } from "react";
 import JoseMariChan from "../../assets/images/Jose-Mari-Chan.png";
 import useBooking from "../../context/useBooking.js";
-import { getAirlperLines } from "./airlperLines.js";
+import { getAirlperLines, getForgetfulAirlperQuestion } from "./airlperLines.js";
 import "./Airlper.css";
 
 const PEEK_POSITIONS = [
@@ -27,9 +27,12 @@ function getNextPositionIndex(currentIndex) {
 }
 
 export default function Airlper() {
-  const { stage } = useBooking();
+  const { stage, booking } = useBooking();
   const stageLines = getAirlperLines(stage);
   const [minimized, setMinimized] = useState(false);
+  const [answerDraft, setAnswerDraft] = useState("");
+  const [chat, setChat] = useState({ phase: "asking", hasForgotten: false, lastAnswer: "" });
+  const forgetTimerRef = useRef(null);
   const [ticker, setTicker] = useState(() => ({
     stage,
     lineIndex: 0,
@@ -39,6 +42,8 @@ export default function Airlper() {
   useEffect(() => {
     setTicker((current) => ({ ...current, stage, lineIndex: 0 }));
   }, [stage]);
+
+  useEffect(() => () => window.clearTimeout(forgetTimerRef.current), []);
 
   useEffect(() => {
     const intervalId = window.setInterval(() => {
@@ -59,6 +64,24 @@ export default function Airlper() {
   const position = PEEK_POSITIONS[ticker.positionIndex] ?? PEEK_POSITIONS[0];
   const lineIndex = ticker.stage === stage ? ticker.lineIndex : 0;
   const line = stageLines[lineIndex] ?? stageLines[0];
+  const chatPrompt = chat.phase === "thanking"
+    ? `Thank thee, ${chat.lastAnswer}! I shall remember it forevermore.`
+    : chat.hasForgotten
+      ? getForgetfulAirlperQuestion(booking, chat.lastAnswer)
+      : "Prithee, what is thy name?";
+
+  function submitAnswer(event) {
+    event.preventDefault();
+    const answer = answerDraft.trim();
+    if (!answer) return;
+
+    window.clearTimeout(forgetTimerRef.current);
+    setChat((current) => ({ ...current, phase: "thanking", lastAnswer: answer }));
+    setAnswerDraft("");
+    forgetTimerRef.current = window.setTimeout(() => {
+      setChat((current) => ({ ...current, phase: "asking", hasForgotten: true }));
+    }, 3500);
+  }
 
   return (
     <aside
@@ -103,6 +126,27 @@ export default function Airlper() {
           <p className="airlper__message" role="status" aria-live="polite" aria-atomic="true">
             {line}
           </p>
+          <div className="airlper__chat">
+            <p className="airlper__chat-prompt" role="status" aria-live="polite" aria-atomic="true">
+              {chatPrompt}
+            </p>
+            {chat.phase === "asking" && (
+              <form className="airlper__chat-form" onSubmit={submitAnswer}>
+                <input
+                  type="text"
+                  value={answerDraft}
+                  maxLength={80}
+                  autoComplete="off"
+                  aria-label="Answer Airlper"
+                  placeholder="Type thy answer"
+                  onChange={(event) => setAnswerDraft(event.target.value)}
+                />
+                <button className="btn airlper__submit" type="submit" disabled={!answerDraft.trim()}>
+                  Tell him
+                </button>
+              </form>
+            )}
+          </div>
         </div>
       )}
     </aside>
