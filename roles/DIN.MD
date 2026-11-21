@@ -51,7 +51,7 @@ Change `src/api/client.js` to call the real endpoints with `fetch('/api/...')`, 
 Build `Payment.jsx`: show the quote line items (`getQuote(booking)`), with new hidden charges appearing one by one while the user watches. Payment methods: "Card (demo)", "GCrash", "Pay with Exposure". Show a clear "DEMO: no real payment" note; don't validate or store real card numbers.
 **Done when:** Stage 10 looks like a checkout and the total keeps growing.
 
-### - [ ] Task 8: Stage 10: the gauntlet
+### - [x] Task 8: Stage 10: the gauntlet
 Pay Now flow: "Are you sure?" dialogs that multiply (1, then 2, then 4 stacked; closing one may spawn another, cap it). Pay Now is RICKS's `<ForcefieldButton>`. After clicking it, SYOS's `<Captcha chain={2} />`. Then `createBooking(booking)`, `updateBooking({ reference })` and `next()`.
 **Done when:** a user can fight through the confirmations, forcefield and CAPTCHA and reach Stage 11 with a booking reference.
 

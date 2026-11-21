@@ -489,3 +489,109 @@ body:has(.payment-stage-canvas) {
   color: #555555;
   margin: 0;
 }
+
+/* Multiplying stacked "Are you sure?" dialogs from Figma (28:682, 28:692, 28:702) */
+.payment-dialogs-layer {
+  position: fixed;
+  inset: 0;
+  pointer-events: none;
+  z-index: 50;
+}
+
+.payment-sure-dialog {
+  position: absolute;
+  width: 300px;
+  background: #ffffff;
+  border: 3px solid #000000;
+  box-shadow: 4px 4px 0px rgba(0, 0, 0, 0.35);
+  display: flex;
+  flex-direction: column;
+  pointer-events: auto;
+}
+
+.payment-sure-titlebar {
+  background: #cc0000;
+  padding: 3px 6px;
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  width: 100%;
+}
+
+.payment-sure-title {
+  font-family: 'Comic Neue', 'Comic Sans MS', cursive, sans-serif;
+  font-weight: 700;
+  font-size: 12px;
+  color: #ffffff;
+  margin: 0;
+}
+
+.payment-sure-body {
+  padding: 10px;
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.payment-sure-question {
+  font-family: 'Comic Neue', 'Comic Sans MS', cursive, sans-serif;
+  font-weight: 700;
+  font-size: 14px;
+  color: #000000;
+  margin: 0;
+}
+
+.payment-sure-btns {
+  display: flex;
+  gap: 8px;
+  align-items: center;
+  flex-wrap: wrap;
+}
+
+.payment-sure-btn {
+  border: 2px solid #000000;
+  padding: 4px 12px;
+  font-family: 'Comic Neue', 'Comic Sans MS', cursive, sans-serif;
+  font-weight: 700;
+  font-size: 12px;
+  cursor: pointer;
+}
+
+.payment-sure-btn--gray {
+  background: #bbbbbb;
+  color: #777777;
+}
+
+.payment-sure-btn--green {
+  background: #33cc33;
+  color: #000000;
+}
+
+/* CAPTCHA chain modal overlay after clearing the dialogs */
+.payment-captcha-overlay {
+  position: fixed;
+  inset: 0;
+  background: rgba(0, 0, 0, 0.55);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 60;
+  padding: 16px;
+}
+
+.payment-captcha-dialog {
+  background: #ffffff;
+  border: 3px solid #000000;
+  width: 480px;
+  max-width: 100%;
+  box-shadow: 6px 6px 0px #cc0000;
+  display: flex;
+  flex-direction: column;
+}
+
+.payment-captcha-dialog-body {
+  padding: 14px;
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
