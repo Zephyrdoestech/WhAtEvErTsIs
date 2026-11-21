@@ -31,7 +31,7 @@ Replace the contents of `src/App.jsx` so it just renders `<AppShell />` from `./
 Polish `AppShell.css` and the header so the site looks like a real, trustworthy airline (navy/white, logo, footer with fake links). Add a `StepProgress.jsx` in `components/layout/` showing 12 dots for the stages. Small joke: the progress bar occasionally jitters backwards for a moment.
 **Done when:** the site looks legit at first glance and the progress bar follows the current stage.
 
-### - [ ] Task 3: Frustration meter
+### - [x] Task 3: Frustration meter
 Make `FrustrationMeter.jsx` a real bar from 0 to 100 with a face that gets angrier (😊 → 😐 → 😠 → 🤬 → 💀). Animate it when it rises. Add a small "Loops survived: N" counter from `loopCount`.
 **Done when:** calling `bumpFrustration(20)` anywhere visibly moves the meter and changes the face.
 
