@@ -23,8 +23,8 @@
 
 ## Roadmap
 ### - [x] Task 1: Ye Olde Airlper v1
-Build `Airlper.jsx`: a floating helper with the transparent Jose Mari Chan cutout peeking from changing screen-edge positions. Every five seconds it shows a different stage-appropriate Old English line from `chaos/airlperLines.js`; minimizing hides the speech bubble while the face keeps peeking.
-**Done when:** the Airlper appears on every page, changes its line and position on schedule, and remains reopenable when minimized.
+Build `Airlper.jsx`: a floating helper with the transparent Jose Mari Chan cutout cycling through screen-edge positions on both sides. Every five seconds it shows a different stage-appropriate Old English line from `chaos/airlperLines.js`; minimizing hides the speech bubble while the face keeps peeking.
+**Done when:** the Airlper appears on every page, cycles across both screen sides, changes its line on schedule, and remains reopenable when minimized.
 
 ### - [ ] Task 2: Airlper forgets everything
 Add a tiny chat: the Airlper asks a question, the user types an answer, the Airlper thanks them and a few seconds later asks the same thing again ("Forgive me, what was thy name?"). It reads `booking` and gets details wrong on purpose ("Thy flight to... Narnia?").

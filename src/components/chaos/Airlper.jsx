@@ -7,10 +7,10 @@ import "./Airlper.css";
 
 const PEEK_POSITIONS = [
   { name: "left-top", side: "left", x: "0%", y: "8%", offsetY: "0%" },
-  { name: "right-top", side: "right", x: "100%", y: "8%", offsetY: "0%" },
-  { name: "left-middle", side: "left", x: "0%", y: "50%", offsetY: "-50%" },
   { name: "right-middle", side: "right", x: "100%", y: "50%", offsetY: "-50%" },
   { name: "left-bottom", side: "left", x: "0%", y: "92%", offsetY: "-100%" },
+  { name: "right-top", side: "right", x: "100%", y: "8%", offsetY: "0%" },
+  { name: "left-middle", side: "left", x: "0%", y: "50%", offsetY: "-50%" },
   { name: "right-bottom", side: "right", x: "100%", y: "92%", offsetY: "-100%" },
 ];
 
@@ -22,25 +22,19 @@ function chooseDifferentIndex(length, currentIndex) {
   return nextIndex >= currentIndex ? nextIndex + 1 : nextIndex;
 }
 
+function getNextPositionIndex(currentIndex) {
+  return (currentIndex + 1) % PEEK_POSITIONS.length;
+}
+
 export default function Airlper() {
   const { stage } = useBooking();
   const stageLines = getAirlperLines(stage);
   const [minimized, setMinimized] = useState(false);
-  const [prefersReducedMotion, setPrefersReducedMotion] = useState(false);
   const [ticker, setTicker] = useState(() => ({
     stage,
     lineIndex: 0,
     positionIndex: Math.floor(Math.random() * PEEK_POSITIONS.length),
   }));
-
-  useEffect(() => {
-    const mediaQuery = window.matchMedia("(prefers-reduced-motion: reduce)");
-    const updatePreference = () => setPrefersReducedMotion(mediaQuery.matches);
-
-    updatePreference();
-    mediaQuery.addEventListener("change", updatePreference);
-    return () => mediaQuery.removeEventListener("change", updatePreference);
-  }, []);
 
   useEffect(() => {
     setTicker((current) => ({ ...current, stage, lineIndex: 0 }));
@@ -54,15 +48,13 @@ export default function Airlper() {
         return {
           stage,
           lineIndex: chooseDifferentIndex(stageLines.length, currentLineIndex),
-          positionIndex: prefersReducedMotion
-            ? current.positionIndex
-            : chooseDifferentIndex(PEEK_POSITIONS.length, current.positionIndex),
+          positionIndex: getNextPositionIndex(current.positionIndex),
         };
       });
     }, 5000);
 
     return () => window.clearInterval(intervalId);
-  }, [prefersReducedMotion, stage, stageLines]);
+  }, [stage, stageLines]);
 
   const position = PEEK_POSITIONS[ticker.positionIndex] ?? PEEK_POSITIONS[0];
   const lineIndex = ticker.stage === stage ? ticker.lineIndex : 0;
