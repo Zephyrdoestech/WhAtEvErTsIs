@@ -1,0 +1,51 @@
+/* Retro comic date slider styling */
+.date-slider {
+  display: flex;
+  flex-direction: column;
+  gap: 0.35rem;
+  padding: 0.55rem 0.65rem;
+  background: #ffffff;
+  border: var(--border);
+}
+
+.date-slider--invalid {
+  border-color: var(--red);
+}
+
+.date-slider__readout {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 0.5rem;
+  min-height: 1.75rem;
+}
+
+.date-slider__value {
+  font-size: 0.9rem;
+  font-weight: 700;
+  color: var(--blue);
+}
+
+.date-slider__clear {
+  min-height: 1.75rem;
+  padding: 0.1rem 0.5rem;
+  font-size: 0.78rem;
+}
+
+.date-slider__input {
+  width: 100%;
+  min-height: 1.75rem !important;
+  padding: 0 !important;
+  border: none !important;
+  background: transparent !important;
+  accent-color: var(--purple);
+  cursor: ew-resize;
+}
+
+.date-slider__bounds {
+  display: flex;
+  justify-content: space-between;
+  font-family: var(--font-mono);
+  font-size: 0.72rem;
+  color: #444;
+}

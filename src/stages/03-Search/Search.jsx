@@ -3,6 +3,7 @@ import { useEffect, useId, useRef, useState } from "react";
 import { createPortal } from "react-dom";
 import useBooking from "../../context/useBooking.js";
 import Flashlight from "../../components/flashlight/Flashlight.jsx";
+import DateSlider from "../../components/date/DateSlider.jsx";
 import { airports } from "./airports.js";
 import "./Search.css";
 
@@ -37,6 +38,11 @@ export default function Search() {
   const [error, setError] = useState("");
   const [today] = useState(() => {
     const date = new Date();
+    return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
+  });
+  const [maxTravelDate] = useState(() => {
+    const date = new Date();
+    date.setFullYear(date.getFullYear() + 1);
     return `${date.getFullYear()}-${String(date.getMonth() + 1).padStart(2, "0")}-${String(date.getDate()).padStart(2, "0")}`;
   });
 
@@ -153,12 +159,29 @@ export default function Search() {
           </div>
           <div className="search__field">
             <label htmlFor={`${prefix}-depart`}>Departure date</label>
-            <input id={`${prefix}-depart`} name="departDate" type="date" value={search.departDate} min={today} onChange={(event) => change("departDate", event.target.value)} required />
+            <DateSlider
+              id={`${prefix}-depart`}
+              name="departDate"
+              value={search.departDate}
+              min={today}
+              max={maxTravelDate}
+              required
+              onChange={(nextVal) => change("departDate", nextVal)}
+            />
           </div>
           <div className="search__field">
             <label htmlFor={`${prefix}-return`}>Return date (optional)</label>
-            <input id={`${prefix}-return`} name="returnDate" type="date" value={search.returnDate} min={search.departDate || today} onChange={(event) => change("returnDate", event.target.value)} aria-describedby={`${prefix}-oneway`} />
-            <span className="search__help" id={`${prefix}-oneway`}>Leave blank for a one-way trip.</span>
+            <DateSlider
+              id={`${prefix}-return`}
+              name="returnDate"
+              value={search.returnDate}
+              min={search.departDate || today}
+              max={maxTravelDate}
+              optional
+              ariaDescribedBy={`${prefix}-oneway`}
+              onChange={(nextVal) => change("returnDate", nextVal)}
+            />
+            <span className="search__help" id={`${prefix}-oneway`}>Leave cleared for a one-way trip.</span>
           </div>
           <div className="search__field">
             <label htmlFor={`${prefix}-passengers`}>Passengers</label>

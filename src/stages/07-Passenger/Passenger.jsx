@@ -1,6 +1,7 @@
 // OWNER: SYOS — see SYOS.MD (Stage 07: Passenger Details)
 import { useId, useState } from "react";
 import useBooking from "../../context/useBooking.js";
+import DateSlider from "../../components/date/DateSlider.jsx";
 import PoseCheck from "./PoseCheck.jsx";
 import Captcha from "../../components/captcha/Captcha.jsx";
 import "./Passenger.css";
@@ -58,10 +59,27 @@ export default function Passenger() {
         {!saved ? <form className="passenger__form" onSubmit={submit} noValidate autoComplete="off" aria-describedby={`${prefix}-demo`}>
           {fields.map((field) => <div className="passenger__field" key={field.name}>
             <label htmlFor={`${prefix}-${field.name}`}>{field.label}</label>
-            <input id={`${prefix}-${field.name}`} name={field.name} type={field.type} placeholder={field.placeholder} maxLength={field.maxLength} max={field.type === "date" ? today : undefined} value={passenger[field.name]} onChange={(event) => {
-              setPassenger((current) => ({ ...current, [field.name]: event.target.value }));
-              setErrors((current) => ({ ...current, [field.name]: undefined }));
-            }} required aria-invalid={Boolean(errors[field.name])} aria-describedby={errors[field.name] ? `${prefix}-${field.name}-error` : undefined} />
+            {field.type === "date" ? (
+              <DateSlider
+                id={`${prefix}-${field.name}`}
+                name={field.name}
+                value={passenger[field.name]}
+                min="1926-01-01"
+                max={today}
+                required
+                ariaInvalid={Boolean(errors[field.name])}
+                ariaDescribedBy={errors[field.name] ? `${prefix}-${field.name}-error` : undefined}
+                onChange={(nextVal) => {
+                  setPassenger((current) => ({ ...current, [field.name]: nextVal }));
+                  setErrors((current) => ({ ...current, [field.name]: undefined }));
+                }}
+              />
+            ) : (
+              <input id={`${prefix}-${field.name}`} name={field.name} type={field.type} placeholder={field.placeholder} maxLength={field.maxLength} value={passenger[field.name]} onChange={(event) => {
+                setPassenger((current) => ({ ...current, [field.name]: event.target.value }));
+                setErrors((current) => ({ ...current, [field.name]: undefined }));
+              }} required aria-invalid={Boolean(errors[field.name])} aria-describedby={errors[field.name] ? `${prefix}-${field.name}-error` : undefined} />
+            )}
             {errors[field.name] && <span className="passenger__error" id={`${prefix}-${field.name}-error`}>{errors[field.name]}</span>}
           </div>)}
           <p className="passenger__validation" role="alert">{Object.values(errors).some(Boolean) ? "A few details missed their boarding call. Check the marked fields." : ""}</p>
