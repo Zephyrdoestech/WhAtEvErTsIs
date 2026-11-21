@@ -3,7 +3,7 @@
 //   <ForcefieldButton onClick={...} onDodge={() => {}} maxSpeed={0.15}>Select</ForcefieldButton>
 //   onDodge fires every time the button runs away. maxSpeed is in px per ms.
 import { useEffect, useRef, useState } from "react";
-import nyaSound from "../../assets/audios/nya.mp3";
+import dodgeSound from "../../assets/audios/sfx/Pou Nah Sound Effect.mp3";
 import "./ForcefieldButton.css";
 
 const DEFAULT_MAX_SPEED = 0.15;
@@ -111,9 +111,9 @@ export default function ForcefieldButton({
       return undefined;
     }
 
-    function playNya() {
+    function playDodgeSound() {
       if (!audioRef.current) {
-        audioRef.current = new Audio(nyaSound);
+        audioRef.current = new Audio(dodgeSound);
       }
       audioRef.current.currentTime = 0;
       audioRef.current.play().catch(() => {});
@@ -233,7 +233,7 @@ export default function ForcefieldButton({
       lastDodgeAtRef.current = now;
       setOffset(nextOffset);
       setScale(nextScale);
-      playNya();
+      playDodgeSound();
       onDodgeRef.current?.();
     }
 
