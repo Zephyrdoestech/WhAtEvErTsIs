@@ -59,6 +59,6 @@ Pay Now flow: "Are you sure?" dialogs that multiply (1, then 2, then 4 stacked; 
 Build `Confirmation.jsx`: confetti celebration, then a boarding pass card: passenger name, booking reference, seat, "Destination: UNKNOWN", "Gate: 404", "Status: Confirmed-ish", and the title **Certified Survivor**. Call `updateBooking({ survivor: true })`. A "Manage Booking" button calls `next()`.
 **Done when:** Stage 11 shows the fake boarding pass with the user's real details and the survivor title.
 
-### - [ ] Task 10: Backend hardening + docs
+### - [x] Task 10: Backend hardening + docs
 Add a `POST /api/reset` for demos, basic error handling middleware, and `server/README.md` (endpoints, example requests). Run the full flow with the server on and off.
 **Done when:** the backend is documented and the full flow works with and without the server.
