@@ -55,7 +55,7 @@ Every 10-20 seconds the cabin "lights go out" for a few seconds: wrap the seat m
 Build `Review.jsx`: itinerary summary from `booking` (route, flight, seat, passenger name, extras, fees). Fetch `getQuote(booking)` and show the line items and total. Save it with `updateBooking({ quote })`.
 **Done when:** Stage 09 shows a clear summary that matches what was entered earlier.
 
-### - [ ] Task 9: Stage 09: Terms & Punishments
+### - [x] Task 9: Stage 09: Terms & Punishments
 Load `getTerms()` into a fixed-height scroll box. Measure scroll speed: scrolling too fast resets it to the top ("Please read responsibly"). The "I agree" checkbox only enables after reaching the bottom slowly. `bumpFrustration` on each reset.
 **Done when:** you can only agree by scrolling slowly to the very end.
 
