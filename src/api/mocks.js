@@ -21,7 +21,7 @@ export const MOCK_FLIGHTS = [
     arrive: "UNKNOWN",
     price: 0.5,
     priceLabel: "₱0.50",
-    airline: "WhAtEvErTsIs Air",
+    airline: "whatevertsis Air",
     conditions: ["Plane subject to existence", "Window is a sticker"],
   },
   {
@@ -43,7 +43,7 @@ export const MOCK_FLIGHTS = [
     arrive: "Eventually",
     price: 1,
     priceLabel: "₱1",
-    airline: "WhAtEvErTsIs Air",
+    airline: "whatevertsis Air",
     conditions: ["Layover: 3 days in Cebu (the same city)", "Departs when the pilot feels ready"],
   },
   {
@@ -65,7 +65,7 @@ export const MOCK_FLIGHTS = [
     arrive: "UNKNOWN",
     price: 1,
     priceLabel: "₱1*",
-    airline: "WhAtEvErTsIs Air",
+    airline: "whatevertsis Air",
     conditions: ["Pilot not included", "Turbulence: 3% extra"],
   },
 ];

@@ -79,7 +79,7 @@ export default function ChaosController({ onExitController }) {
           <div className="panel-body chaos-controller__header-body">
             <div className="chaos-controller__intro">
               <h1 className="display chaos-controller__headline">
-                WhAtEvErTsIs Master Feature Switchboard
+                whatevertsis Master Feature Switchboard
               </h1>
               <p>
                 Toggle any chaos mechanic, sound cue, or stage obstacle{" "}

@@ -87,7 +87,7 @@ export default function AppShell() {
           <nav aria-label="Footer">
             <a href="#">Privacy Policy (lost)</a> | <a href="#">Terms &amp; Punishments</a> | <a href="#">Cookie Policy (crumbs only)</a> | <a href="#">Contact (disabled)</a>
           </nav>
-          <p>© 1999-2026 Bahala Na Air / WhAtEvErTsIs. All wrongs reserved. Fictional airline. Not valid for travel.</p>
+          <p>© 1999-2026 Bahala Na Air / whatevertsis. All wrongs reserved. Fictional airline. Not valid for travel.</p>
         </footer>
         <ChaosLayer />
         {import.meta.env.DEV && <DevStageJumper />}
