@@ -4,6 +4,7 @@ import { createPortal } from "react-dom";
 import useBooking from "../../context/useBooking.js";
 import Flashlight from "../../components/flashlight/Flashlight.jsx";
 import DateSlider from "../../components/date/DateSlider.jsx";
+import tourismVideo from "../../assets/videos/Piliin_mo_and_pilipinas.mp4";
 import { airports } from "./airports.js";
 import "./Search.css";
 
@@ -12,7 +13,10 @@ export default function Search() {
   const prefix = useId();
   const submitted = useRef(false);
   const dialog = useRef(null);
+  const video = useRef(null);
   const [tourism, setTourism] = useState(null);
+  const [videoAudible, setVideoAudible] = useState(false);
+  const [abroadWait, setAbroadWait] = useState(0);
   const [allowedAbroad, setAllowedAbroad] = useState("");
   const [dark, setDark] = useState(false);
   const [navbar, setNavbar] = useState(null);
@@ -47,12 +51,61 @@ export default function Search() {
   });
 
   useEffect(() => {
+    const player = video.current;
     if (tourism && !dialog.current.open) {
       dialog.current.showModal();
       dialog.current.querySelector(".search-tourism__primary")?.focus();
     }
-    if (!tourism && dialog.current.open) dialog.current.close();
+    if (!tourism) {
+      player.pause();
+      if (dialog.current.open) dialog.current.close();
+    }
   }, [tourism]);
+
+  useEffect(() => {
+    const player = video.current;
+    return () => player.pause();
+  }, []);
+
+  const tourismAttempt = tourism?.tries;
+  useEffect(() => {
+    if (tourismAttempt === undefined) return;
+    const timers = [2, 1, 0].map((seconds, index) =>
+      window.setTimeout(() => setAbroadWait(seconds), (index + 1) * 1000)
+    );
+    return () => timers.forEach((timer) => window.clearTimeout(timer));
+  }, [tourismAttempt]);
+
+  function openTourism(destination, searching) {
+    setAbroadWait(3);
+    setTourism({ destination, tries: 0, searching });
+    // Start playback within the destination interaction while user activation is available.
+    const player = video.current;
+    player.currentTime = 0;
+    playVideoWithSound();
+  }
+
+  function playVideoWithSound() {
+    const player = video.current;
+    player.muted = false;
+    if (player.volume === 0) player.volume = 1;
+    // If the browser blocks autoplay, the clip stays paused until the user presses play.
+    player.play().catch(() => {});
+  }
+
+  function updateVideoSound(event) {
+    const player = event.currentTarget;
+    setVideoAudible(!player.paused && !player.ended && !player.muted && player.volume > 0);
+  }
+
+  function toggleVideoSound() {
+    const player = video.current;
+    if (!player.paused && !player.ended && !player.muted && player.volume > 0) {
+      player.muted = true;
+    } else {
+      playVideoWithSound();
+    }
+  }
 
   function saveSearch(value) {
     if (submitted.current) return;
@@ -67,7 +120,7 @@ export default function Search() {
     if (field === "to") {
       setAllowedAbroad("");
       if (airports.find((airport) => airport.code === value)?.domestic === false) {
-        setTourism({ destination: value, tries: 0, searching: false });
+        openTourism(value, false);
       }
     }
   }
@@ -95,7 +148,7 @@ export default function Search() {
       return;
     }
     if (!airports.find((airport) => airport.code === search.to).domestic && allowedAbroad !== search.to) {
-      setTourism({ destination: search.to, tries: 0, searching: true });
+      openTourism(search.to, true);
       return;
     }
     saveSearch(search);
@@ -112,7 +165,7 @@ export default function Search() {
   }
 
   function continueAbroad() {
-    if (!tourism) return;
+    if (!tourism || abroadWait > 0) return;
     const tries = tourism.tries + 1;
     bumpFrustration(5);
     if (tries >= 3) {
@@ -120,6 +173,7 @@ export default function Search() {
       setTourism(null);
       if (tourism.searching) saveSearch(search);
     } else {
+      setAbroadWait(3);
       setTourism({ ...tourism, tries });
     }
   }
@@ -135,6 +189,7 @@ export default function Search() {
   }
 
   const darkToggle = <button type="button" className="btn search__dark-toggle" aria-pressed={dark} aria-controls={`${prefix}-form`} onClick={() => setDark((value) => !value)}>🌙 Dark Mode {dark ? "On" : "Off"}</button>;
+  const tries = tourismAttempt ?? 0;
 
   return (
     <section className="panel search" aria-labelledby={`${prefix}-heading`}>
@@ -196,18 +251,21 @@ export default function Search() {
         </form>
         </Flashlight>
         <dialog ref={dialog} className="search-tourism" aria-labelledby={`${prefix}-tourism-title`} aria-describedby={`${prefix}-tourism-description`} onCancel={() => setTourism(null)}>
-          {tourism && <>
             <button type="button" className="btn search-tourism__close" onClick={() => setTourism(null)}>Back to search</button>
-            <div className="search-tourism__banner" aria-hidden="true">🇵🇭 ☀️ 🏝️</div>
             <h3 className="display" id={`${prefix}-tourism-title`}>Piliin Mo ang Pilipinas!</h3>
-            <p id={`${prefix}-tourism-description`}>Going to {airports.find((airport) => airport.code === tourism.destination)?.city}? But the Philippines has beaches, sunshine, and your emotional baggage already knows the way.</p>
-            <button type="button" className="btn warn search-tourism__primary" onClick={choosePhilippines} autoFocus>Piliin ang Pilipinas!</button>
-            <p className="search-tourism__hint">We'll pick another Philippine destination for you.</p>
-            <p className="search-tourism__status" role="status" aria-live="polite">{tourism.tries === 0 ? "Still going abroad? Convince us in 3 attempts." : `Attempt ${tourism.tries} of 3. ${tourism.tries === 1 ? "But have you considered our islands?" : "One more try and we'll let you go. Probably."}`}</p>
-            <div className="search-tourism__runway" style={{ justifyContent: ["flex-start", "center", "flex-end"][tourism.tries] }}>
-              <button type="button" className="btn search-tourism__abroad" onClick={continueAbroad}>Continue abroad</button>
+            <div className="search-tourism__content">
+              <button type="button" className="btn search-tourism__sound" onClick={toggleVideoSound}>{videoAudible ? "Mute video" : "Play with sound"}</button>
+              <video ref={video} className="search-tourism__video" src={tourismVideo} preload="none" playsInline controls aria-label="Piliin Mo ang Pilipinas tourism video" onPlaying={updateVideoSound} onPause={updateVideoSound} onEnded={updateVideoSound} onVolumeChange={updateVideoSound} />
+              <p id={`${prefix}-tourism-description`}>Going to {airports.find((airport) => airport.code === tourism?.destination)?.city}? Try a surprise destination in the Philippines.</p>
             </div>
-          </>}
+            <div className="search-tourism__actions">
+              <button type="button" className="btn warn search-tourism__primary" onClick={choosePhilippines}>Piliin ang Pilipinas!</button>
+              <p className="search-tourism__status" role="status">{tries === 0 ? "Three attempts to continue abroad." : `Attempt ${tries} of 3. ${tries === 1 ? "But have you considered our islands?" : "One more try and we'll let you go. Probably."}`}</p>
+              <div className="search-tourism__runway" style={{ justifyContent: ["flex-start", "center", "flex-end"][tries] }}>
+                <button type="button" className="btn search-tourism__abroad" onClick={continueAbroad} disabled={abroadWait > 0}>Continue abroad{abroadWait > 0 ? ` (${abroadWait}s)` : ""}</button>
+              </div>
+              <span className="sr-only" role="status">{abroadWait === 0 ? "Continue abroad is available." : ""}</span>
+            </div>
         </dialog>
       </div>
     </section>
