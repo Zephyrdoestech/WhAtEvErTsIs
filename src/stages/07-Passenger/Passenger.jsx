@@ -2,6 +2,7 @@
 import { useId, useState } from "react";
 import useBooking from "../../context/useBooking.js";
 import PoseCheck from "./PoseCheck.jsx";
+import Captcha from "../../components/captcha/Captcha.jsx";
 import "./Passenger.css";
 
 const fields = [
@@ -15,7 +16,7 @@ const fields = [
 ];
 
 export default function Passenger() {
-  const { booking, updateBooking, demoMode } = useBooking();
+  const { booking, updateBooking, demoMode, next } = useBooking();
   const prefix = useId();
   const [passenger, setPassenger] = useState(() => Object.fromEntries(fields.map(({ name }) => [name, booking.passenger?.[name] || ""])));
   const [errors, setErrors] = useState({});
@@ -67,7 +68,10 @@ export default function Passenger() {
           <button className="btn go passenger__submit" type="submit">Save passenger details</button>
         </form> : <div className="passenger__saved">
           <p role="status">Passenger details saved for {passenger.firstName} {passenger.lastName}.</p>
-          {!posed ? <PoseCheck demoMode={demoMode} onDone={() => setPosed(true)} /> : <p role="status">Pose accepted. Ready for human verification.</p>}
+          {!posed ? <PoseCheck demoMode={demoMode} onDone={() => setPosed(true)} /> : <section aria-labelledby={`${prefix}-human`}>
+            <h3 id={`${prefix}-human`}>Despite the pose, are you human?</h3>
+            <Captcha onPass={next} />
+          </section>}
           <button type="button" className="btn" onClick={() => { setSaved(false); setPosed(false); }}>Edit passenger details</button>
         </div>}
       </div>
