@@ -6,12 +6,12 @@ import { getAirlperLines, getForgetfulAirlperQuestion } from "./airlperLines.js"
 import "./Airlper.css";
 
 const PEEK_POSITIONS = [
-  { name: "left-top", side: "left", x: "0%", y: "8%", offsetY: "0%" },
-  { name: "right-middle", side: "right", x: "100%", y: "50%", offsetY: "-50%" },
-  { name: "left-bottom", side: "left", x: "0%", y: "92%", offsetY: "-100%" },
-  { name: "right-top", side: "right", x: "100%", y: "8%", offsetY: "0%" },
-  { name: "left-middle", side: "left", x: "0%", y: "50%", offsetY: "-50%" },
-  { name: "right-bottom", side: "right", x: "100%", y: "92%", offsetY: "-100%" },
+  { name: "left-top", side: "left", vertical: "top" },
+  { name: "right-middle", side: "right", vertical: "middle" },
+  { name: "left-bottom", side: "left", vertical: "bottom" },
+  { name: "right-top", side: "right", vertical: "top" },
+  { name: "left-middle", side: "left", vertical: "middle" },
+  { name: "right-bottom", side: "right", vertical: "bottom" },
 ];
 
 function chooseDifferentIndex(length, currentIndex) {
@@ -79,17 +79,19 @@ export default function Airlper() {
     }, 3500);
   }
 
+  // Flip horizontally when on the right side so the face looks left into the screen;
+  // invert vertically when at the top so the cut torso sits flush against the top edge.
+  const scaleX = position.side === "right" ? -1 : 1;
+  const scaleY = position.vertical === "top" ? -1 : 1;
+
   return (
     <aside
-      className={`airlper airlper--${position.side}`}
+      className={`airlper airlper--${position.side} airlper--${position.vertical}`}
       data-position={position.name}
       aria-label="Airlper flight helper"
       style={{
-        left: position.side === "left" ? position.x : "auto",
-        right: position.side === "right" ? "0%" : "auto",
-        top: position.y,
-        "--airlper-offset-x": position.side === "left" ? "-12%" : "12%",
-        "--airlper-offset-y": position.offsetY,
+        "--airlper-scale-x": scaleX,
+        "--airlper-scale-y": scaleY,
       }}
     >
       {minimized ? (
